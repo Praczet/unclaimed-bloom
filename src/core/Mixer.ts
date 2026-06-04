@@ -1,4 +1,4 @@
-import type { TokenRecipe } from './types';
+import type { DirectTokenRecipe } from './types';
 
 function clamp(value: number): number {
     return Math.max(0, Math.min(255, Math.round(value)));
@@ -40,7 +40,7 @@ export class Mixer {
         this.source = source;
     }
 
-    public token(recipe: TokenRecipe): string {
+    public token(recipe: DirectTokenRecipe): string {
         const baseColor = this.base[recipe.base];
         if (baseColor === undefined) {
             throw new Error(`Base palette missing key "${recipe.base}"`);

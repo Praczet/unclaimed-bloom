@@ -2,18 +2,55 @@
   "name": "source-heavy",
   "target": "ags",
   "tokens": {
-    "background":      { "base": "background", "source": "background",      "mix": 0.55 },
-    "surface":         { "base": "background", "source": "surface",         "mix": 0.55 },
-    "surface_variant": { "base": "border",     "source": "surface_variant", "mix": 0.65 },
-
-    "primary":         { "base": "blue",       "source": "primary",         "mix": 0.80 },
-    "secondary":       { "base": "magenta",    "source": "secondary",       "mix": 0.80 },
-    "tertiary":        { "base": "purple",     "source": "tertiary",        "mix": 0.80 },
-
-    "on_background":   { "base": "foreground", "source": "on_background",   "mix": 0.55 },
-    "on_surface":      { "base": "foreground", "source": "on_surface",      "mix": 0.55 },
-
-    "outline":         { "base": "comment",    "source": "outline",         "mix": 0.60 },
-    "error":           { "base": "red",        "source": "error",           "mix": 0.65 }
+    "background": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "surface": {
+      "bloom": "surface.raised",
+      "source": "surface",
+      "mix": 0.15
+    },
+    "surface_variant": {
+      "bloom": "border.strong",
+      "source": "surface_variant",
+      "mix": 0.22
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.3
+    },
+    "secondary": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.3
+    },
+    "tertiary": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.3
+    },
+    "on_background": {
+      "bloom": "text.primary",
+      "source": "on_background",
+      "mix": 0.15
+    },
+    "on_surface": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.15
+    },
+    "outline": {
+      "bloom": "border.subtle",
+      "source": "outline",
+      "mix": 0.22
+    },
+    "error": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.22
+    }
   }
 }

@@ -2,12 +2,28 @@
   "name": "subtle-ish",
   "target": "rofi",
   "tokens": {
-    "background":     { "base": "background",    "source": "background",        "mix": 0.25 },
-    "background_alt": { "base": "border",         "source": "surface_variant",   "mix": 0.30 },
-    "foreground":     { "base": "foreground",     "source": "on_surface",        "mix": 0.25 },
-    "accent1":        { "base": "foreground_dark","source": "on_surface_variant","mix": 0.30 },
-    "selected":       { "base": "blue",           "source": "primary",           "mix": 0.55 },
-    "active":         { "base": "teal",           "source": "secondary",         "mix": 0.50 },
-    "urgent":         { "base": "red",            "source": "error",             "mix": 0.45 }
+    "background": {
+      "bloom": "surface.base"
+    },
+    "background_alt": {
+      "bloom": "surface.highest"
+    },
+    "foreground": {
+      "bloom": "text.primary"
+    },
+    "accent1": {
+      "bloom": "text.secondary"
+    },
+    "selected": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "active": {
+      "bloom": "accent.secondary"
+    },
+    "urgent": {
+      "bloom": "state.danger"
+    }
   }
 }

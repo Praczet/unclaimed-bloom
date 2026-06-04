@@ -2,11 +2,31 @@
   "name": "subtle-ish",
   "target": "hyprland",
   "tokens": {
-    "primary":    { "base": "blue",       "source": "primary",    "mix": 0.55 },
-    "secondary":  { "base": "magenta",    "source": "secondary",  "mix": 0.50 },
-    "tertiary":   { "base": "purple",     "source": "tertiary",   "mix": 0.50 },
-    "error":      { "base": "red",        "source": "error",      "mix": 0.45 },
-    "background": { "base": "background", "source": "background", "mix": 0.25 },
-    "on_surface": { "base": "foreground", "source": "on_surface", "mix": 0.25 }
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "secondary": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "tertiary": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
+    "error": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.15
+    },
+    "background": {
+      "bloom": "surface.base"
+    },
+    "on_surface": {
+      "bloom": "text.primary"
+    }
   }
 }

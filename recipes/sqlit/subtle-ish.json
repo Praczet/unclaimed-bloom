@@ -2,21 +2,79 @@
   "name": "subtle-ish",
   "target": "sqlit",
   "tokens": {
-    "background":     { "base": "background",           "source": "background",           "mix": 0.26 },
-    "surface":        { "base": "background_dark",      "source": "surface_container",    "mix": 0.32 },
-    "panel":          { "base": "background_highlight", "source": "surface_container_high","mix": 0.34 },
-    "foreground":     { "base": "foreground",           "source": "on_surface",           "mix": 0.34 },
-    "primary":        { "base": "blue",                 "source": "primary",              "mix": 0.45 },
-    "secondary":      { "base": "purple",               "source": "secondary",            "mix": 0.42 },
-    "accent":         { "base": "magenta",              "source": "tertiary",             "mix": 0.40 },
-    "success":        { "base": "green",                "source": "primary",              "mix": 0.28 },
-    "warning":        { "base": "yellow",               "source": "tertiary",             "mix": 0.34 },
-    "error":          { "base": "red",                  "source": "error",                "mix": 0.44 },
-    "border":         { "base": "comment",              "source": "outline",              "mix": 0.34 },
-    "border_blurred": { "base": "foreground_dark",      "source": "outline_variant",      "mix": 0.30 },
-    "footer_key":     { "base": "blue",                 "source": "primary",              "mix": 0.50 },
-    "button_fg":      { "base": "background",           "source": "on_primary",           "mix": 0.28 },
-    "selection_bg":   { "base": "selection_background", "source": "primary_container",    "mix": 0.42 },
-    "insert_mode":    { "base": "green",                "source": "primary",              "mix": 0.38 }
+    "background": {
+      "bloom": "surface.base"
+    },
+    "surface": {
+      "bloom": "surface.raised",
+      "source": "surface_container",
+      "mix": 0.1
+    },
+    "panel": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
+    "foreground": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "secondary": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.1
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "success": {
+      "bloom": "state.success"
+    },
+    "warning": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "error": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    },
+    "border": {
+      "bloom": "border.subtle",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "border_blurred": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.1
+    },
+    "footer_key": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "button_fg": {
+      "bloom": "text.primary"
+    },
+    "selection_bg": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.1
+    },
+    "insert_mode": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.1
+    }
   }
 }

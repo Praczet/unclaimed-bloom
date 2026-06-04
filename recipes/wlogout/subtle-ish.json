@@ -2,7 +2,13 @@
   "name": "subtle-ish",
   "target": "wlogout",
   "tokens": {
-    "primary":    { "base": "blue",       "source": "primary",    "mix": 0.55 },
-    "foreground": { "base": "foreground", "source": "on_surface", "mix": 0.25 }
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "foreground": {
+      "bloom": "text.primary"
+    }
   }
 }

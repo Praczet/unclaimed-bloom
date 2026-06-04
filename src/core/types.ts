@@ -40,11 +40,19 @@ export interface Mood {
 
 // --- Recipe ---
 
-export interface TokenRecipe {
+export interface DirectTokenRecipe {
     source: string;
     base: string;
     mix: number;    // 0.0 = pure base palette, 1.0 = pure source palette
 }
+
+export interface BloomTokenRecipe {
+    bloom: string;  // semantic bloom path, for example "surface.base"
+    source?: string;
+    mix?: number;   // 0.0 = pure bloom token, 1.0 = pure source palette
+}
+
+export type TokenRecipe = DirectTokenRecipe | BloomTokenRecipe;
 
 export interface Recipe {
     name: string;

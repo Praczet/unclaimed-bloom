@@ -63,6 +63,12 @@ function commonPrefix(strs: string[]): string {
     return pfx;
 }
 
+function bloomValue(colors: Record<string, Record<string, string>>, path: string): string | undefined {
+    const [group, token] = path.split('.');
+    if (group === undefined || token === undefined) return undefined;
+    return colors[group]?.[token];
+}
+
 async function buildInspectData(profileName: string): Promise<InspectData> {
     const profile       = await readProfile(Paths.profile(profileName));
     const profileBase   = await readPalette(Paths.palette(profile.basePalette));
@@ -90,17 +96,33 @@ async function buildInspectData(profileName: string): Promise<InspectData> {
                 const displayName = stripPfx
                     ? name.slice(stripPfx.length).replace(/__+$/, '').toLowerCase()
                     : name;
-                const baseHex = targetBase.colors[tr.base] ?? '#000000';
-                const srcHex  = sourcePalette.colors[tr.source] ?? baseHex;
-                return {
-                    name:    displayName,
-                    baseKey: tr.base,
-                    baseHex,
-                    srcKey:  tr.source,
-                    srcHex,
-                    mix:     tr.mix,
-                    result:  mixColors(baseHex, srcHex, tr.mix),
-                };
+                if ('bloom' in tr) {
+                    const baseHex = bloomValue(bloomColors, tr.bloom) ?? '#000000';
+                    const srcKey  = tr.source ?? '(none)';
+                    const srcHex  = tr.source !== undefined ? sourcePalette.colors[tr.source] ?? baseHex : baseHex;
+                    const mix     = tr.mix ?? 0;
+                    return {
+                        name:    displayName,
+                        baseKey: `bloom:${tr.bloom}`,
+                        baseHex,
+                        srcKey,
+                        srcHex,
+                        mix,
+                        result:  tr.source !== undefined ? mixColors(baseHex, srcHex, mix) : baseHex,
+                    };
+                } else {
+                    const baseHex = targetBase.colors[tr.base] ?? '#000000';
+                    const srcHex  = sourcePalette.colors[tr.source] ?? baseHex;
+                    return {
+                        name:    displayName,
+                        baseKey: tr.base,
+                        baseHex,
+                        srcKey:  tr.source,
+                        srcHex,
+                        mix:     tr.mix,
+                        result:  mixColors(baseHex, srcHex, tr.mix),
+                    };
+                }
             }),
         };
     }

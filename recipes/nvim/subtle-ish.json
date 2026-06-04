@@ -2,17 +2,42 @@
   "name": "subtle-ish",
   "target": "nvim",
   "tokens": {
-    "background":      { "base": "background", "source": "background",      "mix": 0.20 },
-    "surface":         { "base": "background", "source": "surface",         "mix": 0.20 },
-    "surface_variant": { "base": "border",     "source": "surface_variant", "mix": 0.30 },
-
-    "primary":         { "base": "blue",       "source": "primary",         "mix": 0.55 },
-    "secondary":       { "base": "magenta",    "source": "secondary",       "mix": 0.55 },
-    "tertiary":        { "base": "purple",     "source": "tertiary",        "mix": 0.55 },
-
-    "on_background":   { "base": "foreground", "source": "on_background",   "mix": 0.25 },
-    "on_surface":      { "base": "foreground", "source": "on_surface",      "mix": 0.25 },
-
-    "error":           { "base": "red",        "source": "error",           "mix": 0.45 }
+    "background": {
+      "bloom": "surface.base"
+    },
+    "surface": {
+      "bloom": "surface.raised"
+    },
+    "surface_variant": {
+      "bloom": "border.strong",
+      "source": "surface_variant",
+      "mix": 0.1
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "secondary": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "tertiary": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
+    "on_background": {
+      "bloom": "text.primary"
+    },
+    "on_surface": {
+      "bloom": "text.primary"
+    },
+    "error": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.15
+    }
   }
 }

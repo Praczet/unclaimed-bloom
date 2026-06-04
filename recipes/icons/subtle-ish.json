@@ -2,29 +2,113 @@
   "name": "subtle-ish",
   "target": "icons",
   "tokens": {
-    "__ADART_ICON_SURFACE__":           { "base": "background",           "source": "surface",                  "mix": 0.28 },
-    "__ADART_ICON_SURFACE_DIM__":       { "base": "background_dark",      "source": "surface_container_lowest", "mix": 0.28 },
-    "__ADART_ICON_SURFACE_CONTAINER__": { "base": "background_highlight", "source": "surface_container",        "mix": 0.28 },
-    "__ADART_ICON_SURFACE_HIGH__":      { "base": "border",               "source": "surface_container_high",   "mix": 0.28 },
-    "__ADART_ICON_SURFACE_LOWEST__":    { "base": "background",           "source": "background",               "mix": 0.28 },
-    "__ADART_ICON_ON_SURFACE__":        { "base": "foreground",           "source": "on_surface",               "mix": 0.30 },
-    "__ADART_ICON_ON_SURFACE_MUTED__":  { "base": "comment",              "source": "on_surface_variant",       "mix": 0.30 },
-    "__ADART_ICON_OUTLINE__":           { "base": "comment",              "source": "outline",                  "mix": 0.30 },
-    "__ADART_ICON_SHADOW__":            { "base": "background_dark",      "source": "shadow",                   "mix": 0.20 },
-    "__ADART_ICON_ACCENT_1__":          { "base": "blue",                 "source": "primary",                  "mix": 0.50 },
-    "__ADART_ICON_ACCENT_1_DIM__":      { "base": "blue",                 "source": "primary_container",        "mix": 0.45 },
-    "__ADART_ICON_ACCENT_1_BRIGHT__":   { "base": "blue",                 "source": "primary_fixed",            "mix": 0.50 },
-    "__ADART_ICON_ACCENT_2__":          { "base": "cyan",                 "source": "secondary",                "mix": 0.50 },
-    "__ADART_ICON_ACCENT_2_DIM__":      { "base": "cyan",                 "source": "secondary_container",      "mix": 0.45 },
-    "__ADART_ICON_ACCENT_2_BRIGHT__":   { "base": "cyan",                 "source": "secondary_fixed",          "mix": 0.50 },
-    "__ADART_ICON_ACCENT_3__":          { "base": "magenta",              "source": "tertiary",                 "mix": 0.50 },
-    "__ADART_ICON_ACCENT_3_DIM__":      { "base": "magenta",              "source": "tertiary_container",       "mix": 0.45 },
-    "__ADART_ICON_ACCENT_3_BRIGHT__":   { "base": "magenta",              "source": "tertiary_fixed",           "mix": 0.50 },
-    "__ADART_ICON_SUCCESS__":           { "base": "green",                "source": "secondary_fixed_dim",      "mix": 0.35 },
-    "__ADART_ICON_SUCCESS_DIM__":       { "base": "green",                "source": "secondary_container",      "mix": 0.35 },
-    "__ADART_ICON_WARNING__":           { "base": "yellow",               "source": "tertiary_fixed_dim",       "mix": 0.35 },
-    "__ADART_ICON_WARNING_DIM__":       { "base": "yellow",               "source": "tertiary_container",       "mix": 0.35 },
-    "__ADART_ICON_ERROR__":             { "base": "red",                  "source": "error",                    "mix": 0.40 },
-    "__ADART_ICON_ERROR_DIM__":         { "base": "red",                  "source": "error_container",          "mix": 0.35 }
+    "__ADART_ICON_SURFACE__": {
+      "bloom": "surface.base"
+    },
+    "__ADART_ICON_SURFACE_DIM__": {
+      "bloom": "surface.dim"
+    },
+    "__ADART_ICON_SURFACE_CONTAINER__": {
+      "bloom": "surface.raised"
+    },
+    "__ADART_ICON_SURFACE_HIGH__": {
+      "bloom": "surface.highest"
+    },
+    "__ADART_ICON_SURFACE_LOWEST__": {
+      "bloom": "surface.dim"
+    },
+    "__ADART_ICON_ON_SURFACE__": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "__ADART_ICON_ON_SURFACE_MUTED__": {
+      "bloom": "text.muted",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "__ADART_ICON_OUTLINE__": {
+      "bloom": "border.subtle",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "__ADART_ICON_SHADOW__": {
+      "bloom": "surface.dim"
+    },
+    "__ADART_ICON_ACCENT_1__": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_1_DIM__": {
+      "bloom": "accent.primary",
+      "source": "primary_container",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_1_BRIGHT__": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_2__": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_2_DIM__": {
+      "bloom": "accent.secondary",
+      "source": "secondary_container",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_2_BRIGHT__": {
+      "bloom": "accent.secondary",
+      "source": "secondary_fixed",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_3__": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_3_DIM__": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary_container",
+      "mix": 0.15
+    },
+    "__ADART_ICON_ACCENT_3_BRIGHT__": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary_fixed",
+      "mix": 0.15
+    },
+    "__ADART_ICON_SUCCESS__": {
+      "bloom": "state.success",
+      "source": "secondary_fixed_dim",
+      "mix": 0.1
+    },
+    "__ADART_ICON_SUCCESS_DIM__": {
+      "bloom": "state.success",
+      "source": "secondary_container",
+      "mix": 0.1
+    },
+    "__ADART_ICON_WARNING__": {
+      "bloom": "state.warning",
+      "source": "tertiary_fixed_dim",
+      "mix": 0.1
+    },
+    "__ADART_ICON_WARNING_DIM__": {
+      "bloom": "state.warning",
+      "source": "tertiary_container",
+      "mix": 0.1
+    },
+    "__ADART_ICON_ERROR__": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    },
+    "__ADART_ICON_ERROR_DIM__": {
+      "bloom": "state.danger",
+      "source": "error_container",
+      "mix": 0.1
+    }
   }
 }
