@@ -197,6 +197,37 @@ main {
 .meta-key  { color: var(--muted); margin-right: 4px; }
 .meta-sep  { color: var(--border); }
 
+/* Target selector */
+
+.target-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.target-tab {
+    min-height: 28px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+}
+
+.target-tab:hover {
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--accent), var(--border) 55%);
+}
+
+.target-tab.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent), var(--surface) 88%);
+}
+
 /* Inspect bloom section */
 
 .inspect-bloom {
@@ -238,6 +269,13 @@ main {
 
 /* Target section */
 
+.target-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .inspect-target h2 .recipe-name {
     font-size: 10px;
     font-weight: 400;
@@ -245,6 +283,11 @@ main {
     text-transform: none;
     letter-spacing: 0;
     margin-left: 4px;
+}
+
+.token-count {
+    color: var(--muted);
+    font-size: 11px;
 }
 
 /* Token table */
@@ -258,7 +301,7 @@ main {
 .token-header,
 .token-row {
     display: grid;
-    grid-template-columns: 160px 1fr 1fr 44px 100px;
+    grid-template-columns: minmax(120px, 180px) minmax(180px, 1fr) minmax(160px, 1fr) 44px minmax(110px, 140px);
     align-items: center;
     gap: 8px;
     padding: 4px 0;
@@ -324,11 +367,6 @@ main {
     gap: 5px;
 }
 
-.arrow {
-    color: var(--muted);
-    font-size: 11px;
-}
-
 /* Mini color chip (inline) */
 
 .mini-chip {
@@ -345,4 +383,25 @@ main {
 .empty {
     color: var(--muted);
     padding: 40px 0;
+}
+
+@media (max-width: 900px) {
+    main {
+        padding: 16px 12px;
+    }
+
+    .inspect-meta,
+    .target-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .token-table {
+        overflow-x: auto;
+    }
+
+    .token-header,
+    .token-row {
+        min-width: 760px;
+    }
 }

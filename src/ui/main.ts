@@ -37,6 +37,7 @@ const GROUP_ORDER = ['surface', 'text', 'accent', 'state', 'border', 'selection'
 let blooms:      Blooms = {};
 let active       = '';
 let view: 'bloom' | 'inspect' = 'bloom';
+let activeTarget = '';
 let inspectCache: Record<string, InspectData> = {};
 
 const tabsEl    = document.getElementById('profile-tabs')!;
@@ -96,6 +97,52 @@ function chip(hex: string): string {
     return `<span class="mini-chip" style="background:${hex}"></span>`;
 }
 
+function renderTargetTabs(data: InspectData): string {
+    const targets = Object.keys(data.targets);
+    if (!activeTarget || !(activeTarget in data.targets)) {
+        activeTarget = targets[0] ?? '';
+    }
+
+    return `
+        <div class="target-tabs">
+            ${targets.map(target => `
+                <button class="target-tab${target === activeTarget ? ' active' : ''}" data-target="${target}">
+                    ${target}
+                </button>`).join('')}
+        </div>`;
+}
+
+function bindTargetTabs() {
+    contentEl.querySelectorAll<HTMLButtonElement>('.target-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            activeTarget = btn.dataset['target'] ?? '';
+            renderInspect();
+        });
+    });
+}
+
+function renderTokenRow(t: TokenRow): string {
+    return `
+        <div class="token-row">
+            <span class="col-name" title="${t.name}">${t.name}</span>
+            <span class="col-base" title="${t.baseKey}">
+                ${chip(t.baseHex)}
+                <span class="hex">${t.baseHex}</span>
+                <span class="key">${t.baseKey}</span>
+            </span>
+            <span class="col-src" title="${t.srcKey}">
+                ${chip(t.srcHex)}
+                <span class="hex">${t.srcHex}</span>
+                <span class="key">${t.srcKey}</span>
+            </span>
+            <span class="col-mix">${t.mix.toFixed(2)}</span>
+            <span class="col-result">
+                ${chip(t.result)}
+                <span class="hex">${t.result}</span>
+            </span>
+        </div>`;
+}
+
 function renderInspect() {
     const data = inspectCache[active];
     if (!data) {
@@ -112,6 +159,27 @@ function renderInspect() {
             <span class="meta-sep">·</span>
             <span class="meta-item"><span class="meta-key">source</span> ${data.source}</span>
         </div>`;
+
+    const targetTabs = renderTargetTabs(data);
+    const target = activeTarget;
+    const targetInspect = data.targets[target];
+    const targetSection = targetInspect ? `
+        <section class="group inspect-target">
+            <div class="target-heading">
+                <h2>${target} <span class="recipe-name">${targetInspect.recipe}</span></h2>
+                <span class="token-count">${targetInspect.tokens.length} tokens</span>
+            </div>
+            <div class="token-table">
+                <div class="token-header">
+                    <span class="col-name">token</span>
+                    <span class="col-base">bloom</span>
+                    <span class="col-src">source tint</span>
+                    <span class="col-mix">mix</span>
+                    <span class="col-result">result</span>
+                </div>
+                ${targetInspect.tokens.map(renderTokenRow).join('')}
+            </div>
+        </section>` : '<p class="empty">No target selected.</p>';
 
     const bloomSection = `
         <section class="group inspect-bloom">
@@ -130,41 +198,8 @@ function renderInspect() {
                 </div>`).join('')}
         </section>`;
 
-    const targetSections = Object.entries(data.targets).map(([target, ti]) => `
-        <section class="group inspect-target">
-            <h2>${target} <span class="recipe-name">${ti.recipe}</span></h2>
-            <div class="token-table">
-                <div class="token-header">
-                    <span class="col-name"></span>
-                    <span class="col-base">base</span>
-                    <span class="col-src">source</span>
-                    <span class="col-mix">mix</span>
-                    <span class="col-result">result</span>
-                </div>
-                ${ti.tokens.map(t => `
-                    <div class="token-row">
-                        <span class="col-name">${t.name}</span>
-                        <span class="col-base">
-                            ${chip(t.baseHex)}
-                            <span class="hex">${t.baseHex}</span>
-                            <span class="key">${t.baseKey}</span>
-                        </span>
-                        <span class="col-src">
-                            ${chip(t.srcHex)}
-                            <span class="hex">${t.srcHex}</span>
-                            <span class="key">${t.srcKey}</span>
-                        </span>
-                        <span class="col-mix">${t.mix.toFixed(2)}</span>
-                        <span class="col-result">
-                            <span class="arrow">→</span>
-                            ${chip(t.result)}
-                            <span class="hex">${t.result}</span>
-                        </span>
-                    </div>`).join('')}
-            </div>
-        </section>`).join('');
-
-    contentEl.innerHTML = meta + bloomSection + targetSections;
+    contentEl.innerHTML = meta + targetTabs + targetSection + bloomSection;
+    bindTargetTabs();
 }
 
 async function fetchInspect(profileName: string) {
@@ -193,6 +228,7 @@ function applyBlooms(data: Blooms) {
     blooms = data;
     inspectCache = {}; // blooms changed → inspect data stale
     if (!active || !(active in blooms)) active = Object.keys(blooms)[0] ?? '';
+    activeTarget = '';
     renderTabs();
     render();
     indicator.classList.add('pulse');
