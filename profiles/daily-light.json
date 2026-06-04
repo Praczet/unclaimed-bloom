@@ -18,6 +18,8 @@
     "sqlit": "subtle-ish",
     "nvim": "source-heavy",
     "ags": "subtle-ish",
+    "swaync": "subtle-ish",
+    "waybar": "subtle-ish",
     "potato": "subtle-ish"
   }
 }

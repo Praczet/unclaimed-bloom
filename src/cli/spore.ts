@@ -10,6 +10,8 @@ const execFileAsync = promisify(execFile);
 import { AgsAdapter }     from '../adapters/AgsAdapter';
 import { IcedAdapter }    from '../adapters/IcedAdapter';
 import { SddmAdapter }    from '../adapters/SddmAdapter';
+import { SwayncAdapter }  from '../adapters/SwayncAdapter';
+import { WaybarAdapter }  from '../adapters/WaybarAdapter';
 import { WlogoutAdapter } from '../adapters/WlogoutAdapter';
 import { GhosttyAdapter } from '../adapters/GhosttyAdapter';
 import { GtkAdapter } from '../adapters/GtkAdapter';
@@ -38,11 +40,6 @@ const GTK_DIR = process.env['UB_GTK_DIR']
 const bloomGen = new BloomGenerator();
 const sporeGen = new SporeGenerator();
 const TTY      = process.stdout.isTTY ?? false;
-
-// targets that piggyback on another target's output (no own recipe/adapter)
-const TARGET_PASSENGERS: Record<string, string[]> = {
-    ags: ['swaync', 'waybar'],
-};
 
 // --- Argv parsing (strips --flag value pairs before positionals) ---
 
@@ -214,7 +211,29 @@ async function runAdapter(target: string, spore: Spore, profile: Profile): Promi
                 outputPath:       `${homedir()}/Development/Hyprland/ags/shared/styles/matugen.css`,
                 sourceColorsPath: src.colorsPath,
                 variant:          src.variant,
-                postHook:         `${homedir()}/.local/bin/ags-ensure.sh --reload adart ${homedir()}/Development/Hyprland/ags/src/app.ts && swaync-client --reload-css || true && pkill -SIGUSR2 waybar || true`,
+                postHook:         `${homedir()}/.local/bin/ags-ensure.sh --reload adart ${homedir()}/Development/Hyprland/ags/src/app.ts`,
+            });
+        }
+        case 'swaync': {
+            if (profile.source.type !== 'matugen') {
+                throw new Error('Swaync adapter requires a matugen source profile');
+            }
+            const src = profile.source as MatugenSource;
+            return new SwayncAdapter().apply(spore, {
+                outputPath:       `${homedir()}/.config/swaync/colors/matugen.css`,
+                sourceColorsPath: src.colorsPath,
+                variant:          src.variant,
+            });
+        }
+        case 'waybar': {
+            if (profile.source.type !== 'matugen') {
+                throw new Error('Waybar adapter requires a matugen source profile');
+            }
+            const src = profile.source as MatugenSource;
+            return new WaybarAdapter().apply(spore, {
+                outputPath:       `${homedir()}/.config/waybar/colors/matugen.css`,
+                sourceColorsPath: src.colorsPath,
+                variant:          src.variant,
             });
         }
         case 'rofi': {
@@ -281,7 +300,16 @@ function filterTargets(
 ): [string, string][] {
     const entries = Object.entries(all);
     if (filter === undefined) {
-        const order: Record<string, number> = { hyprland: 0, ghostty: 1, nvim: 2, ags: 3, potato: 4, icons: 5 };
+        const order: Record<string, number> = {
+            hyprland: 0,
+            ghostty:  1,
+            nvim:     2,
+            ags:      3,
+            swaync:   4,
+            waybar:   5,
+            potato:   6,
+            icons:    7,
+        };
         return entries.sort(([a], [b]) => (order[a] ?? 2) - (order[b] ?? 2));
     }
     const match = entries.filter(([t]) => t === filter);
@@ -330,7 +358,7 @@ async function sow(profileName: string, targetFilter?: string, wallpaperPath?: s
     for (const [target, recipeName] of filterTargets(profile.targets, targetFilter, profileName)) {
         const recipe     = await readRecipe(Paths.recipe(target, recipeName));
         const targetBase = await loadBasePalette(profile, recipe);
-        const spore      = sporeGen.generate(targetBase, sourcePalette, recipe, profileName);
+        const spore      = sporeGen.generate(targetBase, sourcePalette, bloom, recipe, profileName);
 
         await writeJson(Paths.spore(profileName, target), {
             _generated_by: 'spore sow',
@@ -592,6 +620,13 @@ function printBloom(colors: BloomColors): void {
     }
 }
 
+function bloomValue(colors: BloomColors, path: string): string | undefined {
+    const [group, token] = path.split('.');
+    if (group === undefined || token === undefined) return undefined;
+    const groupColors = (colors as unknown as Record<string, Record<string, string>>)[group];
+    return groupColors?.[token];
+}
+
 // --- inspect ---
 
 async function inspect(profileName: string, targetFilter?: string): Promise<void> {
@@ -615,10 +650,8 @@ async function inspect(profileName: string, targetFilter?: string): Promise<void
         const recipe     = await readRecipe(Paths.recipe(target, recipeName));
         const targetBase = await loadBasePalette(profile, recipe);
         const baseNote   = targetBase.name !== profileBase.name ? `  ${dim(`base: ${targetBase.name}`)}` : '';
-        const passengers = TARGET_PASSENGERS[target];
-        const passengerNote = passengers ? `  ${dim(`↳ also: ${passengers.join(', ')}`)}` : '';
 
-        console.log(`\n${bold(target)}  ${dim(recipeName)}${baseNote}${passengerNote}`);
+        console.log(`\n${bold(target)}  ${dim(recipeName)}${baseNote}`);
 
         const tokenEntries = Object.entries(recipe.tokens);
         const pfx = commonPrefix(tokenEntries.map(([n]) => n));
@@ -635,10 +668,19 @@ async function inspect(profileName: string, targetFilter?: string): Promise<void
         for (let i = 0; i < tokenEntries.length; i++) {
             const [, tr]      = tokenEntries[i]!;
             const displayName = displayNames[i]!;
-            const baseHex     = targetBase.colors[tr.base] ?? '#000000';
-            const srcHex      = sourcePalette.colors[tr.source] ?? baseHex;
-            const rendered    = mixColors(baseHex, srcHex, tr.mix);
-            tokenRow(displayName, tr.base, baseHex, tr.source, srcHex, tr.mix, rendered, nameWidth);
+            if ('bloom' in tr) {
+                const bloomHex = bloomValue(bloom.colors, tr.bloom) ?? '#000000';
+                const srcKey   = tr.source ?? '(none)';
+                const srcHex   = tr.source !== undefined ? sourcePalette.colors[tr.source] ?? bloomHex : bloomHex;
+                const mix      = tr.mix ?? 0;
+                const rendered = tr.source !== undefined ? mixColors(bloomHex, srcHex, mix) : bloomHex;
+                tokenRow(displayName, `bloom:${tr.bloom}`, bloomHex, srcKey, srcHex, mix, rendered, nameWidth);
+            } else {
+                const baseHex  = targetBase.colors[tr.base] ?? '#000000';
+                const srcHex   = sourcePalette.colors[tr.source] ?? baseHex;
+                const rendered = mixColors(baseHex, srcHex, tr.mix);
+                tokenRow(displayName, tr.base, baseHex, tr.source, srcHex, tr.mix, rendered, nameWidth);
+            }
         }
     }
 }

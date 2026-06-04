@@ -1,0 +1,56 @@
+{
+  "name": "source-heavy",
+  "target": "waybar",
+  "tokens": {
+    "background": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "surface": {
+      "bloom": "surface.raised",
+      "source": "surface",
+      "mix": 0.15
+    },
+    "surface_variant": {
+      "bloom": "border.strong",
+      "source": "surface_variant",
+      "mix": 0.22
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.3
+    },
+    "secondary": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.3
+    },
+    "tertiary": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.3
+    },
+    "on_background": {
+      "bloom": "text.primary",
+      "source": "on_background",
+      "mix": 0.15
+    },
+    "on_surface": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.15
+    },
+    "outline": {
+      "bloom": "border.subtle",
+      "source": "outline",
+      "mix": 0.22
+    },
+    "error": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.22
+    }
+  }
+}

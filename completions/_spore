@@ -88,7 +88,7 @@ _spore_complete_profiles() {
 
 _spore_complete_targets() {
     local -a targets
-    targets=(ghostty mycli sqlit icons gtk nvim ags)
+    targets=(hyprland ghostty rofi yazi wlogout iced sddm mycli sqlit icons gtk nvim ags swaync waybar potato)
     _describe 'target' targets
 }
 
