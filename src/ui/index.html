@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unclaimed Bloom — Workbench</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <span class="title">Unclaimed Bloom</span>
+            <span id="indicator" class="indicator disconnected" title="live updates"></span>
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="bloom">bloom</button>
+                <button class="view-btn" data-view="inspect">inspect</button>
+            </div>
+        </div>
+        <nav id="profile-tabs"></nav>
+    </header>
+    <main id="content"></main>
+    <script type="module" src="./main.ts"></script>
+</body>
+</html>

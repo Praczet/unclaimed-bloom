@@ -1,0 +1,10 @@
+{
+  "name": "dormant",
+  "description": "palette is the law — Matugen barely whispers",
+  "weights": {
+    "surface":    0.05,
+    "foreground": 0.08,
+    "accent":     0.20,
+    "semantic":   0.10
+  }
+}

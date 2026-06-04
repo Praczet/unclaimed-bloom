@@ -1,0 +1,10 @@
+{
+  "name": "blooming",
+  "description": "balanced default — palette and source in harmony",
+  "weights": {
+    "surface":    0.25,
+    "foreground": 0.32,
+    "accent":     0.50,
+    "semantic":   0.40
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "daily",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "dark"
+  },
+  "basePalette": "tokyonight-moon",
+  "mood": "blooming",
+  "targets": {
+    "hyprland": "subtle-ish",
+    "ghostty": "subtle-ish",
+    "rofi": "subtle-ish",
+    "yazi": "subtle-ish",
+    "wlogout": "subtle-ish",
+    "iced": "subtle-ish",
+    "sddm": "subtle-ish",
+    "mycli": "subtle-ish",
+    "sqlit": "subtle-ish",
+    "icons": "subtle-ish",
+    "gtk": "subtle-ish",
+    "nvim": "source-heavy",
+    "ags": "source-heavy",
+    "potato": "subtle-ish"
+  }
+}

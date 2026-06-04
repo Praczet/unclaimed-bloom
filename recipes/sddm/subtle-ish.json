@@ -1,0 +1,10 @@
+{
+  "name": "subtle-ish",
+  "target": "sddm",
+  "tokens": {
+    "primary":    { "base": "blue",       "source": "primary",    "mix": 0.55 },
+    "on_primary": { "base": "background", "source": "on_primary", "mix": 0.50 },
+    "secondary":  { "base": "teal",       "source": "secondary",  "mix": 0.50 },
+    "error":      { "base": "red",        "source": "error",      "mix": 0.45 }
+  }
+}

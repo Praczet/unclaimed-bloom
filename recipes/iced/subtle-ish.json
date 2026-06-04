@@ -1,0 +1,11 @@
+{
+  "name": "subtle-ish",
+  "target": "iced",
+  "tokens": {
+    "background": { "base": "background", "source": "surface",    "mix": 0.20 },
+    "text":       { "base": "foreground", "source": "on_surface", "mix": 0.25 },
+    "primary":    { "base": "blue",       "source": "primary",    "mix": 0.55 },
+    "success":    { "base": "green",      "source": "tertiary",   "mix": 0.45 },
+    "danger":     { "base": "red",        "source": "error",      "mix": 0.45 }
+  }
+}

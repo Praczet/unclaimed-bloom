@@ -1,0 +1,384 @@
+#!/usr/bin/env python3
+# %name: matugen-sqlit-moonmix
+# %desc: Generate a sqlit custom Textual theme from Tokyonight Moon tinted by Matugen colors.
+# %icon: palette
+# %terminal: true
+# %categories: theme,terminal,database
+# %mode: cli
+# %tags: matugen,sqlit,textual,tokyonight,moon,moonmix,colors,theme
+# %usage: matugen-sqlit-moonmix --palette ~/.cache/matugen/sqlit-palette.json --theme-file ~/.config/sqlit/themes/matugen-moon.json --settings ~/.config/sqlit/settings.json
+# %deps: python3
+# %safe: yes
+"""
+matugen-sqlit-moonmix
+
+Generate a custom sqlit/Textual theme using Tokyonight Moon as the stable base,
+then tint it with Matugen palette colors.
+
+Why this exists:
+    sqlit's built-in theme is nice, but this script is meant to follow the same
+    idea as the Ghostty Moonmix theme:
+
+        Tokyonight Moon base + Matugen wallpaper mood
+
+    So the base colors below are Tokyonight Moon-ish, not sqlit's built-in
+    "sqlit" theme. Matugen only tints the mood. It does not get to drive the
+    whole bus. We have seen what happens when wallpapers are given authority.
+
+What it writes:
+    1. A sqlit custom theme JSON file, usually:
+       ~/.config/sqlit/themes/matugen-moon.json
+
+    2. Updates sqlit settings.json so it contains:
+       "theme": "matugen-moon"
+       "custom_themes": ["matugen-moon"]
+
+Expected Matugen palette input:
+    A small JSON file generated from sqlit-palette.json.template, for example:
+        ~/.cache/matugen/sqlit-palette.json
+
+Example:
+    matugen-sqlit-moonmix \
+      --palette ~/.cache/matugen/sqlit-palette.json \
+      --theme-file ~/.config/sqlit/themes/matugen-moon.json \
+      --settings ~/.config/sqlit/settings.json
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+DEFAULT_THEME_NAME = "matugen-moon"
+
+
+# Tokyonight Moon-ish base colors.
+# These are the stable spine of the theme. Matugen tints them; it does not
+# replace them. Same philosophy as matugen-ghostty-moonmix.
+TOKYO_MOON = {
+    "background": "#222436",
+    "background_dark": "#1e2030",
+    "surface": "#2f334d",
+    "panel": "#3b4261",
+    "foreground": "#c8d3f5",
+    "foreground_muted": "#828bb8",
+    "comment": "#636da6",
+    "blue": "#82aaff",
+    "cyan": "#86e1fc",
+    "green": "#c3e88d",
+    "yellow": "#ffc777",
+    "orange": "#ff966c",
+    "red": "#ff757f",
+    "magenta": "#c099ff",
+    "purple": "#fca7ea",
+    "selection": "#2d3f76",
+}
+
+
+def clamp(value: float, low: int = 0, high: int = 255) -> int:
+    """Clamp a channel value to an integer RGB channel."""
+    return max(low, min(high, round(value)))
+
+
+def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
+    """Convert #RRGGBB to an RGB tuple."""
+    value = hex_color.strip().lstrip("#")
+    if len(value) != 6:
+        raise ValueError(f"Expected #RRGGBB color, got {hex_color!r}")
+    return int(value[0:2], 16), int(value[2:4], 16), int(value[4:6], 16)
+
+
+def rgb_to_hex(rgb: tuple[int, int, int]) -> str:
+    """Convert an RGB tuple to #RRGGBB."""
+    return "#{:02x}{:02x}{:02x}".format(*rgb)
+
+
+def mix(base: str, tint: str, tint_weight: float) -> str:
+    """
+    Mix two colors in simple sRGB.
+
+    tint_weight:
+        0.0 = pure Tokyonight Moon base
+        1.0 = pure Matugen tint
+
+    This deliberately matches the simple approach from the Ghostty moonmix
+    script: predictable beats clever. Future us can still invent Oklab drama.
+    """
+    br, bg, bb = hex_to_rgb(base)
+    tr, tg, tb = hex_to_rgb(tint)
+
+    return rgb_to_hex((
+        clamp(br * (1 - tint_weight) + tr * tint_weight),
+        clamp(bg * (1 - tint_weight) + tg * tint_weight),
+        clamp(bb * (1 - tint_weight) + tb * tint_weight),
+    ))
+
+
+def pick(palette: dict[str, str], key: str, fallback: str) -> str:
+    """Read a color from the Matugen palette, falling back safely."""
+    value = palette.get(key) or fallback
+    return value if isinstance(value, str) else fallback
+
+
+def build_theme(palette: dict[str, str], theme_name: str, mix_weight: float) -> dict[str, Any]:
+    """Build a Textual Theme-compatible dictionary for sqlit."""
+    def m(tokyo_key: str, matugen_key: str, weight: float | None = None) -> str:
+        return mix(
+            TOKYO_MOON[tokyo_key],
+            pick(palette, matugen_key, TOKYO_MOON[tokyo_key]),
+            mix_weight if weight is None else weight,
+        )
+
+    # Structural colors keep a low Matugen tint so sqlit stays Tokyonight Moon,
+    # not "whatever today's wallpaper screamed into the color generator".
+    background = m("background", "background", 0.26)
+    surface = m("background_dark", "surface_container", 0.32)
+    panel = m("surface", "surface_container_high", 0.34)
+    foreground = m("foreground", "on_surface", 0.34)
+
+    # Accent colors can take more Matugen, because that is where wallpaper mood
+    # is supposed to show up.
+    primary = m("blue", "primary", 0.45)
+    secondary = m("magenta", "secondary", 0.42)
+    accent = m("purple", "tertiary", 0.40)
+    success = m("green", "primary", 0.28)
+    warning = m("yellow", "tertiary", 0.34)
+    error = m("red", "error", 0.44)
+
+    border = m("comment", "outline", 0.34)
+    border_blurred = m("foreground_muted", "outline_variant", 0.30)
+    footer_background = m("background_dark", "surface_container", 0.32)
+    footer_key = m("blue", "primary", 0.50)
+    button_fg = mix(TOKYO_MOON["background"], pick(palette, "on_primary", TOKYO_MOON["background"]), 0.28)
+    selection_bg = mix(TOKYO_MOON["selection"], pick(palette, "primary_container", TOKYO_MOON["selection"]), 0.42)
+    insert_mode = m("green", "primary", 0.38)
+
+    return {
+        "name": theme_name,
+        "primary": primary,
+        "secondary": secondary,
+        "accent": accent,
+        "warning": warning,
+        "error": error,
+        "success": success,
+        "foreground": foreground,
+        "background": background,
+        "surface": surface,
+        "panel": panel,
+        "dark": True,
+        "variables": {
+            "border": border,
+            "border-blurred": border_blurred,
+            "footer-background": footer_background,
+            "footer-key-foreground": footer_key,
+            "footer-description-foreground": foreground,
+            "button-color-foreground": button_fg,
+            "input-selection-background": f"{selection_bg} 40%",
+            "input-selection-foreground": foreground,
+            "mode-normal-color": secondary,
+            "mode-insert-color": insert_mode,
+
+            # Textual scrollbar variables. Different Textual versions/widgets
+            # use slightly different names, so we set the obvious aliases.
+            "scrollbar": primary,
+            "scrollbar-hover": accent,
+            "scrollbar-active": primary,
+            "scrollbar-color": primary,
+            "scrollbar-color-hover": accent,
+            "scrollbar-color-active": primary,
+            "scrollbar-background": surface,
+            "scrollbar-background-hover": panel,
+            "scrollbar-background-active": panel,
+            "scrollbar-corner-color": background,
+
+            "link-color": primary,
+            "link-background": background,
+            "block-cursor-background": primary,
+            "block-cursor-foreground": button_fg,
+            "block-cursor-text-style": "none",
+        },
+    }
+
+
+def load_json_file(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
+    """Load a JSON object, returning fallback if the file does not exist."""
+    if not path.exists():
+        return fallback
+
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Invalid JSON in {path}: {exc}") from exc
+
+    if not isinstance(value, dict):
+        raise SystemExit(f"Expected JSON object in {path}")
+
+    return value
+
+
+def write_json_file(path: Path, payload: dict[str, Any], backup: bool = False) -> Path | None:
+    """Write JSON with optional timestamped backup."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    backup_path = None
+    if backup and path.exists():
+        backup_path = path.with_suffix(path.suffix + f".bak.{datetime.now():%Y%m%d-%H%M%S}")
+        backup_path.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    return backup_path
+
+
+def theme_entry_matches(value: Any, theme_name: str, theme_file: Path) -> bool:
+    """Return True if a custom_themes entry points to this generated theme."""
+    if not isinstance(value, str):
+        return False
+
+    stripped = value.strip()
+    if not stripped:
+        return False
+
+    if stripped == theme_name:
+        return True
+
+    if stripped == f"{theme_name}.json":
+        return True
+
+    expanded = Path(stripped).expanduser()
+    if expanded.exists() and theme_file.exists():
+        return expanded.resolve() == theme_file.resolve()
+
+    return False
+
+
+def update_settings(settings: dict[str, Any], theme_name: str, theme_file: Path, use_path_entry: bool) -> dict[str, Any]:
+    """
+    Update sqlit settings so it loads and applies the generated custom theme.
+
+    sqlit expects custom_themes to be a list of strings:
+        "matugen-moon"
+    or:
+        "/home/adam/.config/sqlit/themes/matugen-moon.json"
+
+    It does not expect inline theme objects. Naturally, because one more tiny
+    file is apparently the price of beauty.
+    """
+    themes = settings.get("custom_themes")
+    if not isinstance(themes, list):
+        themes = []
+
+    themes = [
+        item for item in themes
+        if not theme_entry_matches(item, theme_name, theme_file)
+    ]
+
+    entry = str(theme_file) if use_path_entry else theme_name
+    themes.append(entry)
+
+    settings["theme"] = theme_name
+    settings["custom_themes"] = themes
+    settings["_matugen_moonmix_generated"] = datetime.now().isoformat(timespec="seconds")
+
+    return settings
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate a sqlit custom theme from Tokyonight Moon base colors tinted by Matugen."
+    )
+    parser.add_argument(
+        "--palette",
+        required=True,
+        type=Path,
+        help="Matugen-generated palette JSON.",
+    )
+    parser.add_argument(
+        "--theme-file",
+        default=Path.home() / ".config/sqlit/themes/matugen-moon.json",
+        type=Path,
+        help="Theme JSON file to write for sqlit.",
+    )
+    parser.add_argument(
+        "--settings",
+        default=Path.home() / ".config/sqlit/settings.json",
+        type=Path,
+        help="sqlit settings JSON to update.",
+    )
+    parser.add_argument(
+        "--theme-name",
+        default=DEFAULT_THEME_NAME,
+        help="Name of the generated sqlit theme.",
+    )
+    parser.add_argument(
+        "--mix-weight",
+        type=float,
+        default=0.40,
+        help="Default Matugen tint weight. 0.0 = Tokyonight Moon, 1.0 = Matugen.",
+    )
+    parser.add_argument(
+        "--use-path-entry",
+        action="store_true",
+        help="Store the absolute theme JSON path in custom_themes instead of the theme name.",
+    )
+    parser.add_argument(
+        "--no-settings",
+        action="store_true",
+        help="Only write the theme file; do not patch sqlit settings.json.",
+    )
+    args = parser.parse_args()
+
+    if not 0 <= args.mix_weight <= 1:
+        raise SystemExit("--mix-weight must be between 0.0 and 1.0")
+
+    palette_path = args.palette.expanduser()
+    theme_file = args.theme_file.expanduser()
+    settings_path = args.settings.expanduser()
+
+    palette = load_json_file(palette_path, fallback={})
+    theme = build_theme(palette, args.theme_name, args.mix_weight)
+
+    theme_payload = {
+        "_generated_by": "matugen-sqlit-moonmix",
+        "_generated_at": datetime.now().isoformat(timespec="seconds"),
+        "_note": "sqlit custom Textual theme: Tokyonight Moon base tinted by Matugen.",
+        "theme": theme,
+    }
+
+    theme_backup = write_json_file(theme_file, theme_payload, backup=True)
+
+    settings_backup = None
+    if not args.no_settings:
+        settings = load_json_file(
+            settings_path,
+            fallback={
+                "theme": args.theme_name,
+                "custom_themes": [],
+                "custom_keymap": "default",
+                "expanded_nodes": [],
+            },
+        )
+        settings = update_settings(settings, args.theme_name, theme_file, args.use_path_entry)
+        settings_backup = write_json_file(settings_path, settings, backup=True)
+
+    print(f"matugen-sqlit: wrote theme file: {theme_file}")
+    if theme_backup:
+        print(f"theme backup: {theme_backup}")
+
+    if not args.no_settings:
+        print(f"matugen-sqlit: updated settings: {settings_path}")
+        if settings_backup:
+            print(f"settings backup: {settings_backup}")
+
+    print(f"theme: {args.theme_name}")
+
+
+if __name__ == "__main__":
+    main()

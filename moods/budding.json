@@ -1,0 +1,10 @@
+{
+  "name": "budding",
+  "description": "gentle mix, tuned for light profiles",
+  "weights": {
+    "surface":    0.15,
+    "foreground": 0.18,
+    "accent":     0.45,
+    "semantic":   0.25
+  }
+}

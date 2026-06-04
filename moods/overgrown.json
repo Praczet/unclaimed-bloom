@@ -1,0 +1,10 @@
+{
+  "name": "overgrown",
+  "description": "Matugen dominates — wallpaper takes over",
+  "weights": {
+    "surface":    0.70,
+    "foreground": 0.60,
+    "accent":     0.90,
+    "semantic":   0.70
+  }
+}

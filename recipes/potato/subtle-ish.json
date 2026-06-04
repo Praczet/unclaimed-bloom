@@ -1,0 +1,16 @@
+{
+  "name": "subtle-ish",
+  "target": "potato",
+  "tokens": {
+    "background": { "base": "background",    "source": "background",        "mix": 0.25 },
+    "text":       { "base": "foreground",    "source": "on_background",     "mix": 0.25 },
+    "muted":      { "base": "foreground_dark","source": "on_surface_variant","mix": 0.30 },
+    "grid":       { "base": "border",        "source": "outline_variant",   "mix": 0.25 },
+    "axis":       { "base": "comment",       "source": "outline",           "mix": 0.30 },
+    "weightLine": { "base": "blue",          "source": "primary",           "mix": 0.55 },
+    "stepsBar":   { "base": "teal",          "source": "secondary",         "mix": 0.55 },
+    "success":    { "base": "green",         "source": "tertiary",          "mix": 0.55 },
+    "warning":    { "base": "yellow",        "source": "tertiary_container","mix": 0.35 },
+    "danger":     { "base": "red",           "source": "error",             "mix": 0.45 }
+  }
+}

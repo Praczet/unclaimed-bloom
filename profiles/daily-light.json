@@ -1,0 +1,23 @@
+{
+  "name": "daily-light",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "light"
+  },
+  "basePalette": "tokyonight-day",
+  "mood": "budding",
+  "targets": {
+    "hyprland": "subtle-ish",
+    "ghostty": "subtle-ish",
+    "rofi": "subtle-ish",
+    "yazi": "subtle-ish",
+    "wlogout": "subtle-ish",
+    "iced": "subtle-ish",
+    "mycli": "subtle-ish",
+    "sqlit": "subtle-ish",
+    "nvim": "source-heavy",
+    "ags": "subtle-ish",
+    "potato": "subtle-ish"
+  }
+}

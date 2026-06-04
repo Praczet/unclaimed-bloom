@@ -1,0 +1,27 @@
+{
+  "name": "TokyoNight Moon",
+  "slug": "tokyonight-moon",
+  "kind": "dark",
+  "source": "folke/tokyonight.nvim",
+  "colors": {
+    "background": "#222436",
+    "background_dark": "#1e2030",
+    "background_highlight": "#2f334d",
+    "foreground": "#c8d3f5",
+    "foreground_dark": "#828bb8",
+    "comment": "#7a88cf",
+    "black": "#1b1d2b",
+    "red": "#ff757f",
+    "orange": "#ff966c",
+    "yellow": "#ffc777",
+    "green": "#c3e88d",
+    "cyan": "#86e1fc",
+    "blue": "#82aaff",
+    "purple": "#c099ff",
+    "magenta": "#fca7ea",
+    "teal": "#4fd6be",
+    "border": "#3b4261",
+    "selection_background": "#2d3f76",
+    "selection_foreground": "#c8d3f5"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "subtle-ish",
+  "target": "ags",
+  "tokens": {
+    "background":      { "base": "background", "source": "background",      "mix": 0.20 },
+    "surface":         { "base": "background", "source": "surface",         "mix": 0.20 },
+    "surface_variant": { "base": "border",     "source": "surface_variant", "mix": 0.25 },
+
+    "primary":         { "base": "blue",       "source": "primary",         "mix": 0.55 },
+    "secondary":       { "base": "magenta",    "source": "secondary",       "mix": 0.55 },
+    "tertiary":        { "base": "purple",     "source": "tertiary",        "mix": 0.55 },
+
+    "on_background":   { "base": "foreground", "source": "on_background",   "mix": 0.25 },
+    "on_surface":      { "base": "foreground", "source": "on_surface",      "mix": 0.25 },
+
+    "outline":         { "base": "comment",    "source": "outline",         "mix": 0.30 },
+    "error":           { "base": "red",        "source": "error",           "mix": 0.40 }
+  }
+}

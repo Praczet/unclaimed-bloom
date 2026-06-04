@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# %name: matugen-cache
+# %desc: Generate Matugen colors JSON (dry-run, no templates) and cache for spore.
+# %icon: palette
+# %terminal: true
+
+set -euo pipefail
+
+WALLPAPER="${1:-}"
+MODE="${2:-dark}"
+
+if [[ -z "$WALLPAPER" ]]; then
+    echo "Usage: matugen-cache <wallpaper> [dark|light]" >&2
+    echo "       matugen-cache ~/.config/backgrounds/my-wallpaper.png dark" >&2
+    exit 1
+fi
+
+if [[ ! -f "$WALLPAPER" ]]; then
+    echo "Error: wallpaper not found: $WALLPAPER" >&2
+    exit 1
+fi
+
+case "$MODE" in
+    dark)  PREFER="darkness"  ;;
+    light) PREFER="lightness" ;;
+    *)
+        echo "Error: mode must be 'dark' or 'light', got: $MODE" >&2
+        exit 1
+        ;;
+esac
+
+CACHE_DIR="${UB_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/unclaimed-bloom}"
+OUTPUT="$CACHE_DIR/matugen-colors.json"
+
+mkdir -p "$CACHE_DIR"
+matugen image "$WALLPAPER" --json hex --dry-run --prefer="$PREFER" > "$OUTPUT"
+echo "matugen colors cached → $OUTPUT  (mode: $MODE)"

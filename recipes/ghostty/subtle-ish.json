@@ -1,0 +1,28 @@
+{
+  "name": "subtle-ish",
+  "target": "ghostty",
+  "tokens": {
+    "background":           { "base": "background",           "source": "background",               "mix": 0.28 },
+    "foreground":           { "base": "foreground",           "source": "on_surface",               "mix": 0.35 },
+    "cursor_color":         { "base": "blue",                 "source": "primary",                  "mix": 0.55 },
+    "cursor_text":          { "base": "background_dark",      "source": "on_primary",               "mix": 0.35 },
+    "selection_background": { "base": "background_highlight", "source": "secondary_container",      "mix": 0.45 },
+    "selection_foreground": { "base": "foreground",           "source": "on_secondary_container",   "mix": 0.35 },
+    "palette_0":            { "base": "background_dark",      "source": "surface_container_highest","mix": 0.35 },
+    "palette_1":            { "base": "red",                  "source": "error",                    "mix": 0.45 },
+    "palette_2":            { "base": "green",                "source": "primary",                  "mix": 0.35 },
+    "palette_3":            { "base": "yellow",               "source": "tertiary",                 "mix": 0.35 },
+    "palette_4":            { "base": "blue",                 "source": "primary",                  "mix": 0.45 },
+    "palette_5":            { "base": "magenta",              "source": "secondary",                "mix": 0.45 },
+    "palette_6":            { "base": "cyan",                 "source": "tertiary",                 "mix": 0.35 },
+    "palette_7":            { "base": "foreground",           "source": "on_surface_variant",       "mix": 0.30 },
+    "palette_8":            { "base": "comment",              "source": "outline",                  "mix": 0.35 },
+    "palette_9":            { "base": "red",                  "source": "error_container",          "mix": 0.35 },
+    "palette_10":           { "base": "green",                "source": "primary_container",        "mix": 0.35 },
+    "palette_11":           { "base": "yellow",               "source": "tertiary_container",       "mix": 0.35 },
+    "palette_12":           { "base": "blue",                 "source": "primary_fixed_dim",        "mix": 0.40 },
+    "palette_13":           { "base": "magenta",              "source": "secondary_fixed_dim",      "mix": 0.40 },
+    "palette_14":           { "base": "cyan",                 "source": "tertiary_fixed_dim",       "mix": 0.40 },
+    "palette_15":           { "base": "foreground",           "source": "on_surface",               "mix": 0.35 }
+  }
+}

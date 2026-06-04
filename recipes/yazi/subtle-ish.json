@@ -1,0 +1,27 @@
+{
+  "name": "subtle-ish",
+  "target": "yazi",
+  "tokens": {
+    "primary":            { "base": "blue",            "source": "primary",               "mix": 0.55 },
+    "on_primary":         { "base": "background",      "source": "on_primary",            "mix": 0.50 },
+    "secondary":          { "base": "teal",            "source": "secondary",             "mix": 0.50 },
+    "on_secondary":       { "base": "background",      "source": "on_secondary",          "mix": 0.50 },
+    "tertiary":           { "base": "purple",          "source": "tertiary",              "mix": 0.50 },
+    "on_tertiary":        { "base": "background",      "source": "on_tertiary",           "mix": 0.50 },
+    "copy_marker":        { "base": "blue",            "source": "tertiary_fixed_dim",    "mix": 0.40 },
+    "surface_variant":    { "base": "border",          "source": "surface_variant",       "mix": 0.35 },
+    "on_surface_variant": { "base": "foreground_dark", "source": "on_surface_variant",    "mix": 0.30 },
+    "surface_hi":         { "base": "border",          "source": "surface_container_high","mix": 0.35 },
+    "on_surface":         { "base": "foreground",      "source": "on_surface",            "mix": 0.25 },
+    "accent":             { "base": "teal",            "source": "surface_tint",          "mix": 0.60 },
+    "error":              { "base": "red",             "source": "error",                 "mix": 0.45 },
+    "on_error":           { "base": "foreground",      "source": "on_error_container",    "mix": 0.35 },
+    "perm_r":             { "base": "green",           "source": "tertiary_fixed",        "mix": 0.45 },
+    "perm_w":             { "base": "yellow",          "source": "secondary_fixed",       "mix": 0.45 },
+    "perm_x":             { "base": "red",             "source": "error",                 "mix": 0.50 },
+    "file_image":         { "base": "cyan",            "source": "tertiary",              "mix": 0.40 },
+    "file_media":         { "base": "yellow",          "source": "secondary",             "mix": 0.45 },
+    "file_archive":       { "base": "magenta",         "source": "primary_fixed_dim",     "mix": 0.30 },
+    "file_doc":           { "base": "green",           "source": "tertiary_container",    "mix": 0.35 }
+  }
+}

@@ -1,0 +1,95 @@
+#compdef spore
+
+# Zsh completion for the spore CLI (Unclaimed Bloom).
+# Source this file or place it in a directory on $fpath.
+#
+# Usage:
+#   source /path/to/unclaimed-bloom/completions/_spore
+# or add the completions/ directory to fpath before compinit:
+#   fpath=(/path/to/unclaimed-bloom/completions $fpath)
+
+_spore() {
+    local -a commands
+
+    commands=(
+        'sow:Generate bloom and all target spores into cache'
+        'grow:Apply cached spores to their target destinations'
+        'inspect:Print bloom and spore colors to stdout without writing'
+        'status:Show sow/grow status for profiles'
+        'palette:Palette subcommands'
+        'mood:Mood subcommands'
+        'recipe:Recipe subcommands'
+        'profile:Profile subcommands'
+    )
+
+    local -a list_subcommands
+    list_subcommands=('list:List available items')
+
+    local -a target_subcommands
+    target_subcommands=(
+        'apply:Apply a single target from a cached spore'
+        'inspect:Inspect a specific target spore'
+    )
+
+    case $words[2] in
+        sow)
+            case $CURRENT in
+                3) _spore_complete_profiles ;;
+                4) _spore_complete_targets  ;;
+            esac
+            # --wallpaper flag: complete file paths
+            if [[ ${words[CURRENT-1]} == '--wallpaper' ]]; then
+                _files
+            else
+                _describe 'option' '(--wallpaper:Path to wallpaper image for Matugen source generation)'
+            fi
+            ;;
+        grow|inspect|status)
+            case $CURRENT in
+                3) _spore_complete_profiles ;;
+                4) _spore_complete_targets  ;;
+            esac
+            ;;
+        target)
+            case $words[3] in
+                apply|inspect)
+                    _spore_complete_targets
+                    ;;
+                *)
+                    _describe 'target subcommand' target_subcommands
+                    ;;
+            esac
+            ;;
+        palette|mood|profile)
+            _describe 'subcommand' list_subcommands
+            ;;
+        recipe)
+            case $CURRENT in
+                3) _describe 'subcommand' list_subcommands ;;
+                4) _spore_complete_targets ;;
+            esac
+            ;;
+        *)
+            _describe 'spore command' commands
+            ;;
+    esac
+}
+
+_spore_complete_profiles() {
+    local data_dir="${UB_DATA_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/unclaimed-bloom}"
+    local profiles_dir="$data_dir/profiles"
+    local -a profiles
+
+    if [[ -d "$profiles_dir" ]]; then
+        profiles=("${profiles_dir}"/*.json(N:t:r))
+        _describe 'profile' profiles
+    fi
+}
+
+_spore_complete_targets() {
+    local -a targets
+    targets=(ghostty mycli sqlit icons gtk nvim ags)
+    _describe 'target' targets
+}
+
+_spore "$@"

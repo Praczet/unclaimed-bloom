@@ -1,0 +1,28 @@
+{
+  "name": "subtle-ish",
+  "target": "mycli",
+  "tokens": {
+    "bg":           { "base": "background",           "source": "background",              "mix": 0.24 },
+    "bg_dark":      { "base": "background_dark",      "source": "surface",                 "mix": 0.22 },
+    "bg_high":      { "base": "background_highlight", "source": "surface_container_high",  "mix": 0.32 },
+    "bg_selected":  { "base": "background_highlight", "source": "primary_container",       "mix": 0.45 },
+    "bg_meta":      { "base": "background_highlight", "source": "secondary_container",     "mix": 0.38 },
+    "bg_tertiary":  { "base": "background_highlight", "source": "tertiary_container",      "mix": 0.42 },
+    "fg":           { "base": "foreground",           "source": "on_surface",              "mix": 0.28 },
+    "fg_muted":     { "base": "foreground_dark",      "source": "on_surface_variant",      "mix": 0.32 },
+    "comment":      { "base": "comment",              "source": "outline",                 "mix": 0.32 },
+    "blue":         { "base": "blue",                 "source": "primary",                 "mix": 0.46 },
+    "cyan":         { "base": "cyan",                 "source": "tertiary",                "mix": 0.34 },
+    "green":        { "base": "green",                "source": "primary",                 "mix": 0.30 },
+    "yellow":       { "base": "yellow",               "source": "tertiary",                "mix": 0.32 },
+    "red":          { "base": "red",                  "source": "error",                   "mix": 0.42 },
+    "magenta":      { "base": "purple",               "source": "secondary",               "mix": 0.38 },
+    "purple":       { "base": "magenta",              "source": "tertiary",                "mix": 0.30 },
+    "orange":       { "base": "orange",               "source": "tertiary",                "mix": 0.28 },
+    "on_primary":   { "base": "foreground",           "source": "on_primary_container",    "mix": 0.35 },
+    "on_secondary": { "base": "foreground",           "source": "on_secondary_container",  "mix": 0.35 },
+    "on_tertiary":  { "base": "foreground",           "source": "on_tertiary_container",   "mix": 0.35 },
+    "error_bg":     { "base": "background_highlight", "source": "error_container",         "mix": 0.45 },
+    "error_fg":     { "base": "foreground",           "source": "on_error_container",      "mix": 0.35 }
+  }
+}

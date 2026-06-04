@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# %name: matugen-mycli-apply
+# %desc: Build ~/.myclirc from a stable base config and generated mycli colors.
+# %icon: palette
+# %terminal: true
+# %categories: theme,terminal,database
+# %mode: cli
+# %tags: matugen,mycli,tokyonight-moon,mariadb,mysql,colors,theme
+# %usage: matugen-mycli-apply [base.conf] [colors.ini] [output.myclirc]
+# %deps: bash,grep,date,mkdir,cp,cat
+# %safe: yes
+
+set -euo pipefail
+
+base="${1:-$HOME/.config/mycli/base.conf}"
+colors="${2:-$HOME/.cache/matugen/mycli-colors.ini}"
+dst="${3:-$HOME/.myclirc}"
+
+if [[ ! -f "$base" ]]; then
+  printf 'matugen-mycli: base config not found: %s\n' "$base" >&2
+  exit 1
+fi
+
+if [[ ! -f "$colors" ]]; then
+  printf 'matugen-mycli: colors config not found: %s\n' "$colors" >&2
+  exit 1
+fi
+
+if grep -q '^\[colors\]$' "$base"; then
+  printf 'matugen-mycli: base config must not contain [colors]: %s\n' "$base" >&2
+  exit 1
+fi
+
+if ! grep -q '^\[colors\]$' "$colors"; then
+  printf 'matugen-mycli: colors config must contain [colors]: %s\n' "$colors" >&2
+  exit 1
+fi
+
+mkdir -p "$(dirname "$dst")"
+
+if [[ -f "$dst" ]]; then
+  backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+  cp "$dst" "$backup"
+else
+  backup=""
+fi
+
+{
+  printf '# Generated %s by matugen-mycli-apply.\n' "$(date '+%Y-%m-%d %H:%M:%S')"
+  printf '# Source base: %s\n' "$base"
+  printf '# Source colors: %s\n\n' "$colors"
+  cat "$base"
+  printf '\n\n'
+  cat "$colors"
+  printf '\n'
+} > "$dst"
+
+if [[ -n "$backup" ]]; then
+  printf 'matugen-mycli: updated %s\nbackup: %s\n' "$dst" "$backup"
+else
+  printf 'matugen-mycli: created %s\n' "$dst"
+fi

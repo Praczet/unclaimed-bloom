@@ -1,0 +1,23 @@
+#compdef matugen-cache
+
+# Zsh completion for scripts/matugen-cache.
+# Source or place in a directory on $fpath.
+
+_matugen-cache() {
+    local -a modes
+    modes=(
+        'dark:Use darkness preference (for dark themes)'
+        'light:Use lightness preference (for light themes)'
+    )
+
+    case $CURRENT in
+        2)
+            _files -g '*.png *.jpg *.jpeg *.webp'
+            ;;
+        3)
+            _describe 'mode' modes
+            ;;
+    esac
+}
+
+_matugen-cache "$@"
