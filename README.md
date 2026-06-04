@@ -18,6 +18,16 @@ Each target decides how much it borrows from the dynamic source palette and how 
 npm install
 ```
 
+## Install
+
+```bash
+scripts/install
+```
+
+By default this installs a `spore` launcher to `~/.local/bin/spore`, copies first-run data
+files to `~/.config/unclaimed-bloom/`, and installs zsh completions to
+`~/.config/zsh/completions/`.
+
 ## Usage
 
 ### Dev (via wrapper script)
@@ -94,7 +104,7 @@ unclaimed-bloom/          ← UB_DATA_DIR (repo root in dev)
 │   ├── ags/        ghostty/        gtk/        hyprland/
 │   ├── iced/       icons/          mycli/      nvim/
 │   ├── potato/     rofi/           sddm/       sqlit/
-│   ├── wlogout/    yazi/
+│   ├── swaync/     waybar/         wlogout/    yazi/
 ├── profiles/             saved ecosystems (daily, daily-light, …)
 └── templates/            plain-text output templates
     └── gtk/
@@ -126,6 +136,14 @@ npm run workbench
 Opens a Vite dev server at `http://localhost:5173` with a live swatch preview of all
 cached bloom profiles. Swatches refresh automatically when you run `sow`.
 
+To start the workbench and open it in a browser:
+
+```bash
+scripts/unclaimed-bloom
+```
+
+Set `UB_OPEN_BROWSER=0` to start it without opening a browser.
+
 ## Architecture
 
 ```
@@ -144,6 +162,19 @@ adapters
 workers / templates / post-hooks
         ↓
 Ghostty / mycli / sqlit / icons / GTK / Neovim / …
+```
+
+All shipped recipes use the bloom directly for shared semantic roles:
+
+```json
+"background": { "bloom": "surface.base" },
+"selected": { "bloom": "accent.primary", "source": "primary", "mix": 0.15 }
+```
+
+The engine still supports direct base/source mixing as an escape hatch for future target-specific behavior:
+
+```json
+"cursor_color": { "base": "blue", "source": "primary", "mix": 0.55 }
 ```
 
 See `docs/PROJECT-CAPSULE.md` for full architecture and roadmap.

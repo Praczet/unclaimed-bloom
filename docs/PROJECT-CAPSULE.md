@@ -825,7 +825,7 @@ These apply to all future work in this repository.
 - Before removing: copy the entry into `~/.config/matugen/to-remove/old_matugen_conf` with a comment explaining which UB adapter replaced it and why.
 - Move the template file itself from `~/.config/matugen/templates/` into `~/.config/matugen/to-remove/` at the same time.
 - When asked to update Matugen (e.g. "we just added a Neovim adapter"), proactively suggest this cleanup as part of the same task — do not wait to be asked separately.
-- **Currently active in Matugen** (not yet absorbed): hyprland, waybar, swaync, adart (AGS), rofi, wlogout, yazi, potato, iced, nvim, sddm-adart-matugener-theme.
+- **Currently active in Matugen** (not yet absorbed): none of the main desktop targets; UB owns hyprland, waybar, swaync, adart (AGS), rofi, wlogout, yazi, potato, iced, nvim, and sddm-adart-matugener-theme.
 - **Already removed** (absorbed by UB): gtk (GtkAdapter), ghostty (GhosttyAdapter), mycli (MycliAdapter), sqlit (SqlitAdapter), icons (IconsAdapter).
 
 ## Possible semantic token seed
@@ -900,7 +900,7 @@ unclaimed-bloom/
 │   │   ├── types.ts             Palette, Source, Mood, Recipe, Bloom, Spore, Profile, Report
 │   │   ├── Mixer.ts             hexToRgb, rgbToHex, mixColors, Mixer class
 │   │   ├── BloomGenerator.ts    base + source + mood → BloomColors (6 groups, 18 tokens)
-│   │   ├── SporeGenerator.ts    recipe + base + source → Spore
+│   │   ├── SporeGenerator.ts    recipe + bloom/base/source → Spore
 │   │   └── canonical.ts         18 canonical palette key names (enforced by spore palette validate)
 │   ├── node/
 │   │   ├── fs.ts                readJson/writeJson + typed loaders for all data types
@@ -914,7 +914,9 @@ unclaimed-bloom/
 │   │   ├── IconsAdapter.ts      writes icons-runtime.json + calls icons-generate worker
 │   │   ├── GtkAdapter.ts        renders gtk-adart-unclaimed-bloom.css with resolved hex values
 │   │   ├── NvimAdapter.ts       writes matugen-colors.lua; reloads all running nvim via socket
-│   │   ├── AgsAdapter.ts        writes matugen.css (source + 10 overrides); reloads AGS/swaync/waybar
+│   │   ├── AgsAdapter.ts        writes AGS matugen.css (source + 10 overrides); reloads AGS
+│   │   ├── SwayncAdapter.ts     writes swaync colors/matugen.css; reloads swaync CSS
+│   │   ├── WaybarAdapter.ts     writes waybar colors/matugen.css; sends SIGUSR2 to waybar
 │   │   ├── HyprlandAdapter.ts   writes matugen.lua (rgba) + matugen.conf ($var/$var_hex); hyprctl reload
 │   │   ├── RofiAdapter.ts       writes matugen.rasi with 7 semantic CSS variables + wallpaper path
 │   │   ├── YaziAdapter.ts       writes full theme.toml from 21 recipe tokens
@@ -955,6 +957,10 @@ unclaimed-bloom/
 ├── recipes/
 │   ├── ags/subtle-ish.json      10 tokens (CSS custom property names)
 │   │   ags/source-heavy.json   same tokens, higher mix — matugen-dominant
+│   ├── swaync/subtle-ish.json   10 tokens (CSS @define-color overrides)
+│   │   swaync/source-heavy.json same tokens, higher mix — matugen-dominant
+│   ├── waybar/subtle-ish.json   10 tokens (CSS @define-color overrides)
+│   │   waybar/source-heavy.json same tokens, higher mix — matugen-dominant
 │   ├── ghostty/subtle-ish.json  22 tokens (16-color palette + bg/fg/cursor/selection)
 │   ├── gtk/subtle-ish.json      29 tokens (GTK CSS variable names, fully resolved hex)
 │   ├── hyprland/subtle-ish.json 6 tokens (Hyprland border/decoration colors)
@@ -991,6 +997,18 @@ Core chain:
     → SporeGenerator + recipe → spore (target-specific color set)
     → adapter → worker/template/post-hook → target config file
 
+Recipe token modes:
+  Bloom-backed:
+    { "bloom": "surface.base" }
+    { "bloom": "accent.primary", "source": "primary", "mix": 0.15 }
+
+  Direct escape hatch, supported by the engine but not used by shipped recipes:
+    { "base": "blue", "source": "primary", "mix": 0.55 }
+
+Use bloom-backed tokens for shipped target recipes. Direct base/source recipes are reserved
+for future exceptions where a target needs deliberate disagreement that cannot be expressed
+as bloom plus a small source tint.
+
 Adapters (all working):
   GhosttyAdapter   — writes theme file, sends SIGUSR2 for live reload
   MycliAdapter     — writes colors INI, calls ub-mycli-apply worker
@@ -1000,8 +1018,11 @@ Adapters (all working):
                      writes to both repo themes/ dir and ~/.local/share/themes/ live install
   NvimAdapter      — writes ~/.config/nvim/lua/generated/matugen-colors.lua (same format
                      as old matugen template); reloads all running nvim instances via socket glob
-  AgsAdapter       — writes matugen.css from source + 10 recipe overrides; post-hook reloads
-                     AGS, swaync, and waybar (swaync + waybar share via symlink)
+  AgsAdapter       — writes AGS matugen.css from source + 10 recipe overrides; post-hook reloads AGS
+  SwayncAdapter    — writes ~/.config/swaync/colors/matugen.css from source + recipe overrides;
+                     reloads swaync CSS
+  WaybarAdapter    — writes ~/.config/waybar/colors/matugen.css from source + recipe overrides;
+                     sends SIGUSR2 to waybar
   HyprlandAdapter  — writes two files: matugen.lua (rgba format, for decoration.lua) and
                      matugen.conf ($var + $var_hex format, for hyprlock.conf); post-hook: hyprctl reload
   RofiAdapter      — writes ~/.config/rofi/shared/matugen.rasi with 7 semantic CSS variables;
@@ -1205,8 +1226,13 @@ matugen-mix.nvim plugin unchanged — UB just took over the file.
 
 ### ✅ 9. AGS target — DONE
 AgsAdapter writes matugen.css from source colors + 10 recipe-mixed overrides.
-Post-hook reloads AGS, swaync (via symlink), and waybar (via symlink).
-Recipes: subtle-ish.
+Post-hook reloads AGS only.
+Recipes: `subtle-ish` and `source-heavy`.
+
+### ✅ 9b. swaync + waybar targets — DONE
+SwayncAdapter writes `~/.config/swaync/colors/matugen.css` and reloads swaync CSS.
+WaybarAdapter writes `~/.config/waybar/colors/matugen.css` and sends SIGUSR2 to waybar.
+Recipes: `subtle-ish` and `source-heavy`.
 
 ### ✅ 10. SDDM target — DONE
 SddmAdapter writes full theme.conf for sddm-adart-matugener.
@@ -1214,13 +1240,15 @@ HyprlandAdapter writes matugen.lua + matugen.conf (two output files, two formats
 RofiAdapter, YaziAdapter, WlogoutAdapter, IcedAdapter, PotatoAdapter also added.
 matugen/config.toml is now template-free — all targets owned by UB.
 
-### 7. Install script
+### ✅ 7. Install script — DONE
 
-Add `scripts/install` (or `npm run install-production`) that:
-- Copies `scripts/spore` to `~/.local/bin/spore` (or symlinks it)
-- Copies data files to `~/.config/unclaimed-bloom/` on first install
-- Installs completions to `~/.config/zsh/completions/` or prints instructions
-Makes the system usable outside the repo directory.
+`scripts/install` installs a `spore` launcher to `~/.local/bin/spore` by default.
+The launcher keeps code execution tied to the repo checkout, but uses
+`~/.config/unclaimed-bloom/` as `UB_DATA_DIR` by default.
+
+It also copies first-run data files and scripts to `~/.config/unclaimed-bloom/`,
+installs zsh completions to `~/.config/zsh/completions/`, and supports `--force`
+for refreshing installed data files when future Adam knowingly chooses violence.
 
 ### 8. Workbench interactive features
 
