@@ -27,7 +27,7 @@ import { CANONICAL_KEYS } from '../core/canonical.js';
 import { BloomGenerator } from '../core/BloomGenerator';
 import { SporeGenerator } from '../core/SporeGenerator';
 import { hexToRgb, mixColors } from '../core/Mixer';
-import type { BloomColors, MatugenSource, Profile, Report, Spore } from '../core/types';
+import type { BloomColors, MatugenSource, Profile, Recipe, Report, Spore, TokenRecipe } from '../core/types';
 import { readJson, readMood, readPalette, readProfile, readRecipe, readSpore, writeJson } from '../node/fs';
 import { expandHome, loadBasePalette, loadSourcePalette } from '../node/loader';
 import { CACHE_DIR, DATA_DIR, Paths } from '../node/paths';
@@ -40,6 +40,62 @@ const GTK_DIR = process.env['UB_GTK_DIR']
 const bloomGen = new BloomGenerator();
 const sporeGen = new SporeGenerator();
 const TTY      = process.stdout.isTTY ?? false;
+
+const BLOOM_KEYS = [
+    'surface.base',
+    'surface.dim',
+    'surface.raised',
+    'surface.highest',
+    'text.primary',
+    'text.secondary',
+    'text.muted',
+    'text.disabled',
+    'accent.primary',
+    'accent.secondary',
+    'accent.tertiary',
+    'state.success',
+    'state.warning',
+    'state.danger',
+    'state.info',
+    'border.subtle',
+    'border.strong',
+    'selection.background',
+    'selection.foreground',
+] as const;
+
+const BLOOM_KEY_SET = new Set<string>(BLOOM_KEYS);
+
+const REQUIRED_RECIPE_TOKENS: Record<string, string[]> = {
+    ags: [
+        'background', 'surface', 'surface_variant',
+        'primary', 'secondary', 'tertiary',
+        'on_background', 'on_surface',
+        'outline', 'error',
+    ],
+    ghostty: [
+        'background', 'foreground',
+        'cursor_color', 'cursor_text',
+        'selection_background', 'selection_foreground',
+        ...Array.from({ length: 16 }, (_, i) => `palette_${i}`),
+    ],
+    hyprland: ['primary', 'secondary', 'tertiary', 'error', 'background', 'on_surface'],
+    iced: ['background', 'text', 'primary', 'success', 'danger'],
+    rofi: ['background', 'background_alt', 'foreground', 'accent1', 'selected', 'active', 'urgent'],
+    sddm: ['primary', 'on_primary', 'secondary', 'error'],
+    swaync: [
+        'background', 'surface', 'surface_variant',
+        'primary', 'secondary', 'tertiary',
+        'on_background', 'on_surface',
+        'outline', 'error',
+    ],
+    waybar: [
+        'background', 'surface', 'surface_variant',
+        'primary', 'secondary', 'tertiary',
+        'on_background', 'on_surface',
+        'outline', 'error',
+    ],
+    wlogout: ['primary', 'foreground'],
+};
 
 // --- Argv parsing (strips --flag value pairs before positionals) ---
 
@@ -67,7 +123,10 @@ try {
             // fall through
         case 'mood':    if (arg === 'list') { await listMoods();    break; } // fall through
         case 'profile': if (arg === 'list') { await listProfiles(); break; } // fall through
-        case 'recipe':  if (arg === 'list') { await listRecipes(targetArg); break; } // fall through
+        case 'recipe':
+            if (arg === 'list')     { await listRecipes(targetArg); break; }
+            if (arg === 'validate') { await validateRecipes(targetArg); break; }
+            // fall through
         default:
             console.error(`Unknown command: ${command ?? '(none)'}`);
             console.error('Usage: spore sow     <profile> [target] [--wallpaper <path>] [--mood <name>]');
@@ -79,6 +138,7 @@ try {
             console.error('       spore mood    list');
             console.error('       spore profile list');
             console.error('       spore recipe  list [target]');
+            console.error('       spore recipe  validate [target]');
             process.exit(1);
     }
 } catch (err) {
@@ -569,6 +629,147 @@ async function listRecipes(targetFilter?: string): Promise<void> {
             console.log(`  ${`${targetDir}/${slug}`.padEnd(28)} ${base.padEnd(30)} ${dim(`${count} tokens`)}`);
         }
     }
+}
+
+async function recipeFiles(targetFilter?: string): Promise<Array<{ target: string; file: string; path: string }>> {
+    const recipesDir = join(DATA_DIR, 'recipes');
+    let targetDirs: string[];
+    try {
+        targetDirs = (await readdir(recipesDir)).sort();
+    } catch {
+        return [];
+    }
+
+    if (targetFilter !== undefined) {
+        targetDirs = targetDirs.filter(d => d === targetFilter);
+        if (targetDirs.length === 0) {
+            throw new Error(`No recipes for target "${targetFilter}".`);
+        }
+    }
+
+    const files: Array<{ target: string; file: string; path: string }> = [];
+    for (const target of targetDirs) {
+        const targetPath = join(recipesDir, target);
+        let entries: string[];
+        try {
+            entries = (await readdir(targetPath)).filter(f => f.endsWith('.json')).sort();
+        } catch { continue; }
+
+        for (const file of entries) {
+            files.push({ target, file, path: join(targetPath, file) });
+        }
+    }
+
+    return files;
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function validateMix(value: unknown, field: string, errors: string[]): void {
+    if (typeof value !== 'number' || !isFinite(value) || value < 0 || value > 1) {
+        errors.push(`${field} must be a number from 0 to 1`);
+    }
+}
+
+function validateTokenRecipe(tokenName: string, recipe: TokenRecipe, errors: string[]): void {
+    if (!isObject(recipe)) {
+        errors.push(`${tokenName}: token recipe must be an object`);
+        return;
+    }
+
+    if ('base' in recipe) {
+        errors.push(`${tokenName}: direct base/source tokens are not allowed in shipped recipes; use bloom`);
+    }
+
+    if (!('bloom' in recipe)) {
+        errors.push(`${tokenName}: missing bloom path`);
+        return;
+    }
+
+    if (typeof recipe.bloom !== 'string' || recipe.bloom.length === 0) {
+        errors.push(`${tokenName}: bloom must be a non-empty string`);
+    } else if (!BLOOM_KEY_SET.has(recipe.bloom)) {
+        errors.push(`${tokenName}: unknown bloom path "${recipe.bloom}"`);
+    }
+
+    if ('source' in recipe && recipe.source !== undefined && typeof recipe.source !== 'string') {
+        errors.push(`${tokenName}: source must be a string when present`);
+    }
+
+    if ('mix' in recipe && recipe.mix !== undefined) {
+        validateMix(recipe.mix, `${tokenName}.mix`, errors);
+    }
+
+    if (recipe.source !== undefined && recipe.mix === undefined) {
+        errors.push(`${tokenName}: source tint requires mix`);
+    }
+
+    if (recipe.source === undefined && recipe.mix !== undefined) {
+        errors.push(`${tokenName}: mix requires source`);
+    }
+}
+
+function validateRecipeShape(recipe: Recipe, expectedTarget: string): string[] {
+    const errors: string[] = [];
+
+    if (recipe.target !== expectedTarget) {
+        errors.push(`target mismatch: directory is "${expectedTarget}" but recipe says "${recipe.target}"`);
+    }
+
+    if (!isObject(recipe.tokens)) {
+        errors.push('tokens must be an object');
+        return errors;
+    }
+
+    const required = REQUIRED_RECIPE_TOKENS[expectedTarget] ?? [];
+    for (const token of required) {
+        if (recipe.tokens[token] === undefined) {
+            errors.push(`missing required token "${token}"`);
+        }
+    }
+
+    for (const [tokenName, tokenRecipe] of Object.entries(recipe.tokens)) {
+        validateTokenRecipe(tokenName, tokenRecipe, errors);
+    }
+
+    return errors;
+}
+
+async function validateRecipes(targetFilter?: string): Promise<void> {
+    const files = await recipeFiles(targetFilter);
+    if (files.length === 0) {
+        console.log('No recipes found.');
+        return;
+    }
+
+    let anyFailed = false;
+    for (const entry of files) {
+        const label = `${entry.target}/${entry.file.slice(0, -5)}`;
+        let recipe: Recipe;
+        try {
+            recipe = await readRecipe(entry.path);
+        } catch (err) {
+            console.log(`  ${label.padEnd(32)} ✗  ${err instanceof Error ? err.message : String(err)}`);
+            anyFailed = true;
+            continue;
+        }
+
+        const errors = validateRecipeShape(recipe, entry.target);
+        if (errors.length === 0) {
+            const count = Object.keys(recipe.tokens).length;
+            console.log(`  ${label.padEnd(32)} ✓  ${count} bloom tokens`);
+        } else {
+            console.log(`  ${label.padEnd(32)} ✗  ${errors.length} issue${errors.length === 1 ? '' : 's'}`);
+            for (const error of errors) {
+                console.log(`    - ${error}`);
+            }
+            anyFailed = true;
+        }
+    }
+
+    if (anyFailed) process.exit(1);
 }
 
 // --- inspect display helpers ---

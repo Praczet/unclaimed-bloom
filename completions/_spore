@@ -25,6 +25,12 @@ _spore() {
     local -a list_subcommands
     list_subcommands=('list:List available items')
 
+    local -a recipe_subcommands
+    recipe_subcommands=(
+        'list:List available recipes'
+        'validate:Validate recipe shape, bloom paths, required tokens, and mix ranges'
+    )
+
     local -a target_subcommands
     target_subcommands=(
         'apply:Apply a single target from a cached spore'
@@ -65,7 +71,7 @@ _spore() {
             ;;
         recipe)
             case $CURRENT in
-                3) _describe 'subcommand' list_subcommands ;;
+                3) _describe 'subcommand' recipe_subcommands ;;
                 4) _spore_complete_targets ;;
             esac
             ;;

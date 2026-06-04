@@ -66,6 +66,7 @@ scripts/spore inspect <profile> [target]
 scripts/spore palette list
 scripts/spore mood list
 scripts/spore recipe list [target]
+scripts/spore recipe validate [target]
 scripts/spore profile list
 
 # Launch the Vite workbench (live swatch preview in the browser)

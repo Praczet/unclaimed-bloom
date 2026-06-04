@@ -529,6 +529,7 @@ spores and reports are namespaced by profile as of capsule 0.4.
 spore palette list
 spore mood list
 spore recipe list [target]
+spore recipe validate [target]
 spore profile list
 
 # Core workflow
@@ -553,6 +554,8 @@ spore status [profile] [target]
   - Show sow/grow timestamps for all profiles and targets.
 - `spore recipe list`
   - List available target recipes.
+- `spore recipe validate [target]`
+  - Validate recipe JSON, bloom paths, required target tokens, mix ranges, and shipped-recipe shape.
 - `spore palette list`
   - List base palettes with kind (dark/light) and color count.
 - `spore mood list`
@@ -1053,6 +1056,7 @@ List commands:
   mood list         — name + weight values
   profile list      — name, basePalette, mood, targets
   recipe list       — name, basePalette override or (profile), token count
+  recipe validate   — bloom path, required token, mix range, and shipped recipe shape checks
 
 Workbench (npm run workbench):
   Node server on :7865 — HTTP /api/blooms + WebSocket /ws + fs.watch on blooms dir
@@ -1112,6 +1116,7 @@ scripts/spore mood list
 scripts/spore profile list
 scripts/spore recipe list
 scripts/spore recipe list ghostty
+scripts/spore recipe validate
 ```
 
 Ghostty reloads live on `grow` (SIGUSR2). mycli and sqlit update their configs immediately.
