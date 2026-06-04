@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# %name: Unclaimed Bloom
+# %desc: Start the Unclaimed Bloom workbench and open it in a browser.
+# %icon: applications-graphics-symbolic
+# %terminal: true
+
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+URL="${UB_WORKBENCH_URL:-http://localhost:5173}"
+LOGFILE="${UB_WORKBENCH_LOG:-${XDG_CACHE_HOME:-$HOME/.cache}/unclaimed-bloom/workbench.log}"
+OPEN_BROWSER="${UB_OPEN_BROWSER:-1}"
+
+mkdir -p "$(dirname "$LOGFILE")"
+
+open_browser() {
+    if [[ "$OPEN_BROWSER" == "0" ]]; then
+        return 0
+    fi
+
+    if command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$URL" >/dev/null 2>&1 &
+    elif command -v gio >/dev/null 2>&1; then
+        gio open "$URL" >/dev/null 2>&1 &
+    else
+        echo "No browser opener found. Open manually: $URL"
+    fi
+}
+
+wait_for_workbench() {
+    for _ in {1..80}; do
+        if command -v curl >/dev/null 2>&1 && curl -fsS "$URL" >/dev/null 2>&1; then
+            return 0
+        fi
+        sleep 0.25
+    done
+
+    echo "Workbench did not answer quickly. It may still be starting."
+    echo "URL: $URL"
+}
+
+cd "$REPO_DIR"
+
+if [[ ! -x "$REPO_DIR/node_modules/.bin/vite" || ! -x "$REPO_DIR/node_modules/.bin/tsx" ]]; then
+    echo "Missing node dependencies. Run npm install in:"
+    echo "  $REPO_DIR"
+    exit 1
+fi
+
+echo "Starting Unclaimed Bloom workbench"
+echo "  url: $URL"
+echo "  log: $LOGFILE"
+
+npm run workbench >"$LOGFILE" 2>&1 &
+SERVER_PID=$!
+
+cleanup() {
+    if kill -0 "$SERVER_PID" >/dev/null 2>&1; then
+        kill "$SERVER_PID" >/dev/null 2>&1 || true
+    fi
+}
+trap cleanup EXIT INT TERM
+
+wait_for_workbench
+open_browser
+
+echo "Workbench running. Press Ctrl+C to stop."
+wait "$SERVER_PID"
