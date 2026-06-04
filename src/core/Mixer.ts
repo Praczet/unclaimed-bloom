@@ -40,6 +40,10 @@ export class Mixer {
         this.source = source;
     }
 
+    public baseColor(key: string): string | undefined {
+        return this.base[key];
+    }
+
     public token(recipe: DirectTokenRecipe): string {
         const baseColor = this.base[recipe.base];
         if (baseColor === undefined) {

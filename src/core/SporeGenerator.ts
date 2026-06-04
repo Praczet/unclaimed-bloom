@@ -6,6 +6,10 @@ function isBloomRecipe(recipe: TokenRecipe): recipe is Extract<TokenRecipe, { bl
     return 'bloom' in recipe;
 }
 
+function isDirectRecipe(recipe: TokenRecipe): recipe is DirectTokenRecipe {
+    return 'base' in recipe && 'source' in recipe && 'mix' in recipe;
+}
+
 function flattenBloom(bloom: Bloom): Record<string, string> {
     const colors: Record<string, string> = {};
     for (const [group, tokens] of Object.entries(bloom.colors)) {
@@ -41,20 +45,28 @@ export class SporeGenerator {
         bloomColors: Record<string, string>,
         tokenRecipe: TokenRecipe,
     ): string {
-        if (!isBloomRecipe(tokenRecipe)) {
-            return mixer.token(tokenRecipe as DirectTokenRecipe);
+        if (isBloomRecipe(tokenRecipe)) {
+            const bloomColor = bloomColors[tokenRecipe.bloom];
+            if (bloomColor === undefined) {
+                throw new Error(`Bloom missing key "${tokenRecipe.bloom}"`);
+            }
+
+            if (tokenRecipe.source === undefined) {
+                return bloomColor;
+            }
+
+            const sourceColor = source.colors[tokenRecipe.source] ?? bloomColor;
+            return mixColors(bloomColor, sourceColor, tokenRecipe.mix ?? 0);
         }
 
-        const bloomColor = bloomColors[tokenRecipe.bloom];
-        if (bloomColor === undefined) {
-            throw new Error(`Bloom missing key "${tokenRecipe.bloom}"`);
+        if (isDirectRecipe(tokenRecipe)) {
+            return mixer.token(tokenRecipe);
         }
 
-        if (tokenRecipe.source === undefined) {
-            return bloomColor;
+        const baseColor = mixer.baseColor(tokenRecipe.base);
+        if (baseColor === undefined) {
+            throw new Error(`Base palette missing key "${tokenRecipe.base}"`);
         }
-
-        const sourceColor = source.colors[tokenRecipe.source] ?? bloomColor;
-        return mixColors(bloomColor, sourceColor, tokenRecipe.mix ?? 0);
+        return baseColor;
     }
 }

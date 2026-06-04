@@ -172,10 +172,13 @@ All shipped recipes use the bloom directly for shared semantic roles:
 "selected": { "bloom": "accent.primary", "source": "primary", "mix": 0.15 }
 ```
 
-The engine still supports direct base/source mixing as an escape hatch for future target-specific behavior:
+Recipes can also pin a token to the pure base palette when a target should ignore Matugen:
 
 ```json
-"cursor_color": { "base": "blue", "source": "primary", "mix": 0.55 }
+"background": { "base": "background" }
 ```
+
+The engine still supports direct base/source mixing internally, but shipped recipes should prefer
+`bloom`, `bloom` plus a small source tint, or pure `base`.
 
 See `docs/PROJECT-CAPSULE.md` for full architecture and roadmap.

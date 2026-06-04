@@ -1005,12 +1005,16 @@ Recipe token modes:
     { "bloom": "surface.base" }
     { "bloom": "accent.primary", "source": "primary", "mix": 0.15 }
 
-  Direct escape hatch, supported by the engine but not used by shipped recipes:
+  Pure base:
+    { "base": "background" }
+
+  Direct mix escape hatch, supported by the engine but not used by shipped recipes:
     { "base": "blue", "source": "primary", "mix": 0.55 }
 
-Use bloom-backed tokens for shipped target recipes. Direct base/source recipes are reserved
-for future exceptions where a target needs deliberate disagreement that cannot be expressed
-as bloom plus a small source tint.
+Use bloom-backed tokens for shared target roles. Use pure base when a target needs an
+untinted base-palette color, for example a pure TokyoNight background. Direct base/source
+mix recipes are reserved for future exceptions where a target needs deliberate disagreement
+that cannot be expressed as bloom, bloom plus source tint, or pure base.
 
 Adapters (all working):
   GhosttyAdapter   — writes theme file, sends SIGUSR2 for live reload

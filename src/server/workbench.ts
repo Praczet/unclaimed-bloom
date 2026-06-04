@@ -112,15 +112,26 @@ async function buildInspectData(profileName: string): Promise<InspectData> {
                     };
                 } else {
                     const baseHex = targetBase.colors[tr.base] ?? '#000000';
-                    const srcHex  = sourcePalette.colors[tr.source] ?? baseHex;
+                    if ('source' in tr && 'mix' in tr) {
+                        const srcHex = sourcePalette.colors[tr.source] ?? baseHex;
+                        return {
+                            name:    displayName,
+                            baseKey: `base:${tr.base}`,
+                            baseHex,
+                            srcKey:  tr.source,
+                            srcHex,
+                            mix:     tr.mix,
+                            result:  mixColors(baseHex, srcHex, tr.mix),
+                        };
+                    }
                     return {
                         name:    displayName,
-                        baseKey: tr.base,
+                        baseKey: `base:${tr.base}`,
                         baseHex,
-                        srcKey:  tr.source,
-                        srcHex,
-                        mix:     tr.mix,
-                        result:  mixColors(baseHex, srcHex, tr.mix),
+                        srcKey:  '(none)',
+                        srcHex:  baseHex,
+                        mix:     0,
+                        result:  baseHex,
                     };
                 }
             }),

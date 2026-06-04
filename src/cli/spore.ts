@@ -679,12 +679,21 @@ function validateTokenRecipe(tokenName: string, recipe: TokenRecipe, errors: str
         return;
     }
 
+    if ('base' in recipe && !('source' in recipe) && !('mix' in recipe)) {
+        if (typeof recipe.base !== 'string' || recipe.base.length === 0) {
+            errors.push(`${tokenName}: base must be a non-empty string`);
+        } else if (!CANONICAL_KEYS.includes(recipe.base as (typeof CANONICAL_KEYS)[number])) {
+            errors.push(`${tokenName}: unknown base palette key "${recipe.base}"`);
+        }
+        return;
+    }
+
     if ('base' in recipe) {
-        errors.push(`${tokenName}: direct base/source tokens are not allowed in shipped recipes; use bloom`);
+        errors.push(`${tokenName}: direct base/source mix tokens are not allowed in shipped recipes; use bloom or pure base`);
     }
 
     if (!('bloom' in recipe)) {
-        errors.push(`${tokenName}: missing bloom path`);
+        errors.push(`${tokenName}: missing bloom path or pure base token`);
         return;
     }
 
@@ -758,8 +767,11 @@ async function validateRecipes(targetFilter?: string): Promise<void> {
 
         const errors = validateRecipeShape(recipe, entry.target);
         if (errors.length === 0) {
-            const count = Object.keys(recipe.tokens).length;
-            console.log(`  ${label.padEnd(32)} ✓  ${count} bloom tokens`);
+            const tokenRecipes = Object.values(recipe.tokens);
+            const bloomCount = tokenRecipes.filter(token => 'bloom' in token).length;
+            const baseCount = tokenRecipes.filter(token => 'base' in token && !('source' in token)).length;
+            const baseNote = baseCount > 0 ? `, ${baseCount} base` : '';
+            console.log(`  ${label.padEnd(32)} ✓  ${bloomCount} bloom${baseNote} tokens`);
         } else {
             console.log(`  ${label.padEnd(32)} ✗  ${errors.length} issue${errors.length === 1 ? '' : 's'}`);
             for (const error of errors) {
@@ -878,9 +890,13 @@ async function inspect(profileName: string, targetFilter?: string): Promise<void
                 tokenRow(displayName, `bloom:${tr.bloom}`, bloomHex, srcKey, srcHex, mix, rendered, nameWidth);
             } else {
                 const baseHex  = targetBase.colors[tr.base] ?? '#000000';
-                const srcHex   = sourcePalette.colors[tr.source] ?? baseHex;
-                const rendered = mixColors(baseHex, srcHex, tr.mix);
-                tokenRow(displayName, tr.base, baseHex, tr.source, srcHex, tr.mix, rendered, nameWidth);
+                if ('source' in tr && 'mix' in tr) {
+                    const srcHex   = sourcePalette.colors[tr.source] ?? baseHex;
+                    const rendered = mixColors(baseHex, srcHex, tr.mix);
+                    tokenRow(displayName, `base:${tr.base}`, baseHex, tr.source, srcHex, tr.mix, rendered, nameWidth);
+                } else {
+                    tokenRow(displayName, `base:${tr.base}`, baseHex, '(none)', baseHex, 0, baseHex, nameWidth);
+                }
             }
         }
     }

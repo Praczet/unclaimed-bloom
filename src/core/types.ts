@@ -46,13 +46,17 @@ export interface DirectTokenRecipe {
     mix: number;    // 0.0 = pure base palette, 1.0 = pure source palette
 }
 
+export interface BaseTokenRecipe {
+    base: string;   // pure base palette token, for example "background"
+}
+
 export interface BloomTokenRecipe {
     bloom: string;  // semantic bloom path, for example "surface.base"
     source?: string;
     mix?: number;   // 0.0 = pure bloom token, 1.0 = pure source palette
 }
 
-export type TokenRecipe = DirectTokenRecipe | BloomTokenRecipe;
+export type TokenRecipe = BaseTokenRecipe | DirectTokenRecipe | BloomTokenRecipe;
 
 export interface Recipe {
     name: string;
