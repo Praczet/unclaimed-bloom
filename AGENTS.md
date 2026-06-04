@@ -580,6 +580,27 @@ For repository docs like `AGENTS.md`, standard Markdown is fine, but Logseq-frie
 
 ## Practical repo rules
 
+### Git commits
+
+- Use Conventional Commits style for commit messages.
+- Prefer short one-line messages unless the change genuinely needs a body.
+- Do not add `Co-authored-by` trailers or other AI attribution trailers.
+- Good:
+
+```text
+feat: add something
+fix: handle missing recipe file
+docs: update project capsule
+```
+
+- Bad:
+
+```text
+Add something
+feat(scope)!: implement enterprise-grade chromatic synergy
+Co-authored-by: Some AI <ai@example.com>
+```
+
 ### Do
 
 - Keep `docs/PROJECT-CAPSULE.md` up to date when major decisions change.
