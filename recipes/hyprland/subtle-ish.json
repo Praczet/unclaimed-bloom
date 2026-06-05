@@ -23,13 +23,13 @@
       "mix": 0.15
     },
     "background": {
-      "bloom": "surface.base",
       "source": "background",
+      "bloom": "surface.base",
       "mix": 0.15
     },
     "on_surface": {
-      "bloom": "text.primary",
       "source": "on_surface",
+      "bloom": "surface.raised",
       "mix": 0.15
     }
   }

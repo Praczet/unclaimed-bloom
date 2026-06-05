@@ -3,28 +3,28 @@
   "target": "icons",
   "tokens": {
     "__ADART_ICON_SURFACE__": {
-      "bloom": "surface.base",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "__ADART_ICON_SURFACE_DIM__": {
-      "bloom": "surface.dim",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "__ADART_ICON_SURFACE_CONTAINER__": {
-      "bloom": "surface.raised",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "__ADART_ICON_SURFACE_HIGH__": {
-      "bloom": "surface.highest",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "__ADART_ICON_SURFACE_LOWEST__": {
-      "bloom": "surface.dim",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "__ADART_ICON_ON_SURFACE__": {
@@ -43,8 +43,8 @@
       "mix": 0.1
     },
     "__ADART_ICON_SHADOW__": {
-      "bloom": "surface.dim",
       "source": "shadow",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "__ADART_ICON_ACCENT_1__": {

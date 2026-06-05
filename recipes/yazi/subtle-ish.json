@@ -53,8 +53,8 @@
       "mix": 0.1
     },
     "on_surface": {
-      "bloom": "text.primary",
       "source": "on_surface",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "accent": {

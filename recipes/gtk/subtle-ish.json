@@ -23,43 +23,43 @@
       "mix": 0.1
     },
     "window_bg_color": {
-      "bloom": "surface.base",
-      "source": "surface_container_highest",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "window_fg_color": {
-      "bloom": "text.primary",
-      "source": "on_background",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "headerbar_bg_color": {
-      "bloom": "surface.dim",
-      "source": "surface_container_high",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "popover_bg_color": {
+      "source": "source_color",
       "bloom": "surface.raised",
-      "source": "surface_container_high",
       "mix": 0.15
     },
     "view_bg_color": {
-      "bloom": "surface.dim",
-      "source": "surface_container",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "card_bg_color": {
+      "source": "source_color",
       "bloom": "surface.raised",
-      "source": "surface_container",
       "mix": 0.15
     },
     "sidebar_bg_color": {
-      "bloom": "surface.dim",
-      "source": "surface_container",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "sidebar_border_color": {
-      "bloom": "border.subtle",
-      "source": "outline_variant",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "borders": {
@@ -69,73 +69,73 @@
       "bloom": "border.subtle"
     },
     "insensitive_bg_color": {
+      "source": "source_color",
       "bloom": "surface.raised",
-      "source": "surface_container_lowest",
       "mix": 0.15
     },
     "insensitive_fg_color": {
-      "bloom": "text.muted",
-      "source": "on_surface_variant",
+      "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "success_color": {
-      "bloom": "state.success",
       "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "success_fg_color": {
-      "bloom": "text.primary",
       "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "warning_color": {
-      "bloom": "state.warning",
       "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "warning_fg_color": {
-      "bloom": "text.primary",
       "source": "source_color",
+      "bloom": "surface.raised",
       "mix": 0.15
     },
     "error_color": {
-      "bloom": "state.danger",
       "source": "on_error_container",
+      "bloom": "text.primary",
       "mix": 0.15
     },
     "error_fg_color": {
-      "bloom": "text.primary",
       "source": "on_error_container",
+      "bloom": "text.primary",
       "mix": 0.15
     },
     "surface_bright_color": {
-      "bloom": "surface.highest",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "surface_container_lowest_color": {
-      "bloom": "surface.dim",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "surface_container_low_color": {
-      "bloom": "surface.base",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "surface_container_color": {
-      "bloom": "surface.raised",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "surface_container_high_color": {
-      "bloom": "surface.raised",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "surface_container_highest_color": {
-      "bloom": "surface.highest",
       "source": "surface_container_highest",
+      "bloom": "surface.highest",
       "mix": 0.15
     },
     "selection_bg": {
@@ -149,8 +149,8 @@
       "mix": 1.0
     },
     "outline_color": {
-      "bloom": "border.subtle",
       "source": "outline_variant",
+      "bloom": "surface.raised",
       "mix": 0.15
     }
   }

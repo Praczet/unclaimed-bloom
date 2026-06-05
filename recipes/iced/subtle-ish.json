@@ -3,8 +3,8 @@
   "target": "iced",
   "tokens": {
     "background": {
-      "bloom": "surface.base",
       "source": "background",
+      "bloom": "surface.base",
       "mix": 0.15
     },
     "text": {

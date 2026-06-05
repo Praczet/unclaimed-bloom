@@ -3,13 +3,13 @@
   "target": "rofi",
   "tokens": {
     "background": {
-      "bloom": "surface.base",
       "source": "background",
+      "bloom": "surface.base",
       "mix": 0.15
     },
     "background_alt": {
-      "bloom": "surface.highest",
       "source": "on_background",
+      "bloom": "text.primary",
       "mix": 0.15
     },
     "foreground": {
