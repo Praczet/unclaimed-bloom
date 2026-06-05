@@ -105,6 +105,7 @@ const wallpaperIdx = rawArgs.indexOf('--wallpaper');
 const wallpaperFlag = wallpaperIdx !== -1 ? rawArgs[wallpaperIdx + 1] : undefined;
 const moodIdx = rawArgs.indexOf('--mood');
 const moodFlag = moodIdx !== -1 ? rawArgs[moodIdx + 1] : undefined;
+const applyFlag = rawArgs.includes('--apply');
 const positional = rawArgs.filter((a, i) =>
     !a.startsWith('--') &&
     rawArgs[i - 1] !== '--wallpaper' &&
@@ -575,7 +576,21 @@ async function setCommand(arg?: string, restArg?: string): Promise<void> {
     profile.targets[tgt] = rcp;
     await writeJson(profilePath, profile);
     console.log(`Profile ${prof}: set ${tgt} -> ${rcp}`);
+
+    if (applyFlag) {
+        console.log('apply flag present — running sow + grow for the changed target');
+        try {
+            await sow(prof, tgt);
+            await grow(prof, tgt);
+            console.log(`Applied and regenerated target ${tgt} for profile ${prof}`);
+        } catch (err) {
+            console.error(`Failed to apply after set: ${err instanceof Error ? err.message : String(err)}`);
+            process.exit(1);
+        }
+    }
 }
+
+// --- list commands ---
 
 // --- list commands ---
 
