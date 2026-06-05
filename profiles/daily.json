@@ -9,7 +9,7 @@
   "mood": "blooming",
   "targets": {
     "hyprland": "subtle-ish",
-    "ghostty": "subtle-ish",
+    "ghostty": "source-heavy",
     "rofi": "subtle-ish",
     "yazi": "subtle-ish",
     "wlogout": "subtle-ish",
