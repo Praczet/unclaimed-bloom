@@ -5,7 +5,7 @@
     "accent_color": {
       "bloom": "accent.primary",
       "source": "primary_fixed_dim",
-      "mix": 0.15
+      "mix": 0.05
     },
     "accent_fg_color": {
       "bloom": "text.primary",
@@ -28,9 +28,7 @@
       "mix": 0.15
     },
     "window_fg_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "text.primary"
     },
     "headerbar_bg_color": {
       "source": "source_color",
@@ -57,11 +55,6 @@
       "bloom": "surface.raised",
       "mix": 0.15
     },
-    "sidebar_border_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
-    },
     "borders": {
       "bloom": "border.subtle"
     },
@@ -74,39 +67,27 @@
       "mix": 0.15
     },
     "insensitive_fg_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "text.disabled"
     },
     "success_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "state.success"
     },
     "success_fg_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "text.primary"
     },
     "warning_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "state.warning"
     },
     "warning_fg_color": {
-      "source": "source_color",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "text.primary"
     },
     "error_color": {
-      "source": "on_error_container",
-      "bloom": "text.primary",
+      "bloom": "state.danger",
+      "source": "error",
       "mix": 0.15
     },
     "error_fg_color": {
-      "source": "on_error_container",
-      "bloom": "text.primary",
-      "mix": 0.15
+      "bloom": "text.primary"
     },
     "surface_bright_color": {
       "source": "surface_container_highest",
@@ -139,19 +120,16 @@
       "mix": 0.15
     },
     "selection_bg": {
-      "bloom": "surface.raised",
-      "source": "surface_container_high",
-      "mix": 0.10
+      "bloom": "selection.background"
     },
     "selection_fg": {
-      "bloom": "text.primary",
-      "source": "on_surface",
-      "mix": 1.0
+      "bloom": "selection.foreground"
+    },
+    "sidebar_border_color": {
+      "bloom": "border.subtle"
     },
     "outline_color": {
-      "source": "outline_variant",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "border.subtle"
     }
   }
 }

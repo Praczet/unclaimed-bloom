@@ -1,0 +1,110 @@
+{
+  "name": "graphite-light",
+  "target": "gtk",
+  "basePalette": "graphite-light",
+  "tokens": {
+    "accent_color": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.16
+    },
+    "accent_fg_color": {
+      "base": "selection_foreground"
+    },
+    "link_color": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.16
+    },
+    "link_visited_color": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.10
+    },
+    "window_bg_color": {
+      "base": "background"
+    },
+    "window_fg_color": {
+      "base": "foreground"
+    },
+    "headerbar_bg_color": {
+      "base": "background_highlight"
+    },
+    "popover_bg_color": {
+      "base": "background_highlight"
+    },
+    "view_bg_color": {
+      "base": "background"
+    },
+    "card_bg_color": {
+      "base": "background_highlight"
+    },
+    "sidebar_bg_color": {
+      "base": "background_dark"
+    },
+    "borders": {
+      "base": "border"
+    },
+    "unfocused_borders": {
+      "base": "border"
+    },
+    "insensitive_bg_color": {
+      "base": "background_dark"
+    },
+    "insensitive_fg_color": {
+      "base": "comment"
+    },
+    "success_color": {
+      "base": "green"
+    },
+    "success_fg_color": {
+      "base": "foreground"
+    },
+    "warning_color": {
+      "base": "yellow"
+    },
+    "warning_fg_color": {
+      "base": "foreground"
+    },
+    "error_color": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.10
+    },
+    "error_fg_color": {
+      "base": "foreground"
+    },
+    "surface_bright_color": {
+      "base": "background_highlight"
+    },
+    "surface_container_lowest_color": {
+      "base": "background_highlight"
+    },
+    "surface_container_low_color": {
+      "base": "background"
+    },
+    "surface_container_color": {
+      "base": "background"
+    },
+    "surface_container_high_color": {
+      "base": "background_dark"
+    },
+    "surface_container_highest_color": {
+      "base": "border"
+    },
+    "selection_bg": {
+      "bloom": "selection.background",
+      "source": "secondary_container",
+      "mix": 0.06
+    },
+    "selection_fg": {
+      "base": "selection_foreground"
+    },
+    "sidebar_border_color": {
+      "base": "border"
+    },
+    "outline_color": {
+      "base": "border"
+    }
+  }
+}

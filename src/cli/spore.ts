@@ -27,8 +27,8 @@ import { CANONICAL_KEYS } from '../core/canonical.js';
 import { BloomGenerator } from '../core/BloomGenerator';
 import { SporeGenerator } from '../core/SporeGenerator';
 import { hexToRgb, mixColors } from '../core/Mixer';
-import type { BloomColors, MatugenSource, Profile, Recipe, Report, Spore, TokenRecipe } from '../core/types';
-import { readJson, readMood, readPalette, readProfile, readRecipe, readSpore, writeJson } from '../node/fs';
+import type { BloomColors, CompositionProfile, CompositionRun, MatugenSource, Profile, ProfileEntry, Recipe, Report, Spore, TokenRecipe } from '../core/types';
+import { readJson, readMood, readPalette, readProfile, readProfileEntry, readRecipe, readSpore, writeJson } from '../node/fs';
 import { expandHome, loadBasePalette, loadSourcePalette } from '../node/loader';
 import { CACHE_DIR, DATA_DIR, Paths } from '../node/paths';
 
@@ -386,13 +386,134 @@ function filterTargets(
     return match;
 }
 
+function isCompositionProfile(profile: ProfileEntry): profile is CompositionProfile {
+    return 'type' in profile && profile.type === 'composition';
+}
+
+async function readNormalProfile(profileName: string, context: string): Promise<Profile> {
+    const entry = await readProfileEntry(Paths.profile(profileName));
+    if (isCompositionProfile(entry)) {
+        throw new Error(`${context} references composition profile "${profileName}". Composition runs must reference normal profiles.`);
+    }
+    return entry;
+}
+
+function resolveCompositionTargets(
+    profile: Profile,
+    run: CompositionRun,
+    targetFilter: string | undefined,
+): string[] | undefined {
+    if (run.targets === undefined && run.exclude === undefined && targetFilter === undefined) {
+        return undefined;
+    }
+
+    const excluded = new Set(run.exclude ?? []);
+    let targets = run.targets ?? Object.keys(profile.targets);
+    targets = targets.filter(target => !excluded.has(target));
+
+    if (targetFilter !== undefined) {
+        targets = targets.filter(target => target === targetFilter);
+    }
+
+    return targets;
+}
+
+async function compositionSourceProfile(composition: CompositionProfile): Promise<Profile> {
+    const sourceProfile = composition.currentProfile ?? composition.runs[0]?.profile;
+    if (sourceProfile === undefined) {
+        throw new Error(`Composition profile "${composition.name}" has no runs.`);
+    }
+    return readNormalProfile(sourceProfile, `Composition "${composition.name}" source profile`);
+}
+
+async function sowComposition(
+    composition: CompositionProfile,
+    targetFilter?: string,
+    wallpaperPath?: string,
+    moodOverride?: string,
+): Promise<void> {
+    console.log(`profile:  ${composition.name} (composition)`);
+    console.log(`data dir: ${DATA_DIR}`);
+
+    if (wallpaperPath !== undefined) {
+        const sourceProfile = await compositionSourceProfile(composition);
+        if (sourceProfile.source.type !== 'matugen') {
+            throw new Error(`--wallpaper requires a matugen source, but profile "${sourceProfile.name}" uses "${sourceProfile.source.type}"`);
+        }
+        await runMatugen(wallpaperPath, expandHome(sourceProfile.source.colorsPath), sourceProfile.source.variant);
+        await writeFile(Paths.currentWallpaper(), expandHome(wallpaperPath), 'utf8');
+    }
+
+    let matchedTarget = targetFilter === undefined;
+    for (const run of composition.runs) {
+        const profile = await readNormalProfile(run.profile, `Composition "${composition.name}"`);
+        const targets = resolveCompositionTargets(profile, run, targetFilter);
+
+        if (targets !== undefined) {
+            if (targets.length === 0) continue;
+            matchedTarget = true;
+            for (const target of targets) {
+                await sow(run.profile, target, undefined, moodOverride);
+            }
+        } else {
+            await sow(run.profile, undefined, undefined, moodOverride);
+        }
+    }
+
+    if (!matchedTarget && targetFilter !== undefined) {
+        throw new Error(`Target "${targetFilter}" not found in composition "${composition.name}".`);
+    }
+
+    const currentProfile = composition.currentProfile ?? composition.runs[composition.runs.length - 1]?.profile ?? composition.name;
+    await writeFile(Paths.currentProfile(), currentProfile, 'utf8');
+    console.log(`composition current profile → ${currentProfile}`);
+
+    const growHint = targetFilter !== undefined
+        ? `spore grow ${composition.name} ${targetFilter}`
+        : `spore grow ${composition.name}`;
+    console.log(`done.  run: ${growHint}`);
+}
+
+async function growComposition(composition: CompositionProfile, targetFilter?: string): Promise<void> {
+    console.log(`profile:  ${composition.name} (composition)`);
+    console.log(`cache:    ${CACHE_DIR}`);
+
+    let matchedTarget = targetFilter === undefined;
+    for (const run of composition.runs) {
+        const profile = await readNormalProfile(run.profile, `Composition "${composition.name}"`);
+        const targets = resolveCompositionTargets(profile, run, targetFilter);
+
+        if (targets !== undefined) {
+            if (targets.length === 0) continue;
+            matchedTarget = true;
+            for (const target of targets) {
+                await grow(run.profile, target);
+            }
+        } else {
+            await grow(run.profile);
+        }
+    }
+
+    if (!matchedTarget && targetFilter !== undefined) {
+        throw new Error(`Target "${targetFilter}" not found in composition "${composition.name}".`);
+    }
+
+    notifyWorkbench(composition.currentProfile ?? composition.name, targetFilter).catch(() => {});
+    console.log('done.');
+}
+
 // --- sow (cache only) ---
 
 async function sow(profileName: string, targetFilter?: string, wallpaperPath?: string, moodOverride?: string): Promise<void> {
+    const entry = await readProfileEntry(Paths.profile(profileName));
+    if (isCompositionProfile(entry)) {
+        await sowComposition(entry, targetFilter, wallpaperPath, moodOverride);
+        return;
+    }
+    const profile = entry;
+
     console.log(`profile:  ${profileName}`);
     console.log(`data dir: ${DATA_DIR}`);
-
-    const profile = await readProfile(Paths.profile(profileName));
 
     if (wallpaperPath !== undefined) {
         if (profile.source.type !== 'matugen') {
@@ -445,10 +566,15 @@ async function sow(profileName: string, targetFilter?: string, wallpaperPath?: s
 // --- grow (cache → config) ---
 
 async function grow(profileName: string, targetFilter?: string): Promise<void> {
+    const entry = await readProfileEntry(Paths.profile(profileName));
+    if (isCompositionProfile(entry)) {
+        await growComposition(entry, targetFilter);
+        return;
+    }
+    const profile = entry;
+
     console.log(`profile:  ${profileName}`);
     console.log(`cache:    ${CACHE_DIR}`);
-
-    const profile = await readProfile(Paths.profile(profileName));
 
     for (const [target] of filterTargets(profile.targets, targetFilter, profileName)) {
         let spore: Spore;
@@ -498,6 +624,29 @@ function fmtTs(iso: string): string {
     return iso.replace('T', ' ').slice(0, 16) + ' UTC';
 }
 
+async function statusComposition(composition: CompositionProfile, targetFilter?: string): Promise<void> {
+    console.log(`\n${bold(composition.name)} ${dim('(composition)')}`);
+    for (const run of composition.runs) {
+        const profile = await readNormalProfile(run.profile, `Composition "${composition.name}"`);
+        const targets = resolveCompositionTargets(profile, run, targetFilter);
+        if (targets !== undefined && targets.length === 0) continue;
+
+        const label = targets === undefined ? 'all targets' : targets.join(' ');
+        console.log(`  run ${run.profile}${label ? ` ${dim(`[${label}]`)}` : ''}`);
+
+        if (targets === undefined) {
+            await status(run.profile);
+        } else {
+            for (const target of targets) {
+                await status(run.profile, target);
+            }
+        }
+    }
+    if (composition.currentProfile !== undefined) {
+        console.log(`  currentProfile ${dim(composition.currentProfile)}`);
+    }
+}
+
 async function status(profileName?: string, targetFilter?: string): Promise<void> {
 
     let profileNames: string[];
@@ -516,6 +665,18 @@ async function status(profileName?: string, targetFilter?: string): Promise<void
     }
 
     for (const name of profileNames) {
+        let entry: ProfileEntry;
+        try {
+            entry = await readProfileEntry(Paths.profile(name));
+        } catch {
+            continue;
+        }
+
+        if (isCompositionProfile(entry)) {
+            await statusComposition(entry, targetFilter);
+            continue;
+        }
+
         console.log(`\n${bold(name)}`);
 
         // bloom
@@ -529,12 +690,7 @@ async function status(profileName?: string, targetFilter?: string): Promise<void
         }
 
         // spores — list what's in cache
-        let profile: Profile;
-        try {
-            profile = await readProfile(Paths.profile(name));
-        } catch {
-            continue;
-        }
+        const profile = entry;
 
         const targets = targetFilter !== undefined
             ? Object.entries(profile.targets).filter(([t]) => t === targetFilter)
@@ -589,8 +745,7 @@ async function setCommand(arg?: string, restArg?: string): Promise<void> {
     } catch (err) {
         // Try to list available variants for the target to help the user
         try {
-            const dir = join(DATA_DIR, 'recipes', tgt);
-            const files = (await readdir(dir)).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort();
+            const files = await recipeNamesForTarget(tgt);
             if (files.length > 0) {
                 console.error(`Recipe "${rcp}" for target "${tgt}" not found. Available: ${files.join(', ')}`);
             } else {
@@ -789,23 +944,77 @@ async function listProfiles(): Promise<void> {
     const dir = join(DATA_DIR, 'profiles');
     const files = (await readdir(dir)).filter(f => f.endsWith('.json'));
     for (const file of files.sort()) {
-        const p = await readProfile(join(dir, file));
-        const targets = Object.keys(p.targets).join(' ');
-        console.log(
-            `  ${p.name.padEnd(16)} ` +
-            `base:${p.basePalette.padEnd(20)} ` +
-            `mood:${p.mood.padEnd(12)} ` +
-            dim(`[${targets}]`),
-        );
+        const p = await readProfileEntry(join(dir, file));
+        if (isCompositionProfile(p)) {
+            const runs = p.runs.map(run => {
+                const targetNote = run.targets !== undefined ? `:${run.targets.join(',')}` : '';
+                const excludeNote = run.exclude !== undefined ? `:-${run.exclude.join(',')}` : '';
+                return `${run.profile}${targetNote}${excludeNote}`;
+            }).join(' → ');
+            console.log(`  ${p.name.padEnd(16)} composition ${dim(`[${runs}] current:${p.currentProfile ?? '(last)'}`)}`);
+        } else {
+            const targets = Object.keys(p.targets).join(' ');
+            console.log(
+                `  ${p.name.padEnd(16)} ` +
+                `base:${p.basePalette.padEnd(20)} ` +
+                `mood:${p.mood.padEnd(12)} ` +
+                dim(`[${targets}]`),
+            );
+        }
     }
 }
 
-async function listRecipes(targetFilter?: string): Promise<void> {
-    const recipesDir = join(DATA_DIR, 'recipes');
-    let targetDirs: string[];
+async function recipeTargetDirs(): Promise<string[]> {
+    const targets = new Set<string>();
+
     try {
-        targetDirs = (await readdir(recipesDir)).sort();
+        for (const entry of await readdir(join(DATA_DIR, 'targets'), { withFileTypes: true })) {
+            if (entry.isDirectory()) {
+                targets.add(entry.name);
+            }
+        }
     } catch {
+        // Older installs may still use recipes/<target>.
+    }
+
+    try {
+        for (const entry of await readdir(join(DATA_DIR, 'recipes'), { withFileTypes: true })) {
+            if (entry.isDirectory()) {
+                targets.add(entry.name);
+            }
+        }
+    } catch {
+        // No legacy recipes directory.
+    }
+
+    return [...targets].sort();
+}
+
+async function recipeNamesForTarget(target: string): Promise<string[]> {
+    const names = new Set<string>();
+    const dirs = [
+        join(DATA_DIR, 'targets', target, 'recipes'),
+        join(DATA_DIR, 'recipes', target),
+    ];
+
+    for (const dir of dirs) {
+        try {
+            for (const file of await readdir(dir)) {
+                if (file.endsWith('.json')) {
+                    names.add(file.slice(0, -5));
+                }
+            }
+        } catch {
+            // Target may not exist in this layout.
+        }
+    }
+
+    return [...names].sort();
+}
+
+async function listRecipes(targetFilter?: string): Promise<void> {
+    let targetDirs = await recipeTargetDirs();
+    if (targetDirs.length === 0) {
         console.log('No recipes found.');
         return;
     }
@@ -818,15 +1027,8 @@ async function listRecipes(targetFilter?: string): Promise<void> {
     }
 
     for (const targetDir of targetDirs) {
-        const targetPath = join(recipesDir, targetDir);
-        let files: string[];
-        try {
-            files = (await readdir(targetPath)).filter(f => f.endsWith('.json')).sort();
-        } catch { continue; }
-
-        for (const file of files) {
-            const r = await readRecipe(join(targetPath, file));
-            const slug = file.slice(0, -5);
+        for (const slug of await recipeNamesForTarget(targetDir)) {
+            const r = await readRecipe(Paths.recipe(targetDir, slug));
             const base = r.basePalette !== undefined ? `base:${r.basePalette}` : dim('base: (profile)');
             const count = Object.keys(r.tokens).length;
             console.log(`  ${`${targetDir}/${slug}`.padEnd(28)} ${base.padEnd(30)} ${dim(`${count} tokens`)}`);
@@ -835,11 +1037,8 @@ async function listRecipes(targetFilter?: string): Promise<void> {
 }
 
 async function recipeFiles(targetFilter?: string): Promise<Array<{ target: string; file: string; path: string }>> {
-    const recipesDir = join(DATA_DIR, 'recipes');
-    let targetDirs: string[];
-    try {
-        targetDirs = (await readdir(recipesDir)).sort();
-    } catch {
+    let targetDirs = await recipeTargetDirs();
+    if (targetDirs.length === 0) {
         return [];
     }
 
@@ -852,14 +1051,8 @@ async function recipeFiles(targetFilter?: string): Promise<Array<{ target: strin
 
     const files: Array<{ target: string; file: string; path: string }> = [];
     for (const target of targetDirs) {
-        const targetPath = join(recipesDir, target);
-        let entries: string[];
-        try {
-            entries = (await readdir(targetPath)).filter(f => f.endsWith('.json')).sort();
-        } catch { continue; }
-
-        for (const file of entries) {
-            files.push({ target, file, path: join(targetPath, file) });
+        for (const name of await recipeNamesForTarget(target)) {
+            files.push({ target, file: `${name}.json`, path: Paths.recipe(target, name) });
         }
     }
 
@@ -1040,7 +1233,7 @@ function printSource(colors: Record<string, string>): void {
     console.log(`\n${bold('source')}`);
     const keys = Object.keys(colors).sort();
     for (const k of keys) {
-        const v = colors[k];
+        const v = colors[k] ?? '#000000';
         console.log(`  ${k.padEnd(36)}${swatch(v)}  ${v}`);
     }
 }
@@ -1054,8 +1247,30 @@ function bloomValue(colors: BloomColors, path: string): string | undefined {
 
 // --- inspect ---
 
+async function inspectComposition(composition: CompositionProfile, targetFilter?: string): Promise<void> {
+    console.log(`profile:      ${composition.name} (composition)`);
+    for (const run of composition.runs) {
+        const profile = await readNormalProfile(run.profile, `Composition "${composition.name}"`);
+        const targets = resolveCompositionTargets(profile, run, targetFilter);
+
+        if (targets !== undefined) {
+            if (targets.length === 0) continue;
+            for (const target of targets) {
+                await inspect(run.profile, target);
+            }
+        } else {
+            await inspect(run.profile);
+        }
+    }
+}
+
 async function inspect(profileName: string, targetFilter?: string): Promise<void> {
-    const profile       = await readProfile(Paths.profile(profileName));
+    const entry         = await readProfileEntry(Paths.profile(profileName));
+    if (isCompositionProfile(entry)) {
+        await inspectComposition(entry, targetFilter);
+        return;
+    }
+    const profile       = entry;
     const profileBase   = await readPalette(Paths.palette(profile.basePalette));
     const sourcePalette = await loadSourcePalette(profile);
     const mood          = await readMood(Paths.mood(profile.mood));

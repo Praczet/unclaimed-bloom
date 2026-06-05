@@ -1,0 +1,13 @@
+{
+  "name": "daily-light-gtk",
+  "basePalette": "graphite-light",
+  "mood": "dormant",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "light"
+  },
+  "targets": {
+    "gtk": "graphite-light"
+  }
+}

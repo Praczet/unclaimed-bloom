@@ -40,6 +40,9 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 - cli: added cache subcommands (cache create/list/apply/remove) for named cached spore variants.
 - inspect: `spore inspect` now shows full bloom + source palette derivation (so Matugen source colors are visible in the inspector).
 - workbench UI: improved WebSocket fallback to connect to the backend port (7865) when same-origin WS is not available.
+- repo layout: target-owned recipes/templates now live under `targets/<target>/`, with compatibility fallback for older `recipes/<target>` and `templates/<target>` paths.
+- gtk: added Graphite-inspired base palettes, GTK recipes, and GTK-only profiles (`daily-gtk`, `daily-light-gtk`) so GTK can stay neutral while the rest of `daily` keeps its normal bloom.
+- profiles: added composition profiles with ordered runs; `desktop` runs `daily-gtk` for GTK, then `daily`, and leaves `current-profile` set to `daily`.
 
 ## The soul of the project
 
@@ -188,9 +191,8 @@ unclaimed-bloom/
 ├── scripts/        existing/new Python/Bash workers
 ├── palettes/       base palettes
 ├── moods/          global mood presets
-├── recipes/        target recipes
 ├── profiles/       saved ecosystems
-├── templates/      target output templates
+├── targets/        target modules: recipes, templates, target-local assets
 └── docs/           project capsule, design docs, notes
 ```
 
@@ -422,21 +424,22 @@ All adapters created as of 0.7. See "Current implementation state" section for t
 │   ├── dark.json
 │   ├── light.json
 │   └── experimental.json
-├── recipes/
-│   ├── ghostty/
-│   ├── icons/
-│   ├── gtk/
-│   ├── nvim/
-│   ├── ags/
-│   ├── mycli/
-│   └── sqlit/
-└── templates/
+└── targets/
     ├── ghostty/
+    │   └── recipes/
+    ├── icons/
+    │   └── recipes/
     ├── gtk/
+    │   ├── recipes/
+    │   └── templates/
     ├── nvim/
+    │   └── recipes/
     ├── ags/
+    │   └── recipes/
     ├── mycli/
+    │   └── recipes/
     └── sqlit/
+        └── recipes/
 ```
 
 ## Suggested cache/report shape
@@ -615,9 +618,9 @@ These scripts have been superseded by TypeScript adapters + recipes and are kept
 for reference only. Do not use them directly — they hardcode TokyoNight Moon colors
 and produce output incompatible with the new spore contract.
 
-- `matugen-ghostty-moonmix.py` — replaced by `GhosttyAdapter` + `recipes/ghostty/subtle-ish.json`
-- `matugen-mycli-moonmix` — replaced by `MycliAdapter` + `recipes/mycli/subtle-ish.json`
-- `matugen-sqlit-moonmix` — replaced by `SqlitAdapter` + `recipes/sqlit/subtle-ish.json`
+- `matugen-ghostty-moonmix.py` — replaced by `GhosttyAdapter` + `targets/ghostty/recipes/subtle-ish.json`
+- `matugen-mycli-moonmix` — replaced by `MycliAdapter` + `targets/mycli/recipes/subtle-ish.json`
+- `matugen-sqlit-moonmix` — replaced by `SqlitAdapter` + `targets/sqlit/recipes/subtle-ish.json`
 
 ### scripts/matugen-sqlit-moonmix
 
@@ -791,7 +794,7 @@ This means: `TOKYO_MOON` is the first concrete `palettes/tokyonight-moon.json` w
 - No massive plugin system before the first useful run.
 - No rewrite of working scripts just to satisfy architectural vanity.
 - No metaphor overdose in folder names:
-  - Use `recipes/`, not `rituals/`.
+  - Use `targets/<name>/recipes/`, not `targets/<name>/rituals/`.
   - Use `profiles/`, not `gardens/`.
   - Use `adapters/`, not `mycelial-apostles/`, despite obvious temptation.
 
@@ -902,7 +905,7 @@ These apply to all future work in this repository.
 updated:: [[2026-06-05]]
 capsule-version:: 0.8
 
-### Actual repository structure (as of 0.7)
+### Actual repository structure (as of 0.8)
 
 ```text
 unclaimed-bloom/
@@ -965,37 +968,33 @@ unclaimed-bloom/
 │   ├── budding.json             surface:0.15 fg:0.18 accent:0.45 semantic:0.25
 │   ├── blooming.json            surface:0.25 fg:0.32 accent:0.50 semantic:0.40
 │   └── overgrown.json           surface:0.70 fg:0.60 accent:0.90 semantic:0.70
-├── recipes/
-│   ├── ags/subtle-ish.json      10 tokens (CSS custom property names)
-│   │   ags/source-heavy.json   same tokens, higher mix — matugen-dominant
-│   ├── swaync/subtle-ish.json   10 tokens (CSS @define-color overrides)
-│   │   swaync/source-heavy.json same tokens, higher mix — matugen-dominant
-│   ├── waybar/subtle-ish.json   10 tokens (CSS @define-color overrides)
-│   │   waybar/source-heavy.json same tokens, higher mix — matugen-dominant
-│   ├── ghostty/subtle-ish.json  22 tokens (16-color palette + bg/fg/cursor/selection)
-│   ├── gtk/subtle-ish.json      29 tokens (GTK CSS variable names, fully resolved hex)
-│   ├── hyprland/subtle-ish.json 6 tokens (Hyprland border/decoration colors)
-│   ├── iced/subtle-ish.json     5 tokens (Iced palette: background/text/primary/success/danger)
-│   ├── icons/subtle-ish.json    24 tokens (__ADART_ICON_*__ names)
-│   ├── mycli/subtle-ish.json    22 tokens (includes style composition tokens)
-│   ├── nvim/subtle-ish.json     + source-heavy.json
-│   ├── potato/subtle-ish.json   10 tokens (chart/UI semantic names)
-│   ├── rofi/subtle-ish.json     7 tokens (background/fg/accent/selected/active/urgent)
-│   ├── sddm/subtle-ish.json     4 tokens (primary/on_primary/secondary/error)
-│   ├── sqlit/subtle-ish.json    16 tokens
-│   ├── wlogout/subtle-ish.json  2 tokens (primary + foreground fix)
-│   └── yazi/subtle-ish.json     21 tokens (full theme.toml coverage)
 ├── profiles/
 │   ├── daily.json               tokyonight-moon + blooming + matugen dark + 14 targets
 │   └── daily-light.json         tokyonight-day + budding + matugen light + 11 targets
+├── targets/
+│   ├── ags/recipes/             subtle-ish + source-heavy
+│   ├── ghostty/recipes/         subtle-ish + source-heavy
+│   ├── gtk/
+│   │   ├── recipes/             subtle-ish
+│   │   └── templates/           unclaimed-bloom.css with {{TOKEN}} placeholders
+│   ├── hyprland/recipes/        subtle-ish
+│   ├── iced/recipes/            subtle-ish
+│   ├── icons/recipes/           subtle-ish
+│   ├── mycli/recipes/           subtle-ish
+│   ├── nvim/recipes/            subtle-ish + source-heavy
+│   ├── potato/recipes/          subtle-ish
+│   ├── rofi/recipes/            subtle-ish
+│   ├── sddm/recipes/            subtle-ish
+│   ├── sqlit/recipes/           subtle-ish
+│   ├── swaync/recipes/          subtle-ish + source-heavy
+│   ├── waybar/recipes/          subtle-ish + source-heavy
+│   ├── wlogout/recipes/         subtle-ish
+│   └── yazi/recipes/            subtle-ish
 ├── assets/wallpapers/           test wallpapers for Matugen runs
 ├── docs/
 │   ├── PROJECT-CAPSULE.md
 │   ├── adart-matugener-gtk-theme-project-capsule.md
 │   └── adart-matugener-icons-project-capsule.md
-├── templates/
-│   └── gtk/
-│       └── unclaimed-bloom.css  GTK CSS template with {{TOKEN}} placeholders
 └── vite.config.ts               root:src/ui, proxies /api and /ws to workbench server :7865
 ```
 

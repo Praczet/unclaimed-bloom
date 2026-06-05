@@ -1,6 +1,6 @@
 {
   "name": "subtle-ish",
-  "target": "waybar",
+  "target": "nvim",
   "tokens": {
     "background": {
       "source": "background",
@@ -13,9 +13,9 @@
       "mix": 0.15
     },
     "surface_variant": {
+      "bloom": "border.strong",
       "source": "surface_variant",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "mix": 0.1
     },
     "primary": {
       "bloom": "accent.primary",
@@ -38,24 +38,14 @@
       "mix": 0.15
     },
     "on_surface": {
+      "bloom": "text.primary",
       "source": "on_surface",
-      "bloom": "surface.raised",
       "mix": 0.15
-    },
-    "surface_container_high": {
-      "bloom": "surface.highest",
-      "source": "surface_container_high",
-      "mix": 0.1
-    },
-    "outline": {
-      "bloom": "border.subtle",
-      "source": "outline",
-      "mix": 0.1
     },
     "error": {
       "bloom": "state.danger",
       "source": "error",
-      "mix": 0.1
+      "mix": 0.15
     }
   }
 }

@@ -128,6 +128,21 @@ export interface Profile {
     targets: Record<string, string>;    // target name → recipe name
 }
 
+export interface CompositionRun {
+    profile: string;
+    targets?: string[];
+    exclude?: string[];
+}
+
+export interface CompositionProfile {
+    name: string;
+    type: 'composition';
+    runs: CompositionRun[];
+    currentProfile?: string;
+}
+
+export type ProfileEntry = Profile | CompositionProfile;
+
 // --- Worker ---
 
 export interface WorkerConfig {

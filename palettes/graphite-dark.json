@@ -1,0 +1,27 @@
+{
+  "name": "Graphite Dark",
+  "slug": "graphite-dark",
+  "kind": "dark",
+  "source": "Graphite GTK inspired neutral palette for Unclaimed Bloom. Based on vinceliuice/Graphite-gtk-theme dark/default variables, adapted to Unclaimed Bloom recipe keys.",
+  "colors": {
+    "background": "#2c2c2c",
+    "background_dark": "#212121",
+    "background_highlight": "#3c3c3c",
+    "foreground": "#ffffff",
+    "foreground_dark": "#bdbdbd",
+    "comment": "#9e9e9e",
+    "black": "#0a0a0a",
+    "red": "#f28b82",
+    "orange": "#ff7043",
+    "yellow": "#fdd633",
+    "green": "#81c995",
+    "cyan": "#80deea",
+    "blue": "#5294e2",
+    "purple": "#ba68c8",
+    "magenta": "#f06292",
+    "teal": "#4db6ac",
+    "border": "#454545",
+    "selection_background": "#3c3c3c",
+    "selection_foreground": "#ffffff"
+  }
+}

@@ -41,9 +41,8 @@ unclaimed-bloom/
 ├── scripts/        existing/new Python/Bash workers
 ├── palettes/       base palettes
 ├── moods/          global mood presets
-├── recipes/        target recipes
 ├── profiles/       saved ecosystems
-├── templates/      target output templates
+├── targets/        target modules: recipes, templates, target-local assets
 └── docs/           project capsule, design docs, notes
 ```
 
@@ -121,10 +120,11 @@ Recipes control:
 
 A new target should usually join by adding:
 
-1. a recipe
-2. a template
-3. an adapter only if needed
-4. a worker only if the target requires heavier processing
+1. a folder under `targets/<name>/`
+2. one or more recipes under `targets/<name>/recipes/`
+3. templates under `targets/<name>/templates/`, if needed
+4. an adapter only if needed
+5. a worker only if the target requires heavier processing
 
 ### Adapter
 
@@ -300,7 +300,7 @@ Good:
 ```text
 Failed to load recipe "icons/moonish-matugen".
 Expected file:
-  ~/.config/unclaimed-bloom/recipes/icons/moonish-matugen.json
+  ~/.config/unclaimed-bloom/targets/icons/recipes/moonish-matugen.json
 ```
 
 If a command runs another worker script, include:

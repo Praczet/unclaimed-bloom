@@ -8,8 +8,8 @@
       "mix": 0.15
     },
     "background_alt": {
-      "source": "on_background",
-      "bloom": "text.primary",
+      "bloom": "surface.highest",
+      "source": "surface_container_high",
       "mix": 0.15
     },
     "foreground": {

@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -14,8 +15,15 @@ export const Paths = {
     palette:  (name: string)                 => join(DATA_DIR,  'palettes',          `${name}.json`),
     mood:     (name: string)                 => join(DATA_DIR,  'moods',             `${name}.json`),
     profile:  (name: string)                 => join(DATA_DIR,  'profiles',          `${name}.json`),
-    recipe:   (target: string, name: string) => join(DATA_DIR,  'recipes', target,   `${name}.json`),
-    template: (target: string, file: string) => join(DATA_DIR,  'templates', target, file),
+    target:   (target: string)               => join(DATA_DIR,  'targets', target),
+    recipe:   (target: string, name: string) => {
+        const targetPath = join(DATA_DIR, 'targets', target, 'recipes', `${name}.json`);
+        return existsSync(targetPath) ? targetPath : join(DATA_DIR, 'recipes', target, `${name}.json`);
+    },
+    template: (target: string, file: string) => {
+        const targetPath = join(DATA_DIR, 'targets', target, 'templates', file);
+        return existsSync(targetPath) ? targetPath : join(DATA_DIR, 'templates', target, file);
+    },
     script:   (name: string)                 => join(DATA_DIR,  'scripts',            name),
 
     // cache (generated outputs)

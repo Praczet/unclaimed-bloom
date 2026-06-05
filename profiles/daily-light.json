@@ -13,6 +13,7 @@
     "rofi": "subtle-ish",
     "yazi": "subtle-ish",
     "wlogout": "subtle-ish",
+    "sddm": "subtle-ish",
     "iced": "subtle-ish",
     "mycli": "subtle-ish",
     "sqlit": "subtle-ish",
@@ -20,6 +21,7 @@
     "ags": "subtle-ish",
     "swaync": "subtle-ish",
     "waybar": "subtle-ish",
+    "icons": "subtle-ish",
     "potato": "subtle-ish"
   }
 }

@@ -38,9 +38,7 @@
       "mix": 0.15
     },
     "on_surface": {
-      "source": "on_surface",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "text.primary"
     },
     "outline": {
       "bloom": "border.subtle",

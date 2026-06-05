@@ -206,6 +206,22 @@ Check what has been generated:
 spore status
 ```
 
+## GTK Graphite Profile
+
+GTK is intentionally split into its own profile so it can use a Graphite-style
+neutral base without forcing the rest of the desktop to follow.
+
+```bash
+spore sow desktop
+spore grow desktop
+```
+
+`profiles/desktop.json` is a composition profile. It runs `daily-gtk` for GTK,
+then `daily` for the rest of the desktop, and leaves
+`~/.cache/unclaimed-bloom/current-profile` set to `daily`.
+
+The broad `daily` and `daily-light` profiles do not include GTK.
+
 ## Discovery Commands
 
 ```bash
@@ -287,9 +303,8 @@ Repo data:
 unclaimed-bloom/
 ├── palettes/       base palettes
 ├── moods/          mood weight presets
-├── recipes/        target recipes
 ├── profiles/       saved ecosystems
-├── templates/      target output templates
+├── targets/        target modules: recipes, templates, target-local assets
 ├── scripts/        launchers and workers
 └── src/            TypeScript core, CLI, adapters, workbench
 ```
@@ -314,9 +329,8 @@ Installed data:
 ~/.config/unclaimed-bloom/
 ├── palettes/
 ├── moods/
-├── recipes/
 ├── profiles/
-├── templates/
+├── targets/
 └── scripts/
 ```
 
@@ -345,7 +359,8 @@ potato
 
 Each target has:
 
-- a recipe,
+- recipes under `targets/<name>/recipes/`,
+- optional templates under `targets/<name>/templates/`,
 - a generated spore,
 - an adapter or worker path,
 - a report after `grow`.

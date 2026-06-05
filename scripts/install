@@ -135,9 +135,8 @@ install_launcher
 install_workbench_launcher
 copy_dir palettes
 copy_dir moods
-copy_dir recipes
 copy_dir profiles
-copy_dir templates
+copy_dir targets
 copy_dir scripts
 install_completions
 

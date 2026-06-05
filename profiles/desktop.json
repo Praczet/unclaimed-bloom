@@ -1,0 +1,14 @@
+{
+  "name": "desktop",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-gtk",
+      "targets": ["gtk"]
+    },
+    {
+      "profile": "daily"
+    }
+  ],
+  "currentProfile": "daily"
+}

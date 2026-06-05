@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import type { Mood, Palette, Profile, Recipe, Source, Spore } from '../core/types';
+import type { CompositionProfile, CompositionRun, Mood, Palette, Profile, ProfileEntry, Recipe, Source, Spore } from '../core/types';
 
 // --- Generic read / write ---
 
@@ -101,6 +101,9 @@ export async function readSpore(filePath: string): Promise<Spore> {
 
 export async function readProfile(filePath: string): Promise<Profile> {
     const raw = await readJson<Record<string, unknown>>(filePath);
+    if (raw['type'] === 'composition') {
+        throw new Error(`Profile is a composition, not a normal profile:\n  ${filePath}`);
+    }
     const source = assertObject(raw['source'], 'source', filePath);
     assertString(source['type'], 'source.type', filePath);
     return {
@@ -110,4 +113,54 @@ export async function readProfile(filePath: string): Promise<Profile> {
         source:      source as unknown as Source,
         targets:     assertObject(raw['targets'],     'targets',     filePath) as Record<string, string>,
     };
+}
+
+function readCompositionRun(value: unknown, index: number, filePath: string): CompositionRun {
+    const raw = assertObject(value, `runs[${index}]`, filePath);
+    const run: CompositionRun = {
+        profile: assertString(raw['profile'], `runs[${index}].profile`, filePath),
+    };
+
+    if (raw['targets'] !== undefined) {
+        if (!Array.isArray(raw['targets']) || raw['targets'].some(t => typeof t !== 'string' || t.length === 0)) {
+            throw new Error(`Field "runs[${index}].targets" must be an array of strings in:\n  ${filePath}`);
+        }
+        run.targets = raw['targets'] as string[];
+    }
+
+    if (raw['exclude'] !== undefined) {
+        if (!Array.isArray(raw['exclude']) || raw['exclude'].some(t => typeof t !== 'string' || t.length === 0)) {
+            throw new Error(`Field "runs[${index}].exclude" must be an array of strings in:\n  ${filePath}`);
+        }
+        run.exclude = raw['exclude'] as string[];
+    }
+
+    return run;
+}
+
+export async function readCompositionProfile(filePath: string): Promise<CompositionProfile> {
+    const raw = await readJson<Record<string, unknown>>(filePath);
+    if (raw['type'] !== 'composition') {
+        throw new Error(`Profile is not a composition:\n  ${filePath}`);
+    }
+    if (!Array.isArray(raw['runs'])) {
+        throw new Error(`Field "runs" must be an array in:\n  ${filePath}`);
+    }
+
+    return {
+        name: assertString(raw['name'], 'name', filePath),
+        type: 'composition',
+        runs: raw['runs'].map((run, index) => readCompositionRun(run, index, filePath)),
+        currentProfile: raw['currentProfile'] !== undefined
+            ? assertString(raw['currentProfile'], 'currentProfile', filePath)
+            : undefined,
+    };
+}
+
+export async function readProfileEntry(filePath: string): Promise<ProfileEntry> {
+    const raw = await readJson<Record<string, unknown>>(filePath);
+    if (raw['type'] === 'composition') {
+        return readCompositionProfile(filePath);
+    }
+    return readProfile(filePath);
 }

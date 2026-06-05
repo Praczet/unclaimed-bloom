@@ -8,9 +8,7 @@
       "mix": 0.15
     },
     "on_primary": {
-      "bloom": "text.primary",
-      "source": "on_primary",
-      "mix": 0.15
+      "bloom": "surface.base"
     },
     "secondary": {
       "bloom": "accent.secondary",
@@ -18,9 +16,7 @@
       "mix": 0.15
     },
     "on_secondary": {
-      "bloom": "text.primary",
-      "source": "on_secondary",
-      "mix": 0.15
+      "bloom": "surface.base"
     },
     "tertiary": {
       "bloom": "accent.tertiary",
@@ -28,9 +24,7 @@
       "mix": 0.15
     },
     "on_tertiary": {
-      "bloom": "text.primary",
-      "source": "on_tertiary",
-      "mix": 0.15
+      "bloom": "surface.base"
     },
     "copy_marker": {
       "bloom": "accent.primary",
@@ -53,9 +47,7 @@
       "mix": 0.1
     },
     "on_surface": {
-      "source": "on_surface",
-      "bloom": "surface.raised",
-      "mix": 0.15
+      "bloom": "text.primary"
     },
     "accent": {
       "bloom": "accent.primary",

@@ -1,15 +1,10 @@
 {
   "name": "subtle-ish",
-  "target": "sddm",
+  "target": "hyprland",
   "tokens": {
     "primary": {
       "bloom": "accent.primary",
       "source": "primary",
-      "mix": 0.15
-    },
-    "on_primary": {
-      "bloom": "text.primary",
-      "source": "on_primary",
       "mix": 0.15
     },
     "secondary": {
@@ -17,10 +12,23 @@
       "source": "secondary",
       "mix": 0.15
     },
+    "tertiary": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
     "error": {
       "bloom": "state.danger",
       "source": "error",
       "mix": 0.15
+    },
+    "background": {
+      "source": "background",
+      "bloom": "surface.base",
+      "mix": 0.15
+    },
+    "on_surface": {
+      "bloom": "text.primary"
     }
   }
 }
