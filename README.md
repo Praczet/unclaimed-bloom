@@ -97,7 +97,7 @@ Unclaimed Bloom grew out of existing theming work:
 - **Matugen**: wallpaper color source and wallpaper setter.
 - **TokyoNight Moon**: the main dark base palette and taste memory.
 - **adart-matugener-icons**: Papirus-based recoloring, now called through the icons adapter.
-- **adart-matugener-gtk-theme**: GTK theme output, still watched carefully.
+- **adart-matugener-gtk-theme**: sibling GTK theme repo, still provides the theme skeleton and widget/app CSS: <https://github.com/Praczet/adart-matugener-gtk-theme>
 - **Ghostty**: terminal theme output.
 - **Neovim**: generated Lua colors for my Matugen/TokyoNight setup.
 - **AGS**: visual shell pieces using generated CSS.
@@ -241,6 +241,18 @@ then `daily` for the rest of the desktop, and leaves
 `~/.cache/unclaimed-bloom/current-profile` set to `daily`.
 
 The broad `daily` and `daily-light` profiles do not include GTK.
+
+Important: Unclaimed Bloom has not fully swallowed the GTK sibling repo yet.
+For now, UB owns the generated GTK colors and recipes, but the structural GTK
+theme still comes from:
+
+```text
+https://github.com/Praczet/adart-matugener-gtk-theme
+```
+
+The GTK adapter writes generated color CSS into both the live theme install and
+the sibling repo's `themes/ADArt-Unclaimed-Bloom/` tree. Do not delete that repo
+until the GTK skeleton is moved into `targets/gtk/`.
 
 ## Discovery Commands
 
