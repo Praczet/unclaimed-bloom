@@ -42,6 +42,11 @@
       "source": "on_surface",
       "mix": 0.15
     },
+    "surface_container_high": {
+      "bloom": "surface.highest",
+      "source": "surface_container_high",
+      "mix": 0.15
+    },
     "outline": {
       "bloom": "border.subtle",
       "source": "outline",

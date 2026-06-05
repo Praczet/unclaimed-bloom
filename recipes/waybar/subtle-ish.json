@@ -32,6 +32,11 @@
     "on_surface": {
       "bloom": "text.primary"
     },
+    "surface_container_high": {
+      "bloom": "surface.highest",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
     "outline": {
       "bloom": "border.subtle",
       "source": "outline",

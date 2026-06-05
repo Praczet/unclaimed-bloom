@@ -90,6 +90,7 @@ const REQUIRED_RECIPE_TOKENS: Record<string, string[]> = {
     ],
     waybar: [
         'background', 'surface', 'surface_variant',
+        'surface_container_high',
         'primary', 'secondary', 'tertiary',
         'on_background', 'on_surface',
         'outline', 'error',

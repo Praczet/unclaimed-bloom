@@ -9,6 +9,7 @@ const execFileAsync = promisify(execFile);
 
 const REQUIRED_TOKENS = [
     'background', 'surface', 'surface_variant',
+    'surface_container_high',
     'primary', 'secondary', 'tertiary',
     'on_background', 'on_surface',
     'outline', 'error',
