@@ -18,6 +18,19 @@ and grows one shared **bloom**. Then it scatters target-specific **spores** into
 
 Matugen is a source, not the god. TokyoNight Moon is a palette, not a prison. GTK is invited under supervision.
 
+## Future Me Shortcut
+
+If you came back after two weeks and already forgot where the colors live,
+read:
+
+```text
+docs/from-me-to-my-old-me.md
+```
+
+It explains `wallset`, palettes, moods, blooms, recipes, templates, and where to
+go when yazi, waybar, GTK, or anything else looks wrong in a way that feels
+personal.
+
 ## The Shape
 
 ```text
@@ -117,6 +130,8 @@ By default this installs:
 ```text
 ~/.local/bin/spore
 ~/.local/bin/unclaimed-bloom
+~/.local/bin/wallset
+~/.local/bin/wallset-backend
 ~/.config/unclaimed-bloom/
 ~/.config/zsh/completions/
 ```
@@ -144,28 +159,33 @@ Make sure this is on your `PATH`:
 The normal desktop flow goes through:
 
 ```text
-walset → walset-backend → spore sow --wallpaper → spore grow
+wallset → wallset-backend → spore sow desktop --wallpaper → spore grow desktop
 ```
 
-`walset-backend` reads the last used profile from:
-
-```text
-~/.cache/unclaimed-bloom/current-profile
-```
-
-If that file does not exist, it falls back to:
-
-```text
-daily
-```
+`wallset` and `wallset-backend` are owned by this repository and installed by
+`scripts/install`. The default profile is the `desktop` composition, which grows
+GTK from `daily-gtk` first and then grows the rest from `daily`.
+The old `walset` spelling is installed as a compatibility alias.
 
 So the simple version is:
 
 ```bash
-walset
+wallset
 ```
 
 Pick a wallpaper. Matugen runs. Bloom grows. Spores scatter. Config files change. Some programs reload. The desktop pretends this was always planned.
+
+Pass a wallpaper directly:
+
+```bash
+wallset ~/Pictures/wallpapers/something.png
+```
+
+Change the composition/profile used by the backend:
+
+```bash
+UB_WALLSET_PROFILE=daily-light wallset ~/Pictures/wallpapers/something.png
+```
 
 ## Manual Use
 

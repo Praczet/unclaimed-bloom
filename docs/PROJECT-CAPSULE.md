@@ -43,6 +43,7 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 - repo layout: target-owned recipes/templates now live under `targets/<target>/`, with compatibility fallback for older `recipes/<target>` and `templates/<target>` paths.
 - gtk: added Graphite-inspired base palettes, GTK recipes, and GTK-only profiles (`daily-gtk`, `daily-light-gtk`) so GTK can stay neutral while the rest of `daily` keeps its normal bloom.
 - profiles: added composition profiles with ordered runs; `desktop` runs `daily-gtk` for GTK, then `daily`, and leaves `current-profile` set to `daily`.
+- wallpaper: `wallset` and `wallset-backend` are now repo-owned scripts installed by `scripts/install`; default flow runs `spore sow desktop --wallpaper` then `spore grow desktop`. The old `walset` spelling is kept as a compatibility alias.
 
 ## The soul of the project
 
@@ -1082,11 +1083,12 @@ Workbench (npm run workbench):
   scripts/unclaimed-bloom detects an already-running workbench URL and opens it instead
   of starting a second server.
 
-Wallpaper integration (walset-backend):
-  walset-backend calls spore sow <profile> --wallpaper <image> then spore grow <profile>.
-  sow runs matugen twice: full run (templates + wallpaper set) then dry-run to extract
-  clean colors JSON. Reads current profile from ~/.cache/unclaimed-bloom/current-profile
-  (written by sow on every run). Falls back to "daily" if file absent.
+Wallpaper integration (wallset/wallset-backend):
+  wallset optionally picks a wallpaper from UB_WALLPAPER_DIR and calls wallset-backend.
+  wallset-backend calls spore sow <profile> --wallpaper <image> then spore grow <profile>.
+  Default profile is the "desktop" composition, so GTK grows from daily-gtk before
+  the rest of the desktop grows from daily. sow runs matugen twice internally:
+  full run (templates + wallpaper set), then dry-run to extract clean colors JSON.
 
 Key design decisions implemented:
   - sow/grow separation: sow is always safe; grow is explicit and side-effectful
@@ -1101,7 +1103,7 @@ Key design decisions implemented:
     base palette is the mixing anchor, not Tokyonight — daily-light with gruvbox-light
     produces gruvbox-anchored GTK colors
   - Icons token display: inspect strips common __ADART_ICON_*__ prefix for alignment
-  - current-profile file: written by sow, read by walset-backend to stay in sync
+  - current-profile file: written by sow; composition profiles can restore it after multi-profile runs
   - current-wallpaper file: written by sow --wallpaper, read by RofiAdapter for background-image
   - swaync blur: backdrop-filter: blur(16px) in style.css + Hyprland layerrule blur for
     namespace swaync-notification-window + ignore_alpha = 0.1 to prevent halo on transparent padding
@@ -1165,7 +1167,7 @@ Ghostty reloads live on `grow` (SIGUSR2). mycli and sqlit update their configs i
 - workers:: **existing Python/Bash scripts through adapters**
 - architecture:: config-first, recipe-driven, adapter-rendered, worker-friendly, UI-previewable.
 - core metaphor:: one bloom, many spores. sow seeds into cache, grow them into config.
-- status:: broad adapter set working. walset integrated. workbench can inspect, show profile status, and run sow/grow.
+- status:: broad adapter set working. wallset integrated. workbench can inspect, show profile status, and run sow/grow.
 - next major target:: neovim.
 - eventual visual layer:: Vite workbench interactive features after palette normalization.
 
@@ -1174,7 +1176,7 @@ Ghostty reloads live on `grow` (SIGUSR2). mycli and sqlit update their configs i
 ```text
 ~/.cache/unclaimed-bloom/
 ├── matugen-colors.json          raw Matugen output (dark + light variants per token)
-├── current-profile              name of the last profile passed to sow (read by walset-backend)
+├── current-profile              name of the last profile passed to sow
 ├── icons-runtime.json           resolved icon token aliases (written by IconsAdapter)
 ├── blooms/
 │   ├── daily.json

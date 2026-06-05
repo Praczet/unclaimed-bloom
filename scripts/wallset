@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+# %name: wallset
+# %desc: Pick or pass a wallpaper, then hand it to Unclaimed Bloom.
+# %icon: preferences-desktop-wallpaper-symbolic
+# %terminal: true
+
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WALLPAPER_DIR="${UB_WALLPAPER_DIR:-$HOME/.config/backgrounds}"
+BACKEND="${UB_WALLSET_BACKEND:-${UB_WALSET_BACKEND:-$REPO_DIR/scripts/wallset-backend}}"
+DEFAULT_ROFI_THEME="$HOME/.config/rofi/launchers/type-2/style-10.rasi"
+FALLBACK_ROFI_THEME="$HOME/.config/rofi/themes/peek/peek-preview.rasi"
+SECOND_FALLBACK_ROFI_THEME="$HOME/.config/rofi/themes/simple-base/simple.rasi"
+ROFI_THEME="${UB_WALLSET_ROFI_THEME:-}"
+
+usage() {
+    cat <<EOF
+Usage: wallset [wallpaper]
+
+If wallpaper is omitted, wallset tries to pick one from:
+  $WALLPAPER_DIR
+
+Environment:
+  UB_WALLPAPER_DIR       Wallpaper picker directory
+  UB_WALLSET_BACKEND     Backend command/script
+  UB_WALLSET_PROFILE     Profile/composition passed to spore (default: desktop)
+  UB_WALLSET_ROFI_THEME  Rofi theme path for wallpaper picker
+EOF
+}
+
+rofi_theme_args() {
+    if [[ -z "$ROFI_THEME" ]]; then
+        if [[ -f "$DEFAULT_ROFI_THEME" ]]; then
+            ROFI_THEME="$DEFAULT_ROFI_THEME"
+        elif [[ -f "$FALLBACK_ROFI_THEME" ]]; then
+            ROFI_THEME="$FALLBACK_ROFI_THEME"
+        elif [[ -f "$SECOND_FALLBACK_ROFI_THEME" ]]; then
+            ROFI_THEME="$SECOND_FALLBACK_ROFI_THEME"
+        fi
+    fi
+
+    if [[ -n "$ROFI_THEME" && -f "$ROFI_THEME" ]]; then
+        printf '%s\n%s\n' "-theme" "$ROFI_THEME"
+    fi
+}
+
+pick_wallpaper() {
+    local dir="$1"
+    [[ -d "$dir" ]] || {
+        echo "Wallpaper directory not found:" >&2
+        echo "  $dir" >&2
+        exit 1
+    }
+
+    local selected=""
+
+    selected="$(
+        find "$dir" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+            -printf '%f\n' \
+            | sort \
+            | while IFS= read -r name; do
+                printf '%s\0icon\x1f%s/%s\n' "$name" "$dir" "$name"
+            done \
+            | rofi_pick || true
+    )"
+
+    [[ -n "$selected" ]] || {
+        echo "No wallpaper selected." >&2
+        exit 1
+    }
+
+    printf '%s/%s\n' "$dir" "$selected"
+}
+
+rofi_pick() {
+    if command -v rofi >/dev/null 2>&1; then
+        local theme_args=()
+        while IFS= read -r arg; do
+            theme_args+=("$arg")
+        done < <(rofi_theme_args)
+
+        rofi -dmenu -i -show-icons -p "Choose Wallpaper" "${theme_args[@]}"
+    elif command -v fuzzel >/dev/null 2>&1; then
+        fuzzel --dmenu --prompt "wallpaper> "
+    elif command -v fzf >/dev/null 2>&1; then
+        fzf
+    else
+        sed -n '1p'
+    fi
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
+wallpaper="${1:-}"
+if [[ -z "$wallpaper" ]]; then
+    wallpaper="$(pick_wallpaper "$WALLPAPER_DIR")"
+fi
+
+exec "$BACKEND" "$wallpaper"

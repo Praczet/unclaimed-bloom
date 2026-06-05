@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# %name: wallset-backend
+# %desc: Grow Unclaimed Bloom from a wallpaper through the desktop composition.
+# %icon: seedling
+# %terminal: true
+
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROFILE="${UB_WALLSET_PROFILE:-${UB_WALSET_PROFILE:-desktop}}"
+SPORE="${UB_WALLSET_SPORE:-${UB_WALSET_SPORE:-$REPO_DIR/scripts/spore}}"
+
+usage() {
+    cat <<EOF
+Usage: wallset-backend <wallpaper>
+
+Runs:
+  spore sow <profile> --wallpaper <wallpaper>
+  spore grow <profile>
+
+Default profile:
+  $PROFILE
+
+Environment:
+  UB_WALLSET_PROFILE  Profile/composition to sow/grow (default: desktop)
+  UB_WALLSET_SPORE    spore command/script
+EOF
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
+wallpaper="${1:-}"
+if [[ -z "$wallpaper" ]]; then
+    usage >&2
+    exit 1
+fi
+
+if [[ ! -f "$wallpaper" ]]; then
+    echo "Wallpaper file not found:" >&2
+    echo "  $wallpaper" >&2
+    exit 1
+fi
+
+echo "Unclaimed Bloom wallpaper run"
+echo "  profile:   $PROFILE"
+echo "  wallpaper: $wallpaper"
+
+"$SPORE" sow "$PROFILE" --wallpaper "$wallpaper"
+"$SPORE" grow "$PROFILE"
