@@ -470,7 +470,26 @@ async function grow(profileName: string, targetFilter?: string): Promise<void> {
         }
     }
 
+    // notify workbench server if running
+    notifyWorkbench(profileName, targetFilter).catch(() => {});
+
     console.log('done.');
+}
+
+async function notifyWorkbench(profileName: string, target?: string): Promise<void> {
+    const port = process.env['UB_WORKBENCH_PORT'] ?? '7865';
+    const url = `http://localhost:${port}/api/notify`;
+    const body = JSON.stringify({ profile: profileName, target: target ?? '' });
+    try {
+        if (typeof fetch === 'function') {
+            await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+        } else {
+            // fallback to curl if fetch not available
+            await execFileAsync('curl', ['-s', '-X', 'POST', '-H', 'Content-Type: application/json', '-d', body, url]);
+        }
+    } catch (err) {
+        // silently ignore notification failures
+    }
 }
 
 // --- status ---
@@ -599,6 +618,10 @@ async function setCommand(arg?: string, restArg?: string): Promise<void> {
             process.exit(1);
         }
     }
+
+    // Notify the workbench server (if running) so UI can refresh without page reload
+    notifyWorkbench(prof, tgt).catch(() => {});
+}
 }
 
 // --- list commands ---
