@@ -119,6 +119,8 @@ try {
         case 'inspect': await inspect(arg ?? 'daily', targetArg); break;
         case 'status':  await status(arg, targetArg); break;
         case 'cache':   await cacheCommand(arg, targetArg); break;
+        case 'set':     await setCommand(arg, targetArg); break;
+        case 'replant': await setCommand(arg, targetArg); break;
         case 'palette':
             if (arg === 'list')     { await listPalettes();          break; }
             if (arg === 'validate') { await validatePalettes(targetArg); break; }
@@ -533,6 +535,49 @@ async function status(profileName?: string, targetFilter?: string): Promise<void
 }
 
 // --- cache commands ---
+
+async function setCommand(arg?: string, restArg?: string): Promise<void> {
+    // usage: spore set <profile> <target> <recipe>
+    const sub = arg; // unused placeholder
+    const prof = positional[1];
+    const tgt  = positional[2];
+    const rcp  = positional[3];
+    if (!prof || !tgt || !rcp) {
+        console.error('usage: spore set <profile> <target> <recipe>');
+        process.exit(1);
+    }
+
+    // Read profile, validate recipe exists, update and write
+    const profilePath = Paths.profile(prof);
+    let profile;
+    try {
+        profile = await readProfile(profilePath);
+    } catch (err) {
+        console.error(`Failed to read profile ${prof}: ${err instanceof Error ? err.message : String(err)}`);
+        process.exit(1);
+    }
+
+    // ensure target exists in profile.targets
+    if (!profile.targets || typeof profile.targets !== 'object' || !(tgt in profile.targets)) {
+        console.error(`Profile "${prof}" does not have target "${tgt}"`);
+        process.exit(1);
+    }
+
+    // validate recipe file exists
+    try {
+        await readRecipe(Paths.recipe(tgt, rcp));
+    } catch (err) {
+        console.error(`Recipe "${rcp}" for target "${tgt}" not found: ${err instanceof Error ? err.message : String(err)}`);
+        process.exit(1);
+    }
+
+    // update and write
+    profile.targets[tgt] = rcp;
+    await writeJson(profilePath, profile);
+    console.log(`Profile ${prof}: set ${tgt} -> ${rcp}`);
+}
+
+// --- list commands ---
 
 async function cacheCommand(arg?: string, restArg?: string): Promise<void> {
     // usage: spore cache create <profile> <target> <variant>
