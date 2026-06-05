@@ -833,6 +833,15 @@ function printBloom(colors: BloomColors): void {
     }
 }
 
+function printSource(colors: Record<string, string>): void {
+    console.log(`\n${bold('source')}`);
+    const keys = Object.keys(colors).sort();
+    for (const k of keys) {
+        const v = colors[k];
+        console.log(`  ${k.padEnd(36)}${swatch(v)}  ${v}`);
+    }
+}
+
 function bloomValue(colors: BloomColors, path: string): string | undefined {
     const [group, token] = path.split('.');
     if (group === undefined || token === undefined) return undefined;
@@ -857,6 +866,7 @@ async function inspect(profileName: string, targetFilter?: string): Promise<void
 
     if (targetFilter === undefined) {
         printBloom(bloom.colors);
+        printSource(sourcePalette.colors);
     }
 
     for (const [target, recipeName] of filterTargets(profile.targets, targetFilter, profileName)) {
