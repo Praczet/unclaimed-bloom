@@ -1,8 +1,8 @@
 type:: project-capsule
 tags:: [[project-capsule]], [[theme-system]], [[linux-theming]], [[matugen]], [[vite]], [[typescript]], [[unclaimed-bloom]]
 status:: active-development
-updated:: [[2026-06-04]]
-capsule-version:: 0.7
+updated:: [[2026-06-05]]
+capsule-version:: 0.8
 project:: [[Projects/Unclaimed Bloom]]
 related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Neovim]], [[mycli]], [[sqlit]], [[Hyprland]], [[SDDM]]
 
@@ -32,6 +32,14 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 ## One-sentence definition
 
 - **Unclaimed Bloom** is a recipe-driven theming system that grows a shared color/mood bloom from sources like Matugen and selectable base palettes, then scatters target-specific spores into tools like GTK, icons, AGS, Ghostty, Neovim, mycli, sqlit, and future desktop creatures.
+
+## Recent changes (2026-06-05)
+
+- workbench: added POST /api/notify that forces the server to reload blooms/profiles and broadcast via WebSocket so the UI can refresh without a manual reload.
+- cli: added `spore set` / `spore replant` to change a profile's target recipe and `--apply` to run sow+grow immediately.
+- cli: added cache subcommands (cache create/list/apply/remove) for named cached spore variants.
+- inspect: `spore inspect` now shows full bloom + source palette derivation (so Matugen source colors are visible in the inspector).
+- workbench UI: improved WebSocket fallback to connect to the backend port (7865) when same-origin WS is not available.
 
 ## The soul of the project
 
@@ -891,8 +899,8 @@ These apply to all future work in this repository.
 
 ## Current implementation state
 
-updated:: [[2026-06-04]]
-capsule-version:: 0.7
+updated:: [[2026-06-05]]
+capsule-version:: 0.8
 
 ### Actual repository structure (as of 0.7)
 
@@ -928,7 +936,7 @@ unclaimed-bloom/
 │   │   ├── SddmAdapter.ts       writes full theme.conf for sddm-adart-matugener
 │   │   └── PotatoAdapter.ts     writes potato theme.json (10 tokens); post-hook: potato-sync
 │   ├── server/
-│   │   └── workbench.ts         HTTP + WebSocket server; watches blooms dir, broadcasts on change
+│   │   └── workbench.ts         HTTP + WebSocket server; profiles/status/actions API; watches blooms
 │   ├── ui/
 │   │   ├── index.html           Vite entry point
 │   │   ├── main.ts              fetch blooms, render swatches, live WebSocket updates
@@ -1063,9 +1071,17 @@ List commands:
   recipe validate   — bloom path, required token, mix range, and shipped recipe shape checks
 
 Workbench (npm run workbench):
-  Node server on :7865 — HTTP /api/blooms + WebSocket /ws + fs.watch on blooms dir
+  Node server on :7865 — HTTP /api/blooms, /api/profiles, /api/inspect/:profile,
+  /api/docs, /api/docs/:id,
+  POST /api/run for constrained sow/grow actions, WebSocket /ws, fs.watch on blooms dir.
   Vite dev server on :5173 — renders labeled color swatches by semantic group,
-  live-updates via WebSocket when sow writes a new bloom
+  bloom/profile preview, profile/status controls, target selection, sow/grow buttons, command output,
+  docs/help view with README opened first plus generated Live Help, optional
+  Use Bloom palette toggle for theming the workbench from the active profile bloom,
+  and live-updates via WebSocket when sow writes a new bloom.
+  Ports can be overridden with UB_WORKBENCH_PORT and UB_WORKBENCH_UI_PORT.
+  scripts/unclaimed-bloom detects an already-running workbench URL and opens it instead
+  of starting a second server.
 
 Wallpaper integration (walset-backend):
   walset-backend calls spore sow <profile> --wallpaper <image> then spore grow <profile>.
@@ -1146,11 +1162,11 @@ Ghostty reloads live on `grow` (SIGUSR2). mycli and sqlit update their configs i
 - commands:: **sow** (cache) | **grow** (apply) | **inspect** | **status** | **list**
 - core:: **TypeScript**
 - runtime:: **Node.js**
-- workbench:: **Vite** (skeleton done — live swatch preview, WebSocket updates)
+- workbench:: **Vite** (live swatch preview, inspect view, docs/help view, bloom-themed UI toggle, profile/status controls, sow/grow bridge)
 - workers:: **existing Python/Bash scripts through adapters**
 - architecture:: config-first, recipe-driven, adapter-rendered, worker-friendly, UI-previewable.
 - core metaphor:: one bloom, many spores. sow seeds into cache, grow them into config.
-- status:: five targets working (ghostty, mycli, sqlit, icons, gtk). walset integrated. workbench live.
+- status:: broad adapter set working. walset integrated. workbench can inspect, show profile status, and run sow/grow.
 - next major target:: neovim.
 - eventual visual layer:: Vite workbench interactive features after palette normalization.
 
@@ -1259,14 +1275,49 @@ It also copies first-run data files and scripts to `~/.config/unclaimed-bloom/`,
 installs zsh completions to `~/.config/zsh/completions/`, and supports `--force`
 for refreshing installed data files when future Adam knowingly chooses violence.
 
-### 8. Workbench interactive features
+### ✅ 8a. Workbench profile/status + sow/grow bridge — DONE
+
+Workbench now shows selected profile metadata, per-target sown/grown status, and
+provides constrained `sow`/`grow` controls for all targets or one selected target.
+The local server exposes `/api/profiles` and `/api/run`; `/api/run` only accepts
+`sow` or `grow` with a known profile and optional target. It returns stdout/stderr
+so the UI can show what happened without inventing a second command language,
+because one is enough.
+
+### ✅ 8a.1 Workbench docs/help view — DONE
+
+Workbench has a `docs` view backed by `/api/docs`. It opens `README.md` first and
+can switch to generated `Live Help`, which is built from current profiles, targets,
+recipes, and cache status. Repo-internal docs like `PROJECT-CAPSULE.md`, prompts,
+and old project capsules stay in the folder structure and are not shown in the Vite
+workbench. Markdown is rendered locally in the UI with support for headings,
+paragraphs, lists, tables, blockquotes, fenced code, inline code, links, and
+emphasis. All H2 sections render as collapsible details blocks. Live Help target
+status renders as a table so profile targets line up like data, not a shopping
+list after rain. Profile sections render as nested collapsible details blocks,
+with the current profile sorted first, opened by default, and marked with a current
+badge. Target table rows include `inspect`, `sow`, and `grow` actions wired to the
+existing workbench controls. This is documentation, not a static-site generator audition.
+
+### ✅ 8a.2 Workbench Bloom UI palette toggle — DONE
+
+Workbench has a `Use Bloom palette` toggle in the profile control strip plus a bloom
+derivation preview. When enabled, it maps the active profile bloom onto the workbench CSS variables:
+`surface.base` → background, `surface.raised` → panel surface,
+`text.primary`/`text.muted` → text, `accent.primary` → accent,
+`border.subtle` → borders, and state colors for success/warning/danger.
+The UI derives softer surface/accent/border variables from those raw bloom values and
+keeps fallback text/accent colors when contrast would drop too far. The preference is
+stored in localStorage and reapplies when the active profile changes or a WebSocket
+bloom update arrives. The workbench uses the bloom, not raw Matugen, because Matugen
+is source and the bloom is the supervised result.
+
+### 8b. Workbench interactive recipe editing
 
 Extend the Vite workbench with:
-- Profile selector (dropdown reading `profiles/`)
+- Per-token mix weight sliders (recipe editing)
 - Palette selector per profile
 - Mood selector
-- Per-token mix weight sliders (recipe editing)
-- "Sow" and "Grow" action buttons wired to the CLI via local bridge
 - Before/after swatch comparison
 
 ### 11. Hyprlock target

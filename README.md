@@ -223,6 +223,14 @@ spore recipe validate ghostty
 
 ## Workbench
 
+Recent changes (2026-06-05)
+
+- Workbench now accepts an explicit notify trigger: POST /api/notify — useful for CLI-driven updates and external scripts. The server broadcasts blooms/profiles over WebSocket to connected clients.
+- UI: WebSocket connection will fall back to ws://<host>:7865/ws when same-origin WS is not available (helps dev setups where Vite proxies or ports differ).
+- CLI: `spore set` / `spore replant` updates a profile's target recipe; use `--apply` to sow+grow in one step. `spore cache` subcommands manage named cached spore variants.
+
+## Workbench
+
 Start the visual workbench:
 
 ```bash
@@ -244,10 +252,26 @@ http://localhost:5173
 The workbench shows:
 
 - bloom swatches,
+- bloom/profile preview showing the palette → mood → source → bloom derivation table,
 - profile tabs,
+- selected profile palette/mood/source status,
+- per-profile target status with sown/grown timestamps,
 - target inspector,
-- bloom token → source tint → result color,
-- recipe/token count per target.
+- bloom token rows with palette color, mood weight, source color, and bloom result,
+- recipe/token count per target,
+- `sow` and `grow` buttons for all targets or one selected target,
+- docs/help view with README opened first and generated live help.
+- optional `Use Bloom palette` toggle with contrast guardrails and a small bloom preview.
+- target-row actions in Live Help for `inspect`, `sow`, and `grow`.
+
+If the workbench is already running, `scripts/unclaimed-bloom` opens the existing
+URL instead of starting a second server and losing a small argument with the port.
+
+Use alternate ports when an old workbench is already squatting on the defaults:
+
+```bash
+UB_WORKBENCH_PORT=7866 UB_WORKBENCH_UI_PORT=5174 npm run workbench
+```
 
 Start without opening a browser:
 
