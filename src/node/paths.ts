@@ -21,6 +21,8 @@ export const Paths = {
     // cache (generated outputs)
     bloom:   (profile: string)                  => join(CACHE_DIR, 'blooms',  `${profile}.json`),
     spore:   (profile: string, target: string)  => join(CACHE_DIR, 'spores', profile, `${target}.json`),
+    // cached spore for alternate variant or named cache
+    cachedSpore: (profile: string, target: string, variant: string) => join(CACHE_DIR, 'spores', profile, `${target}__${variant}.json`),
     ini:     (target: string)                   => join(CACHE_DIR, 'ini',    `${target}-colors.ini`),
     report:  (profile: string, target: string)  => join(CACHE_DIR, 'reports', profile, `${target}.json`),
     lastRun:          ()       => join(CACHE_DIR, 'reports', 'last-run.json'),

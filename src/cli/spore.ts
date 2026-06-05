@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, writeFile, unlink as fsUnlink } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
@@ -118,6 +118,7 @@ try {
         case 'grow':    await grow(arg ?? 'daily', targetArg); break;
         case 'inspect': await inspect(arg ?? 'daily', targetArg); break;
         case 'status':  await status(arg, targetArg); break;
+        case 'cache':   await cacheCommand(arg, targetArg); break;
         case 'palette':
             if (arg === 'list')     { await listPalettes();          break; }
             if (arg === 'validate') { await validatePalettes(targetArg); break; }
@@ -476,6 +477,7 @@ function fmtTs(iso: string): string {
 }
 
 async function status(profileName?: string, targetFilter?: string): Promise<void> {
+
     let profileNames: string[];
 
     if (profileName !== undefined) {
@@ -528,6 +530,113 @@ async function status(profileName?: string, targetFilter?: string): Promise<void
     }
 
     console.log('');
+}
+
+// --- cache commands ---
+
+async function cacheCommand(arg?: string, restArg?: string): Promise<void> {
+    // usage: spore cache create <profile> <target> <variant>
+    //        spore cache list   <profile>
+    //        spore cache apply  <profile> <target> <variant>
+    //        spore cache remove <profile> <target> <variant>
+    const sub = arg;
+    if (!sub) {
+        console.error('usage: spore cache create|list|apply|remove ...');
+        process.exit(1);
+    }
+
+    switch (sub) {
+        case 'create': {
+            // restArg is profile; positional args after are from raw positional array
+            // positional: [ 'cache', 'create', '<profile>', '<target>', '<variant>' ]
+            const prof = positional[2];
+            const tgt = positional[3];
+            const varnt = positional[4];
+            if (!prof || !tgt || !varnt) {
+                console.error('usage: spore cache create <profile> <target> <variant>');
+                process.exit(1);
+            }
+
+            const profile = await readProfile(Paths.profile(prof));
+            const profileBase = await readPalette(Paths.palette(profile.basePalette));
+            const sourcePalette = await loadSourcePalette(profile);
+            const mood = await readMood(Paths.mood(profile.mood));
+
+            const recipe = await readRecipe(Paths.recipe(tgt, varnt));
+            const targetBase = await loadBasePalette(profile, recipe);
+            const spore = sporeGen.generate(targetBase, sourcePalette, bloomGen.generate(profileBase, sourcePalette, mood, prof), recipe, prof);
+
+            const outPath = Paths.cachedSpore(prof, tgt, varnt);
+            await mkdir(dirname(outPath), { recursive: true });
+            await writeJson(outPath, {
+                _generated_by: 'spore cache create',
+                _generated_at: spore.generatedAt,
+                ...spore,
+            });
+            console.log(`cached spore → ${outPath}`);
+            break;
+        }
+        case 'list': {
+            const profileName = restArg;
+            if (!profileName) {
+                console.error('usage: spore cache list <profile>');
+                process.exit(1);
+            }
+            const dir = join(CACHE_DIR, 'spores', profileName);
+            try {
+                const files = await readdir(dir);
+                for (const f of files.filter(f => f.endsWith('.json')).sort()) {
+                    console.log(`  ${f}`);
+                }
+            } catch {
+                console.log('No cached spores.');
+            }
+            break;
+        }
+        case 'apply': {
+            // positional: [ 'cache', 'apply', '<profile>', '<target>', '<variant>' ]
+            const aProf = positional[2];
+            const aTgt  = positional[3];
+            const aVar  = positional[4];
+            if (!aProf || !aTgt || !aVar) {
+                console.error('usage: spore cache apply <profile> <target> <variant>');
+                process.exit(1);
+            }
+            const src = Paths.cachedSpore(aProf, aTgt, aVar);
+            try {
+                const s = await readJson(src);
+                // copy to active spore path for profile/target
+                await writeJson(Paths.spore(aProf, aTgt), s);
+                console.log(`applied cached spore ${src} → ${Paths.spore(aProf, aTgt)}`);
+            } catch (err) {
+                console.error(`failed to apply cached spore: ${err instanceof Error ? err.message : String(err)}`);
+                process.exit(1);
+            }
+            break;
+        }
+        case 'remove': {
+            // positional: [ 'cache', 'remove', '<profile>', '<target>', '<variant>' ]
+            const rProf = positional[2];
+            const rTgt  = positional[3];
+            const rVar  = positional[4];
+            if (!rProf || !rTgt || !rVar) {
+                console.error('usage: spore cache remove <profile> <target> <variant>');
+                process.exit(1);
+            }
+            const src = Paths.cachedSpore(rProf, rTgt, rVar);
+            try {
+                await fsUnlink(src);
+                console.log(`removed ${src}`);
+            } catch (err) {
+                console.error(`failed to remove cached spore: ${err instanceof Error ? err.message : String(err)}`);
+                process.exit(1);
+            }
+            break;
+        }
+        default:
+            console.error(`Unknown cache subcommand: ${sub}`);
+            process.exit(1);
+    }
 }
 
 // --- list commands ---
