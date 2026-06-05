@@ -568,7 +568,18 @@ async function setCommand(arg?: string, restArg?: string): Promise<void> {
     try {
         await readRecipe(Paths.recipe(tgt, rcp));
     } catch (err) {
-        console.error(`Recipe "${rcp}" for target "${tgt}" not found: ${err instanceof Error ? err.message : String(err)}`);
+        // Try to list available variants for the target to help the user
+        try {
+            const dir = join(DATA_DIR, 'recipes', tgt);
+            const files = (await readdir(dir)).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5)).sort();
+            if (files.length > 0) {
+                console.error(`Recipe "${rcp}" for target "${tgt}" not found. Available: ${files.join(', ')}`);
+            } else {
+                console.error(`Recipe "${rcp}" for target "${tgt}" not found and no recipes present for target "${tgt}".`);
+            }
+        } catch {
+            console.error(`Recipe "${rcp}" for target "${tgt}" not found: ${err instanceof Error ? err.message : String(err)}`);
+        }
         process.exit(1);
     }
 
