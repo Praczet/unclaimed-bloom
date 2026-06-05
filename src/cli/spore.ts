@@ -622,7 +622,6 @@ async function setCommand(arg?: string, restArg?: string): Promise<void> {
     // Notify the workbench server (if running) so UI can refresh without page reload
     notifyWorkbench(prof, tgt).catch(() => {});
 }
-}
 
 // --- list commands ---
 
