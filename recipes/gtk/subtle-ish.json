@@ -138,6 +138,16 @@
       "source": "surface_container_highest",
       "mix": 0.15
     },
+    "selection_bg": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.10
+    },
+    "selection_fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 1.0
+    },
     "outline_color": {
       "bloom": "border.subtle",
       "source": "outline_variant",
