@@ -7,11 +7,18 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-URL="${UB_WORKBENCH_URL:-http://localhost:5173}"
+UI_PORT="${UB_WORKBENCH_UI_PORT:-5173}"
+URL="${UB_WORKBENCH_URL:-http://localhost:$UI_PORT}"
 LOGFILE="${UB_WORKBENCH_LOG:-${XDG_CACHE_HOME:-$HOME/.cache}/unclaimed-bloom/workbench.log}"
 OPEN_BROWSER="${UB_OPEN_BROWSER:-1}"
 
-mkdir -p "$(dirname "$LOGFILE")"
+mkdir -p "$(dirname "$LOGFILE")" 2>/dev/null || true
+
+if ! { touch "$LOGFILE" && [[ -w "$LOGFILE" ]]; } 2>/dev/null; then
+    LOGFILE="${TMPDIR:-/tmp}/unclaimed-bloom-workbench.log"
+    mkdir -p "$(dirname "$LOGFILE")"
+    touch "$LOGFILE"
+fi
 
 open_browser() {
     if [[ "$OPEN_BROWSER" == "0" ]]; then
@@ -39,6 +46,10 @@ wait_for_workbench() {
     echo "URL: $URL"
 }
 
+workbench_is_running() {
+    command -v curl >/dev/null 2>&1 && curl -fsS "$URL" >/dev/null 2>&1
+}
+
 cd "$REPO_DIR"
 
 if [[ ! -x "$REPO_DIR/node_modules/.bin/vite" || ! -x "$REPO_DIR/node_modules/.bin/tsx" ]]; then
@@ -50,6 +61,12 @@ fi
 echo "Starting Unclaimed Bloom workbench"
 echo "  url: $URL"
 echo "  log: $LOGFILE"
+
+if workbench_is_running; then
+    echo "Workbench already answers at $URL"
+    open_browser
+    exit 0
+fi
 
 npm run workbench >"$LOGFILE" 2>&1 &
 SERVER_PID=$!
