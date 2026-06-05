@@ -18,7 +18,7 @@
 @define-color window_fg_color         {{window_fg_color}};
 
 @define-color headerbar_bg_color      {{headerbar_bg_color}};
-@define-color headerbar_fg_color      @window_fg_color;
+@define-color headerbar_fg_color      @window_fg_color; /* kept alias; theme_text_color brightens general text */
 
 @define-color popover_bg_color        {{popover_bg_color}};
 @define-color popover_fg_color        @window_fg_color;
@@ -30,7 +30,7 @@
 @define-color card_fg_color           @window_fg_color;
 
 @define-color sidebar_bg_color        {{sidebar_bg_color}};
-@define-color sidebar_fg_color        @window_fg_color;
+@define-color sidebar_fg_color        mix(@window_fg_color, @surface_bright_color, 0.25); /* slightly brighter than window_fg */
 @define-color sidebar_border_color    {{sidebar_border_color}};
 @define-color sidebar_backdrop_color  @window_bg_color;
 
@@ -73,7 +73,7 @@
 @define-color theme_bg_color           @window_bg_color;
 @define-color theme_fg_color           @window_fg_color;
 @define-color theme_base_color         @view_bg_color;
-@define-color theme_text_color         @view_fg_color;
+@define-color theme_text_color         mix(@view_fg_color, @surface_bright_color, 0.25); /* brighten text for readability */
 @define-color theme_selected_bg_color  {{selection_bg}};
 @define-color theme_selected_fg_color  {{selection_fg}};
 @define-color selected_bg_color        {{selection_bg}};
@@ -81,7 +81,7 @@
 
 /* ---- Inactive / backdrop --------------------------------------------------- */
 
-@define-color accent_backdrop_bg_color            alpha(@accent_bg_color, 0.62);
+@define-color accent_backdrop_bg_color            alpha(@accent_bg_color, 0.20);
 @define-color accent_backdrop_fg_color            @window_fg_color;
 @define-color theme_unfocused_selected_bg_color   @accent_backdrop_bg_color;
 @define-color theme_unfocused_selected_fg_color   @accent_backdrop_fg_color;
@@ -90,6 +90,7 @@
 
 /* ---- libadwaita aliases ---------------------------------------------------- */
 
+@define-color destructive_color     @error_color;
 @define-color destructive_bg_color  @error_color;
 @define-color destructive_fg_color  @error_fg_color;
 @define-color success_bg_color      @success_color;
