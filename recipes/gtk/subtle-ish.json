@@ -24,42 +24,42 @@
     },
     "window_bg_color": {
       "bloom": "surface.base",
-      "source": "source_color",
+      "source": "surface_container_highest",
       "mix": 0.15
     },
     "window_fg_color": {
       "bloom": "text.primary",
-      "source": "source_color",
+      "source": "on_background",
       "mix": 0.15
     },
     "headerbar_bg_color": {
       "bloom": "surface.dim",
-      "source": "source_color",
+      "source": "surface_container_high",
       "mix": 0.15
     },
     "popover_bg_color": {
       "bloom": "surface.raised",
-      "source": "source_color",
+      "source": "surface_container_high",
       "mix": 0.15
     },
     "view_bg_color": {
       "bloom": "surface.dim",
-      "source": "source_color",
+      "source": "surface_container",
       "mix": 0.15
     },
     "card_bg_color": {
       "bloom": "surface.raised",
-      "source": "source_color",
+      "source": "surface_container",
       "mix": 0.15
     },
     "sidebar_bg_color": {
       "bloom": "surface.dim",
-      "source": "source_color",
+      "source": "surface_container",
       "mix": 0.15
     },
     "sidebar_border_color": {
       "bloom": "border.subtle",
-      "source": "source_color",
+      "source": "outline_variant",
       "mix": 0.15
     },
     "borders": {
@@ -70,12 +70,12 @@
     },
     "insensitive_bg_color": {
       "bloom": "surface.raised",
-      "source": "source_color",
+      "source": "surface_container_lowest",
       "mix": 0.15
     },
     "insensitive_fg_color": {
       "bloom": "text.muted",
-      "source": "source_color",
+      "source": "on_surface_variant",
       "mix": 0.15
     },
     "success_color": {
