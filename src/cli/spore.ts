@@ -864,10 +864,9 @@ async function inspect(profileName: string, targetFilter?: string): Promise<void
 
     const bloom = bloomGen.generate(profileBase, sourcePalette, mood, profileName);
 
-    if (targetFilter === undefined) {
-        printBloom(bloom.colors);
-        printSource(sourcePalette.colors);
-    }
+    // Always show bloom and source palette so inspect reflects all source colors
+    printBloom(bloom.colors);
+    printSource(sourcePalette.colors);
 
     for (const [target, recipeName] of filterTargets(profile.targets, targetFilter, profileName)) {
         const recipe     = await readRecipe(Paths.recipe(target, recipeName));
