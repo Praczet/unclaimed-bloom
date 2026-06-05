@@ -3,7 +3,9 @@
   "target": "potato",
   "tokens": {
     "background": {
-      "bloom": "surface.base"
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
     },
     "text": {
       "bloom": "text.primary"

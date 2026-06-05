@@ -53,7 +53,9 @@
       "mix": 0.1
     },
     "on_surface": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.15
     },
     "accent": {
       "bloom": "accent.primary",

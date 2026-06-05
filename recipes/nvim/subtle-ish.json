@@ -3,10 +3,14 @@
   "target": "nvim",
   "tokens": {
     "background": {
-      "bloom": "surface.base"
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
     },
     "surface": {
-      "bloom": "surface.raised"
+      "bloom": "surface.raised",
+      "source": "surface",
+      "mix": 0.15
     },
     "surface_variant": {
       "bloom": "border.strong",
@@ -29,10 +33,14 @@
       "mix": 0.15
     },
     "on_background": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "on_background",
+      "mix": 0.15
     },
     "on_surface": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.15
     },
     "error": {
       "bloom": "state.danger",

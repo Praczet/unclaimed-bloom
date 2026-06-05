@@ -23,28 +23,44 @@
       "mix": 0.1
     },
     "window_bg_color": {
-      "bloom": "surface.base"
+      "bloom": "surface.base",
+      "source": "source_color",
+      "mix": 0.15
     },
     "window_fg_color": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "source_color",
+      "mix": 0.15
     },
     "headerbar_bg_color": {
-      "bloom": "surface.dim"
+      "bloom": "surface.dim",
+      "source": "source_color",
+      "mix": 0.15
     },
     "popover_bg_color": {
-      "bloom": "surface.raised"
+      "bloom": "surface.raised",
+      "source": "source_color",
+      "mix": 0.15
     },
     "view_bg_color": {
-      "bloom": "surface.dim"
+      "bloom": "surface.dim",
+      "source": "source_color",
+      "mix": 0.15
     },
     "card_bg_color": {
-      "bloom": "surface.raised"
+      "bloom": "surface.raised",
+      "source": "source_color",
+      "mix": 0.15
     },
     "sidebar_bg_color": {
-      "bloom": "surface.dim"
+      "bloom": "surface.dim",
+      "source": "source_color",
+      "mix": 0.15
     },
     "sidebar_border_color": {
-      "bloom": "border.subtle"
+      "bloom": "border.subtle",
+      "source": "source_color",
+      "mix": 0.15
     },
     "borders": {
       "bloom": "border.subtle"
@@ -53,49 +69,79 @@
       "bloom": "border.subtle"
     },
     "insensitive_bg_color": {
-      "bloom": "surface.raised"
+      "bloom": "surface.raised",
+      "source": "source_color",
+      "mix": 0.15
     },
     "insensitive_fg_color": {
-      "bloom": "text.muted"
+      "bloom": "text.muted",
+      "source": "source_color",
+      "mix": 0.15
     },
     "success_color": {
-      "bloom": "state.success"
+      "bloom": "state.success",
+      "source": "source_color",
+      "mix": 0.15
     },
     "success_fg_color": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "source_color",
+      "mix": 0.15
     },
     "warning_color": {
-      "bloom": "state.warning"
+      "bloom": "state.warning",
+      "source": "source_color",
+      "mix": 0.15
     },
     "warning_fg_color": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "source_color",
+      "mix": 0.15
     },
     "error_color": {
-      "bloom": "state.danger"
+      "bloom": "state.danger",
+      "source": "on_error_container",
+      "mix": 0.15
     },
     "error_fg_color": {
-      "bloom": "text.primary"
+      "bloom": "text.primary",
+      "source": "on_error_container",
+      "mix": 0.15
     },
     "surface_bright_color": {
-      "bloom": "surface.highest"
+      "bloom": "surface.highest",
+      "source": "surface_container_highest",
+      "mix": 0.15
     },
     "surface_container_lowest_color": {
-      "bloom": "surface.dim"
+      "bloom": "surface.dim",
+      "source": "surface_container_highest",
+      "mix": 0.15
     },
     "surface_container_low_color": {
-      "bloom": "surface.base"
+      "bloom": "surface.base",
+      "source": "surface_container_highest",
+      "mix": 0.15
     },
     "surface_container_color": {
-      "bloom": "surface.raised"
+      "bloom": "surface.raised",
+      "source": "surface_container_highest",
+      "mix": 0.15
     },
     "surface_container_high_color": {
-      "bloom": "surface.raised"
+      "bloom": "surface.raised",
+      "source": "surface_container_highest",
+      "mix": 0.15
     },
     "surface_container_highest_color": {
-      "bloom": "surface.highest"
+      "bloom": "surface.highest",
+      "source": "surface_container_highest",
+      "mix": 0.15
     },
     "outline_color": {
-      "bloom": "border.subtle"
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.15
     }
   }
 }
