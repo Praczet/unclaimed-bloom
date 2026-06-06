@@ -2,6 +2,10 @@
 
 You are working in the `Praczet/unclaimed-bloom` repository.
 
+Last updated: 2026-06-06.
+
+Current branch for the redesign work: `new-ui`.
+
 The goal is to redesign and rebuild the **Workbench UI and its workbench server API** into a proper theme-forging tool. You may significantly restructure or replace the current UI and workbench server code if needed, as long as you do **not** break the main CLI application or the existing core generation logic.
 
 The user wants an iterative, visually testable process. Do not do one giant rewrite. Work in small steps. After each step, produce a visible artifact that can be run and tested in the browser.
@@ -309,6 +313,64 @@ Avoid:
 
 The UI should feel like a developer’s theme workshop: dry, useful, slightly poetic, not childish.
 
+## Current redesign status
+
+The first redesign pass is implemented and visually tested in the browser.
+
+Done:
+
+- Three-area workbench shell:
+  - left sidebar with profiles and profile-scoped targets,
+  - main view with `overview`, `bloom`, `inspect`, `recipes`, `docs`,
+  - right context/action panel with selected context, sow/grow controls, CLI snippets, and bloom UI toggle.
+- Overview:
+  - moved live profile/target status out of Docs,
+  - supports composition profiles such as `desktop`,
+  - composition rows are clickable,
+  - recipe names are clickable and open Recipes.
+- Bloom:
+  - visual hero, palette strip, grouped token derivation,
+  - composition profiles show their real bloom sources instead of pretending one bloom feeds every target.
+- Inspect:
+  - one-target pipeline view with bloom/base/source/mix/result,
+  - composition targets use the target's real source profile context.
+- Recipes:
+  - read-only Recipe Workshop exists,
+  - recipe hero explains `base`, `bloom`, `source`, and `result` using concrete profile/target paths,
+  - table shows color badges for base/bloom/source/result,
+  - recipe selection is scoped by selected profile and selected target,
+  - target list shows recipe count per target,
+  - unused recipes for the selected target are visible but disabled because the current preview pipeline only resolves assigned recipes honestly.
+- Workbench server:
+  - exposes composition-aware profile data,
+  - exposes `/api/recipes`,
+  - exposes base palette path, source path, and bloom cache path for workbench context.
+
+Known important behavior:
+
+- The UI always has a selected profile and selected target.
+- Recipes must follow that context: **profile -> target -> recipe**.
+- Do not reintroduce a global recipe browser as the default Recipes view. It caused stale recipe/target mismatches and unresolved colors.
+- A global recipe library may exist later as a separate mode, but it must be clearly labeled as library browsing, not active profile preview.
+
+## Next session goal
+
+Build a safe read-only preview path for unused recipes belonging to the selected target.
+
+Example problem:
+
+- Profile `daily` uses `waybar / subtle-ish`.
+- Target `waybar` also has `source-heavy`.
+- The UI should let the user click `source-heavy` and preview the resolved colors against `daily + waybar` without changing the profile and without writing files.
+
+This requires a server/API preview path that resolves:
+
+```text
+profile + target + recipeName -> token rows + result colors
+```
+
+Do this before recipe editing, recipe assignment, or saving.
+
 ## Iterative implementation plan
 
 Do not implement everything at once.
@@ -326,7 +388,7 @@ After each step:
 - mention what the user should visually test,
 - mention any missing/fake/nonfunctional parts clearly.
 
-### Step 1 — UI shell and navigation
+### ✅ Step 1 — UI shell and navigation
 
 Create the new workbench shell:
 
@@ -343,7 +405,9 @@ Artifact to test:
 - active profile and active target are visible,
 - old Bloom/Inspect/Docs content still accessible or roughly migrated.
 
-### Step 2 — Overview replaces Live Help status
+Status: done. The shell exists in `src/ui/index.html`, `src/ui/main.ts`, and `src/ui/style.css`.
+
+### ✅ Step 2 — Overview replaces Live Help status
 
 Move the profile/target status preview out of Docs and into Overview.
 
@@ -363,7 +427,9 @@ Artifact to test:
 - Overview clearly replaces the useful part of Live Help.
 - Recipe names are visible and clickable, even if the first version only opens a read-only panel.
 
-### Step 3 — Improve Bloom view
+Status: done. Overview is the live status surface. Docs is documentation/help again.
+
+### ✅ Step 3 — Improve Bloom view
 
 Redesign Bloom view into grouped visual token sections.
 
@@ -373,7 +439,9 @@ Artifact to test:
 - token groups are clear,
 - color transformation pipeline is visible.
 
-### Step 4 — Improve Inspect view
+Status: done. Bloom is visual and composition-aware.
+
+### ✅ Step 4 — Improve Inspect view
 
 Redesign Inspect view for one target at a time.
 
@@ -383,7 +451,9 @@ Artifact to test:
 - recipe name and target are obvious,
 - each row clearly shows bloom/source/mix/result.
 
-### Step 5 — Read-only Recipe Workshop
+Status: done. Inspect is target-focused and composition-aware.
+
+### ✅ Step 5 — Read-only Recipe Workshop
 
 Create Recipes/Workshop view in read-only mode first.
 
@@ -399,7 +469,63 @@ Artifact to test:
 
 - user can browse recipes and understand them.
 
-### Step 6 — Editable Recipe Workshop with preview
+Status: done with one important limitation: recipe browsing is scoped to the selected profile/target. Recipes for the selected target that are not assigned by the current profile are visible but disabled until Step 6 adds honest preview.
+
+### Step 6 — Recipe preview for unassigned target recipes
+
+Add a read-only preview endpoint before editing.
+
+Required server behavior:
+
+- Accept `profile`, `target`, and `recipe`.
+- Load the selected profile context.
+- For composition profiles, resolve the target through the run/profile that owns that target.
+- Load the requested recipe even if it is not currently assigned by that profile.
+- Generate token preview rows using the same core rules as inspect/spore generation.
+- Do not write bloom, spore, report, profile, or recipe files.
+- Return enough context for the UI to explain what it is showing:
+  - resolved profile used for preview,
+  - target,
+  - recipe,
+  - base palette + path,
+  - source + source path when available,
+  - bloom + bloom path,
+  - rows with base/bloom/source/mix/result.
+
+Suggested endpoint:
+
+```text
+GET /api/recipe-preview?profile=daily&target=waybar&recipe=source-heavy
+```
+
+or:
+
+```text
+POST /api/recipes/preview
+```
+
+Use whichever shape best fits `src/server/workbench.ts`.
+
+Required UI behavior:
+
+- In Recipes view, keep the browser scoped to selected target.
+- Enable same-target unassigned recipes once preview data exists.
+- Mark recipes clearly:
+  - `assigned` for the current profile recipe,
+  - `preview only` for available but unassigned recipes.
+- When previewing an unassigned recipe, do not change the profile assignment.
+- The right context panel should keep selected profile/target stable and show the previewed recipe separately if useful.
+- If preview fails, show the failure near the recipe card/table, not as a silent unresolved-color table.
+
+Artifact to test:
+
+- On `daily -> waybar`, user can click both `subtle-ish` and `source-heavy`.
+- `subtle-ish` is labeled assigned.
+- `source-heavy` is labeled preview only.
+- Both render real colors.
+- No files are changed.
+
+### Step 7 — Editable Recipe Workshop with preview
 
 Add editing UI:
 
@@ -415,7 +541,7 @@ Artifact to test:
 
 - user can modify values in UI and see preview changes.
 
-### Step 7 — Saving and assignment
+### Step 8 — Saving and assignment
 
 Add server endpoints for:
 

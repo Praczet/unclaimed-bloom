@@ -34,9 +34,16 @@ type Blooms = Record<string, Bloom>;
 interface TargetStatus {
   name: string;
   recipe: string;
+  profile?: string;
   sownAt?: string;
   grownAt?: string;
   status?: string;
+}
+
+interface CompositionRunStatus {
+  profile: string;
+  targets?: string[];
+  exclude?: string[];
 }
 
 /**
@@ -51,10 +58,16 @@ interface TargetStatus {
  */
 interface ProfileStatus {
   name: string;
+  type?: 'profile' | 'composition';
   basePalette: string;
+  basePalettePath?: string;
   mood: string;
   source: string;
+  sourcePath?: string;
   bloomAt?: string;
+  bloomPath?: string;
+  currentProfile?: string;
+  runs?: CompositionRunStatus[];
   targets: TargetStatus[];
 }
 
@@ -155,6 +168,11 @@ interface TokenRow {
  */
 interface TargetInspect {
   recipe: string;
+  profile?: string;
+  basePalette?: string;
+  mood?: string;
+  source?: string;
+  bloom?: Record<string, Record<string, string>>;
   tokens: TokenRow[];
 }
 
@@ -215,5 +233,34 @@ interface BloomPreviewResponse {
   rows: BloomPreviewRow[];
 }
 
+type TokenRecipe =
+  | { base: string }
+  | { bloom: string; source?: string; mix?: number }
+  | { base: string; source: string; mix: number };
 
+interface RecipeUsage {
+  profile: string;
+  target: string;
+  composition?: string;
+}
 
+interface WorkbenchRecipeSummary {
+  id: string;
+  name: string;
+  target: string;
+  path: string;
+  tokenCount: number;
+  basePalette?: string;
+  usages: RecipeUsage[];
+  raw: {
+    name?: string;
+    target?: string;
+    basePalette?: string;
+    tokens?: Record<string, TokenRecipe>;
+    weights?: Partial<Record<string, number>>;
+  };
+}
+
+interface RecipesResponse {
+  recipes: WorkbenchRecipeSummary[];
+}

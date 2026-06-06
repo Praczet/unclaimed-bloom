@@ -1,8 +1,8 @@
 type:: project-capsule
 tags:: [[project-capsule]], [[theme-system]], [[linux-theming]], [[matugen]], [[vite]], [[typescript]], [[unclaimed-bloom]]
 status:: active-development
-updated:: [[2026-06-05]]
-capsule-version:: 0.8
+updated:: [[2026-06-06]]
+capsule-version:: 0.9
 project:: [[Projects/Unclaimed Bloom]]
 related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Neovim]], [[mycli]], [[sqlit]], [[Hyprland]], [[SDDM]]
 
@@ -10,7 +10,7 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 
 - motto:: **Unclaimed Bloom grows from ash, borrowed soil, and unclaimed hope.**
 - cli:: `spore`
-- capsule-version:: 0.5
+- capsule-version:: 0.9
 - purpose:: A project-start capsule for creating the repository and giving future Adam/Codex/ChatGPT enough context to continue without digging through the old ashes by hand.
 
 ## Core decision snapshot
@@ -33,7 +33,7 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 
 - **Unclaimed Bloom** is a recipe-driven theming system that grows a shared color/mood bloom from sources like Matugen and selectable base palettes, then scatters target-specific spores into tools like GTK, icons, AGS, Ghostty, Neovim, mycli, sqlit, and future desktop creatures.
 
-## Recent changes (2026-06-05)
+## Recent changes (2026-06-06)
 
 - workbench: added POST /api/notify that forces the server to reload blooms/profiles and broadcast via WebSocket so the UI can refresh without a manual reload.
 - cli: added `spore set` / `spore replant` to change a profile's target recipe and `--apply` to run sow+grow immediately.
@@ -44,6 +44,11 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 - gtk: added Graphite-inspired base palettes, GTK recipes, and GTK-only profiles (`daily-gtk`, `daily-light-gtk`) so GTK can stay neutral while the rest of `daily` keeps its normal bloom.
 - profiles: added composition profiles with ordered runs; `desktop` runs `daily-gtk` for GTK, then `daily`, and leaves `current-profile` set to `daily`.
 - wallpaper: `wallset` and `wallset-backend` are now repo-owned scripts installed by `scripts/install`; default flow runs `spore sow desktop --wallpaper` then `spore grow desktop`. The old `walset` spelling is kept as a compatibility alias.
+- workbench redesign: added the three-area UI shell with profile/target sidebar, main views (`overview`, `bloom`, `inspect`, `recipes`, `docs`), and right context/action panel.
+- workbench overview: live profile/target status moved out of Docs; composition profiles are visible and clickable.
+- workbench bloom/inspect: both are composition-aware, so `desktop` can show GTK from `daily-gtk` and other targets from `daily` without stale palette context.
+- workbench recipes: added a read-only Recipe Workshop scoped to the selected profile and target. It explains base/bloom/source/result with concrete paths, shows color badges, shows recipe counts per target, and keeps unassigned same-target recipes visible but disabled until preview is honest.
+- next workbench rule: add read-only arbitrary recipe preview before editing or saving recipes.
 
 ## The soul of the project
 
@@ -1072,13 +1077,15 @@ List commands:
 
 Workbench (npm run workbench):
   Node server on :7865 — HTTP /api/blooms, /api/profiles, /api/inspect/:profile,
-  /api/docs, /api/docs/:id,
+  /api/bloom-preview/:profile, /api/recipes, /api/docs, /api/docs/:id,
   POST /api/run for constrained sow/grow actions, WebSocket /ws, fs.watch on blooms dir.
-  Vite dev server on :5173 — renders labeled color swatches by semantic group,
-  bloom/profile preview, profile/status controls, target selection, sow/grow buttons, command output,
-  docs/help view with README opened first plus generated Live Help, optional
-  Use Bloom palette toggle for theming the workbench from the active profile bloom,
-  and live-updates via WebSocket when sow writes a new bloom.
+  Vite dev server on :5173 — three-area shell with profile/target sidebar,
+  main workbench views, and context/action panel. Views: overview, bloom, inspect,
+  recipes, docs. Overview owns live profile/target status. Bloom and inspect are
+  composition-aware. Recipes is a read-only target-scoped Recipe Workshop with
+  concrete path/context notes and color badges.
+  Optional Use Bloom palette toggle themes the workbench from the active profile bloom.
+  Live-updates via WebSocket when sow writes a new bloom.
   Ports can be overridden with UB_WORKBENCH_PORT and UB_WORKBENCH_UI_PORT.
   scripts/unclaimed-bloom detects an already-running workbench URL and opens it instead
   of starting a second server.
@@ -1313,13 +1320,67 @@ stored in localStorage and reapplies when the active profile changes or a WebSoc
 bloom update arrives. The workbench uses the bloom, not raw Matugen, because Matugen
 is source and the bloom is the supervised result.
 
-### 8b. Workbench interactive recipe editing
+### ✅ 8a.3 Workbench redesign shell + read-only Recipe Workshop — DONE
+
+Workbench now uses the redesigned three-area shell:
+- left sidebar: profiles and selected-profile targets,
+- main area: `overview`, `bloom`, `inspect`, `recipes`, `docs`,
+- right panel: selected context, actions, CLI snippets, workbench palette toggle.
+
+Important behavior:
+- `desktop` composition is visible instead of flattened into a lie.
+- Overview replaces the live status table that used to live in Docs.
+- Bloom view shows composition bloom sources when selected profile is composed.
+- Inspect view resolves target context from the profile that actually owns the target.
+- Recipes view follows the rule: `profile -> target -> recipe`.
+- The recipe browser is narrowed to the selected target.
+- Target rows show how many recipes exist for that target.
+- Same-target recipes that are not assigned by the selected profile are visible but disabled until the workbench can preview them without writing files.
+
+### 8b. Workbench read-only preview for unassigned target recipes
+
+Next workbench step.
+
+Build a safe preview API for:
+
+```text
+profile + target + recipeName -> resolved token rows + result colors
+```
+
+This must:
+- handle composition profiles by resolving the target to the profile run that owns it,
+- load a requested same-target recipe even when the selected profile does not currently assign it,
+- reuse core bloom/spore generation logic,
+- write no bloom, spore, report, profile, or recipe files,
+- return profile, target, recipe, base palette path, source path, bloom path, and token rows.
+
+Suggested endpoint:
+
+```text
+GET /api/recipe-preview?profile=daily&target=waybar&recipe=source-heavy
+```
+
+After this exists, the Recipe Workshop can enable unassigned same-target recipes
+and label them `preview only` instead of leaving them disabled.
+
+### 8c. Workbench interactive recipe editing
 
 Extend the Vite workbench with:
 - Per-token mix weight sliders (recipe editing)
 - Palette selector per profile
 - Mood selector
 - Before/after swatch comparison
+
+Do not save to disk until preview works reliably. No heroic button of doom.
+
+### 8d. Workbench recipe assignment and saving
+
+After preview/editing:
+- assign recipe to target,
+- save recipe,
+- save as new recipe,
+- show affected profiles/targets when editing shared recipes,
+- keep CLI/core config format stable.
 
 ### 11. Hyprlock target
 

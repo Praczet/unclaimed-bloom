@@ -3,7 +3,8 @@
 let blooms: Blooms = {};
 let profiles: ProfilesResponse = { profiles: [] };
 let active = '';
-let view: 'bloom' | 'inspect' | 'docs' = 'bloom';
+type WorkbenchView = 'overview' | 'bloom' | 'inspect' | 'recipes' | 'docs';
+let view: WorkbenchView = 'overview';
 let activeTarget = '';
 let inspectCache: Record<string, InspectData> = {};
 let actionTarget = '';
@@ -12,6 +13,8 @@ let docsIndex: DocsIndexResponse = { defaultDoc: 'README.md', docs: [] };
 let activeDoc = 'README.md';
 let docCache: Record<string, DocResponse> = {};
 let bloomPreviewCache: Record<string, BloomPreviewResponse> = {};
+let recipesData: RecipesResponse = { recipes: [] };
+let activeRecipeId = '';
 let useBloomUiPalette = window.localStorage.getItem('ub-use-bloom-ui-palette') === 'true';
 
 
@@ -31,6 +34,7 @@ let useBloomUiPalette = window.localStorage.getItem('ub-use-bloom-ui-palette') =
 const GROUP_ORDER = ['surface', 'text', 'accent', 'state', 'border', 'selection'];
 
 const tabsEl = document.getElementById('profile-tabs')!;
+const targetListEl = document.getElementById('target-list')!;
 const controlsEl = document.getElementById('controls')!;
 const contentEl = document.getElementById('content')!;
 const indicator = document.getElementById('indicator')!;
@@ -63,6 +67,10 @@ function activeProfile(): ProfileStatus | undefined {
 }
 
 function activeBloom(): Bloom | undefined {
+  const profile = activeProfile();
+  if (profile?.type === 'composition' && profile.currentProfile) {
+    return blooms[profile.currentProfile] ?? blooms[active];
+  }
   return blooms[active];
 }
 
@@ -225,28 +233,96 @@ function applyBloomUiPalette(): void {
 
 document.querySelectorAll<HTMLButtonElement>('.view-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    view = btn.dataset['view'] as 'bloom' | 'inspect' | 'docs';
-    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    render();
+    setView(btn.dataset['view'] as WorkbenchView);
   });
 });
+
+function setView(nextView: WorkbenchView): void {
+  view = nextView;
+  document.querySelectorAll<HTMLButtonElement>('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset['view'] === view);
+  });
+  renderControls();
+  render();
+}
+
+function resetRecipeSelection(): void {
+  activeRecipeId = '';
+}
 
 // --- Tabs ---
 
 function renderTabs() {
   const names = profiles.profiles.map(p => p.name);
   tabsEl.innerHTML = names
-    .map(p => `<button class="tab${p === active ? ' active' : ''}" data-p="${p}">${p}</button>`)
+    .map(p => {
+      const profile = profiles.profiles.find(item => item.name === p);
+      const current = profiles.currentProfile === p ? '<span class="sidebar-badge">current</span>' : '';
+      return `
+        <button class="tab${p === active ? ' active' : ''}" data-p="${esc(p)}">
+          <span class="tab-main">${esc(p)}</span>
+          <span class="tab-sub">${esc(profile?.type === 'composition' ? 'composition' : (profile?.mood ?? 'unknown'))} · ${esc(String(profile?.targets.length ?? 0))} targets</span>
+          ${current}
+        </button>`;
+    })
     .join('');
   tabsEl.querySelectorAll<HTMLButtonElement>('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
       active = btn.dataset['p']!;
       actionTarget = '';
+      activeTarget = '';
+      resetRecipeSelection();
       applyBloomUiPalette();
       renderTabs();
+      renderTargetList();
       renderControls();
       render();
+    });
+  });
+}
+
+function statusClass(status: string | undefined): string {
+  if (!status) return 'idle';
+  if (status === 'ok') return 'ok';
+  if (status === 'error' || status === 'failed') return 'error';
+  return 'warn';
+}
+
+function selectedTargetName(): string {
+  const profile = activeProfile();
+  if (!profile) return '';
+  const preferred = actionTarget || activeTarget;
+  if (preferred && profile.targets.some(t => t.name === preferred)) return preferred;
+  return profile.targets[0]?.name ?? '';
+}
+
+function recipeCountForTarget(targetName: string): number {
+  return recipesData.recipes.filter(recipe => recipe.target === targetName).length;
+}
+
+function renderTargetList(): void {
+  const profile = activeProfile();
+  if (!profile) {
+    targetListEl.innerHTML = '<p class="empty-inline">No targets.</p>';
+    return;
+  }
+
+  const selected = selectedTargetName();
+  targetListEl.innerHTML = profile.targets.map(target => `
+    <button class="target-list-item${target.name === selected ? ' active' : ''}" data-target="${esc(target.name)}">
+      <span class="target-list-name">${esc(target.name)}</span>
+      <span class="status-dot ${statusClass(target.status)}"></span>
+      <span class="target-list-recipe">${esc(target.recipe)} · ${recipeCountForTarget(target.name)} recipes</span>
+    </button>`).join('');
+
+  targetListEl.querySelectorAll<HTMLButtonElement>('.target-list-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTarget = btn.dataset['target'] ?? '';
+      actionTarget = activeTarget;
+      resetRecipeSelection();
+      renderTargetList();
+      renderControls();
+      if (view === 'overview' || view === 'inspect' || view === 'recipes') render();
     });
   });
 }
@@ -264,14 +340,25 @@ function renderControls() {
     actionTarget = '';
   }
 
-  const selectedTarget = actionTarget;
+  const selectedTarget = actionTarget || activeTarget;
   const targetOptions = [
     '<option value="">all targets</option>',
     ...profile.targets.map(t => `<option value="${esc(t.name)}"${t.name === selectedTarget ? ' selected' : ''}>${esc(t.name)}</option>`),
   ].join('');
   const target = profile.targets.find(t => t.name === selectedTarget);
+  const inspectTarget = view === 'inspect' && selectedTarget
+    ? inspectCache[active]?.targets[selectedTarget]
+    : undefined;
+  const contextTitle = target ? target.name : profile.name;
+  const contextSubtitle = target
+    ? `${profile.name}${target.profile && target.profile !== profile.name ? ` · from ${target.profile}` : ''}`
+    : '';
+  const contextType = target ? 'target' : (profile.type ?? 'profile');
+  const contextPalette = inspectTarget?.basePalette ?? profile.basePalette;
+  const contextMood = inspectTarget?.mood ?? profile.mood;
+  const contextSource = inspectTarget?.source ?? profile.source;
   const targetMeta = target
-    ? `target ${esc(target.name)} · recipe ${esc(target.recipe)} · sown ${esc(fmtTime(target.sownAt))} · grown ${esc(fmtTime(target.grownAt))}${target.status ? ` · ${esc(target.status)}` : ''}`
+    ? `target ${esc(target.name)} · recipe ${esc(target.recipe)}${target.profile ? ` · from ${esc(target.profile)}` : ''} · sown ${esc(fmtTime(target.sownAt))} · grown ${esc(fmtTime(target.grownAt))}${target.status ? ` · ${esc(target.status)}` : ''}`
     : `${profile.targets.length} targets · bloom ${esc(fmtTime(profile.bloomAt))}`;
   const bloom = activeBloom();
   const palettePreview = bloom ? `
@@ -283,28 +370,54 @@ function renderControls() {
             <span style="background:${esc(bloom.colors.state?.danger ?? '#ff0000')}"></span>
         </span>` : '';
 
+  const commandTarget = selectedTarget ? ` ${selectedTarget}` : '';
+
   controlsEl.innerHTML = `
-        <div class="profile-meta">
-            <span><span class="meta-key">palette</span>${esc(profile.basePalette)}</span>
-            <span><span class="meta-key">mood</span>${esc(profile.mood)}</span>
-            <span><span class="meta-key">source</span>${esc(profile.source)}</span>
-            ${profiles.currentProfile === profile.name ? '<span class="current-pill">current</span>' : ''}
+        <div class="context-block">
+            <p class="eyebrow">Context</p>
+            <h2>${esc(contextTitle)}</h2>
+            ${contextSubtitle ? `<p class="context-subtitle">${esc(contextSubtitle)}</p>` : ''}
+            <div class="context-meta">
+                <span><span class="meta-key">mode</span>${esc(view)}</span>
+                <span><span class="meta-key">type</span>${esc(contextType)}</span>
+                <span><span class="meta-key">palette</span>${esc(contextPalette)}</span>
+                <span><span class="meta-key">mood</span>${esc(contextMood)}</span>
+                <span><span class="meta-key">source</span>${esc(contextSource)}</span>
+                ${target ? `<span><span class="meta-key">recipe</span>${esc(target.recipe)}</span>` : ''}
+                ${profiles.currentProfile === profile.name ? '<span class="current-pill">current</span>' : ''}
+            </div>
+        </div>
+        <div class="context-block">
+            <p class="eyebrow">Actions</p>
+            <div class="context-actions">
+                <select id="target-select" class="target-select" ${isRunning ? 'disabled' : ''}>${targetOptions}</select>
+                <button id="sow-btn" class="action-btn" ${isRunning ? 'disabled' : ''}>sow</button>
+                <button id="grow-btn" class="action-btn primary" ${isRunning ? 'disabled' : ''}>grow</button>
+            </div>
+            <p class="target-meta">${targetMeta}</p>
+        </div>
+        <div class="context-block">
+            <p class="eyebrow">CLI</p>
+            <pre class="command-stack"><code>spore sow ${esc(profile.name)}${esc(commandTarget)}
+spore grow ${esc(profile.name)}${esc(commandTarget)}
+spore inspect ${esc(profile.name)}${esc(commandTarget || ` ${selectedTargetName()}`)}</code></pre>
+        </div>
+        <div class="context-block">
+            <p class="eyebrow">Workbench Palette</p>
             <label class="toggle-control" title="Theme the workbench from the selected profile bloom">
                 <input id="bloom-ui-toggle" type="checkbox" ${useBloomUiPalette ? 'checked' : ''} ${activeBloom() ? '' : 'disabled'} />
                 <span>Use Bloom palette</span>
             </label>
             ${palettePreview}
-        </div>
-        <div class="action-row">
-            <select id="target-select" class="target-select" ${isRunning ? 'disabled' : ''}>${targetOptions}</select>
-            <button id="sow-btn" class="action-btn" ${isRunning ? 'disabled' : ''}>sow</button>
-            <button id="grow-btn" class="action-btn primary" ${isRunning ? 'disabled' : ''}>grow</button>
-            <span class="target-meta">${targetMeta}</span>
         </div>`;
 
   controlsEl.querySelector<HTMLSelectElement>('#target-select')?.addEventListener('change', e => {
     actionTarget = (e.currentTarget as HTMLSelectElement).value;
+    activeTarget = actionTarget;
+    resetRecipeSelection();
+    renderTargetList();
     renderControls();
+    if (view === 'inspect' || view === 'recipes') render();
   });
   controlsEl.querySelector<HTMLInputElement>('#bloom-ui-toggle')?.addEventListener('change', e => {
     setBloomUiPalettePreference((e.currentTarget as HTMLInputElement).checked);
@@ -319,6 +432,310 @@ function showRunOutput(title: string, text: string, ok: boolean): void {
   runOutputEl.innerHTML = `
         <div class="run-output-title">${esc(title)}</div>
         <pre>${esc(text.trim() || '(no output)')}</pre>`;
+}
+
+// --- Overview view ---
+
+function renderOverview(): void {
+  const profile = activeProfile();
+  if (!profile) {
+    contentEl.innerHTML = '<p class="empty">No profile selected.</p>';
+    return;
+  }
+
+  const selected = selectedTargetName();
+  const describeCompositionRun = (run: CompositionRunStatus): string => {
+    const runProfile = profiles.profiles.find(item => item.name === run.profile);
+    const resolvedTargets = run.targets ?? runProfile?.targets.map(target => target.name) ?? [];
+    const visibleTargets = run.exclude
+      ? resolvedTargets.filter(target => !run.exclude?.includes(target))
+      : resolvedTargets;
+    const targetLabel = visibleTargets.length === 1
+      ? `1 target: ${visibleTargets[0]}`
+      : `${visibleTargets.length} targets`;
+    const excludeLabel = run.exclude && run.exclude.length > 0
+      ? ` · excludes: ${run.exclude.join(', ')}`
+      : '';
+    return `${targetLabel}${excludeLabel}`;
+  };
+  const composition = profile.runs && profile.runs.length > 0 ? `
+    <section class="group">
+      <div class="section-heading">
+        <h2>Composition</h2>
+        <span>${profile.currentProfile ? `leaves current profile as ${esc(profile.currentProfile)}` : 'ordered profile runs'}</span>
+      </div>
+      <div class="composition-list">
+        ${profile.runs.map((run, index) => `
+          <button class="composition-run" type="button" data-composition-profile="${esc(run.profile)}">
+            <span class="composition-index">${index + 1}</span>
+            <div>
+              <h3>${esc(run.profile)}</h3>
+              <p>${esc(describeCompositionRun(run))}</p>
+            </div>
+          </button>`).join('')}
+      </div>
+    </section>` : '';
+
+  const targets = profile.targets.map(target => `
+    <article class="target-card${target.name === selected ? ' active' : ''}">
+      <div class="target-card-main">
+        <span class="status-dot ${statusClass(target.status)}"></span>
+        <div>
+          <h3>${esc(target.name)}</h3>
+          <button class="recipe-link" type="button" data-overview-recipe="${esc(target.name)}">${esc(target.recipe)}</button>
+          ${target.profile && target.profile !== profile.name ? `<p class="target-source-profile">from ${esc(target.profile)}</p>` : ''}
+        </div>
+      </div>
+      <dl class="target-card-meta">
+        <div><dt>sown</dt><dd>${esc(fmtTime(target.sownAt))}</dd></div>
+        <div><dt>grown</dt><dd>${esc(fmtTime(target.grownAt))}</dd></div>
+        <div><dt>status</dt><dd>${esc(target.status ?? 'waiting')}</dd></div>
+      </dl>
+      <div class="target-card-actions">
+        <button type="button" data-overview-action="inspect" data-target="${esc(target.name)}">inspect</button>
+        <button type="button" data-overview-action="sow" data-target="${esc(target.name)}">sow</button>
+        <button type="button" data-overview-action="grow" data-target="${esc(target.name)}">grow</button>
+      </div>
+    </article>`).join('');
+
+  contentEl.innerHTML = `
+    <section class="overview-hero">
+      <div>
+        <p class="eyebrow">Selected Profile</p>
+        <h1>${esc(profile.name)}</h1>
+        <p>${esc(profile.type ?? 'profile')} · ${esc(profile.basePalette)} · ${esc(profile.mood)} · ${esc(profile.source)}</p>
+      </div>
+      <div class="overview-stats">
+        <span><strong>${profile.targets.length}</strong> targets</span>
+        <span><strong>${esc(fmtTime(profile.bloomAt))}</strong> bloom</span>
+      </div>
+    </section>
+    ${composition}
+    <section class="group">
+      <div class="section-heading">
+        <h2>Profile targets</h2>
+        <span>Recipe names are clickable. Editing is still waiting its turn.</span>
+      </div>
+      <div class="target-card-grid">${targets}</div>
+    </section>`;
+
+  contentEl.querySelectorAll<HTMLButtonElement>('[data-overview-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTarget = btn.dataset['target'] ?? '';
+      actionTarget = activeTarget;
+      resetRecipeSelection();
+      renderTargetList();
+      renderControls();
+      const action = btn.dataset['overviewAction'];
+      if (action === 'inspect') {
+        setView('inspect');
+        return;
+      }
+      if (action === 'sow' || action === 'grow') void runAction(action);
+    });
+  });
+
+  contentEl.querySelectorAll<HTMLButtonElement>('[data-overview-recipe]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTarget = btn.dataset['overviewRecipe'] ?? '';
+      actionTarget = activeTarget;
+      resetRecipeSelection();
+      renderTargetList();
+      renderControls();
+      setView('recipes');
+    });
+  });
+
+  contentEl.querySelectorAll<HTMLButtonElement>('[data-composition-profile]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const profileName = btn.dataset['compositionProfile'] ?? '';
+      if (!profiles.profiles.some(item => item.name === profileName)) return;
+      active = profileName;
+      activeTarget = '';
+      actionTarget = '';
+      resetRecipeSelection();
+      applyBloomUiPalette();
+      renderTabs();
+      renderTargetList();
+      renderControls();
+      renderOverview();
+    });
+  });
+}
+
+function renderRecipes(): void {
+  const profile = activeProfile();
+  if (!profile) {
+    contentEl.innerHTML = '<p class="empty">No profile selected.</p>';
+    return;
+  }
+
+  if (recipesData.recipes.length === 0) {
+    contentEl.innerHTML = '<p class="empty">Loading recipes…</p>';
+    void fetchRecipes();
+    return;
+  }
+
+  const selectedTarget = selectedTargetName();
+  const targetAssignment = profile.targets.find(target => target.name === selectedTarget);
+  const targetRecipes = recipesData.recipes.filter(recipe => recipe.target === selectedTarget);
+  const preferredRecipeId = targetAssignment ? `${targetAssignment.name}/${targetAssignment.recipe}` : '';
+  if (!activeRecipeId || !targetRecipes.some(recipe => recipe.id === activeRecipeId)) {
+    activeRecipeId = preferredRecipeId && targetRecipes.some(recipe => recipe.id === preferredRecipeId)
+      ? preferredRecipeId
+      : targetRecipes[0]?.id ?? '';
+  }
+
+  const activeRecipe = targetRecipes.find(recipe => recipe.id === activeRecipeId);
+  if (!activeRecipe) {
+    contentEl.innerHTML = '<p class="empty">No recipes found for the selected target.</p>';
+    return;
+  }
+
+  const inspectData = inspectCache[active];
+  if (!inspectData) {
+    void fetchInspect(active);
+  }
+  const previewTarget = inspectData?.targets[activeRecipe.target];
+  const previewRows = new Map((previewTarget?.tokens ?? []).map(row => [row.name, row]));
+
+  const recipeCards = targetRecipes.map(recipe => {
+    const usedHere = profile.targets.some(target => target.name === recipe.target && target.recipe === recipe.name);
+    const disabled = !usedHere;
+    return `
+      <button class="recipe-card${recipe.id === activeRecipeId ? ' active' : ''}${disabled ? ' disabled' : ''}" type="button" data-recipe-id="${esc(recipe.id)}"${disabled ? ' disabled' : ''}>
+        <span class="recipe-card-target">${esc(recipe.target)}</span>
+        <span class="recipe-card-name">${esc(recipe.name)}</span>
+        <span class="recipe-card-note">${recipe.tokenCount} tokens · ${usedHere ? 'selected profile uses this' : 'available, not assigned here yet'}</span>
+      </button>`;
+  }).join('');
+
+  const tokenEntries = Object.entries(activeRecipe.raw.tokens ?? {});
+  const tokenRows = tokenEntries.map(([name, token]) => {
+    const preview = previewRows.get(name);
+    const base = 'base' in token && typeof token.base === 'string' ? token.base : '';
+    const bloom = 'bloom' in token && typeof token.bloom === 'string' ? token.bloom : '';
+    const source = 'source' in token && typeof token.source === 'string' ? token.source : '';
+    const mix = 'mix' in token && typeof token.mix === 'number' ? token.mix.toFixed(2) : '';
+    const baseLabel = base;
+    const bloomLabel = bloom;
+    const sourceLabel = source;
+    const baseHex = baseLabel && preview?.baseKey.startsWith('base:') ? preview.baseHex : undefined;
+    const bloomHex = bloomLabel && preview?.baseKey.startsWith('bloom:') ? preview.baseHex : undefined;
+    const sourceHex = sourceLabel ? preview?.srcHex : undefined;
+    const resultHex = preview?.result;
+    const colorCell = (label: string, hex: string | undefined): string => label
+      ? `<span class="recipe-color-cell" title="${esc(hex ? `${label} ${hex}` : label)}"><span class="mini-chip${hex ? '' : ' empty-chip'}"${hex ? ` style="background:${esc(hex)}"` : ''}></span><code>${esc(label)}</code>${hex ? `<small>${esc(hex)}</small>` : '<small>unresolved</small>'}</span>`
+      : '<span class="muted-dash">-</span>';
+    return `
+      <div class="recipe-token-row">
+        <span class="recipe-token-name" title="${esc(name)}">${esc(name)}</span>
+        <span>${colorCell(baseLabel, baseHex)}</span>
+        <span>${colorCell(bloomLabel, bloomHex)}</span>
+        <span>${colorCell(sourceLabel, sourceHex)}</span>
+        <span>${mix ? `<code>${esc(mix)}</code>` : '<span class="muted-dash">-</span>'}</span>
+        <span>${resultHex ? `<span class="recipe-color-cell result">${chip(resultHex)}<code>mixed</code><small>${esc(resultHex)}</small></span>` : '<span class="muted-dash">-</span>'}</span>
+      </div>`;
+  }).join('');
+
+  const usage = activeRecipe.usages.length > 0
+    ? activeRecipe.usages.map(item => `
+        <span class="recipe-usage-pill">${esc(item.composition ? `${item.composition} / ${item.profile}` : item.profile)} · ${esc(item.target)}</span>
+      `).join('')
+    : '<span class="recipe-usage-pill muted">not assigned</span>';
+  const recipeAssignment = profile.targets.find(target => target.name === activeRecipe.target && target.recipe === activeRecipe.name);
+  const recipeProfileName = recipeAssignment?.profile ?? (recipeAssignment ? profile.name : activeRecipe.usages[0]?.profile ?? profile.name);
+  const recipeProfile = profiles.profiles.find(item => item.name === recipeProfileName);
+  const recipeBasePalette = activeRecipe.basePalette ?? activeRecipe.raw.basePalette ?? recipeProfile?.basePalette ?? 'unknown';
+  const recipeMood = previewTarget?.mood ?? recipeProfile?.mood ?? profile.mood;
+  const recipeSource = previewTarget?.source ?? recipeProfile?.source ?? profile.source;
+  const recipeBasePalettePath = recipeProfile?.basePalettePath ?? `palettes/${recipeBasePalette}.json`;
+  const recipeBloomPath = recipeProfile?.bloomPath ?? `~/.cache/unclaimed-bloom/blooms/${recipeProfileName}.json`;
+  const recipeSourcePath = recipeProfile?.sourcePath;
+  const recipeContext = recipeAssignment && recipeAssignment.profile && recipeAssignment.profile !== profile.name
+    ? `${profile.name} uses ${recipeProfileName} for ${activeRecipe.target}`
+    : `${recipeProfileName} profile`;
+
+  contentEl.innerHTML = `
+    <section class="overview-hero recipe-hero">
+      <div class="recipe-hero-title">
+        <p class="eyebrow">Recipe Workshop</p>
+        <h1>${esc(activeRecipe.target)} / ${esc(activeRecipe.name)}</h1>
+        <p>Read-only. Preview only. No files harmed yet.</p>
+        <p class="recipe-context-line">${esc(recipeContext)}</p>
+      </div>
+      <div class="recipe-hero-notes" aria-label="Recipe table column notes">
+        <span title="${esc(recipeBasePalettePath)}">
+          <strong>base</strong>
+          <code>${esc(recipeBasePalette)}</code>
+          <small>palette tokens from ${esc(recipeBasePalettePath)}</small>
+        </span>
+        <span title="${esc(recipeBloomPath)}">
+          <strong>bloom</strong>
+          <code>${esc(recipeProfileName)} / ${esc(recipeMood)}</code>
+          <small>semantic palette grown from base + ${esc(recipeSource)} source, stored in ${esc(recipeBloomPath)}</small>
+        </span>
+        <span title="${esc(recipeSourcePath ?? `${recipeSource} source provider`)}">
+          <strong>source</strong>
+          <code>${esc(recipeSource)}</code>
+          <small>${esc(recipeSourcePath ? `source colors from ${recipeSourcePath}` : 'source provider tokens; no file path exposed')}</small>
+        </span>
+        <span title="Final resolved output color for this target token.">
+          <strong>result</strong>
+          <code>${esc(activeRecipe.target)}</code>
+          <small>final target color written by the spore</small>
+        </span>
+      </div>
+      <div class="overview-stats">
+        <span><strong>${activeRecipe.tokenCount}</strong> tokens</span>
+        <span><strong>${activeRecipe.usages.length}</strong> uses</span>
+      </div>
+    </section>
+    <section class="recipe-workshop-layout">
+      <aside class="recipe-browser">
+        <div class="section-heading">
+          <h2>Recipes</h2>
+          <span>${targetRecipes.length} for ${esc(selectedTarget)} · ${recipesData.recipes.length} loaded</span>
+        </div>
+        <div class="recipe-grid">${recipeCards}</div>
+      </aside>
+      <section class="recipe-detail">
+        <div class="section-heading">
+          <h2>Recipe Details</h2>
+          <span>${esc(activeRecipe.path)}</span>
+        </div>
+        <div class="recipe-usage-list">${usage}</div>
+        <div class="recipe-token-table">
+          <div class="recipe-token-header">
+            <span title="Target token name from the selected recipe JSON.">token</span>
+            <span title="Recipe base color. Usually a named token from the recipe basePalette, before bloom/source mixing.">base</span>
+            <span title="Semantic color from the generated profile bloom, for example accent.primary or surface.base.">bloom</span>
+            <span title="Wallpaper/source palette color pulled by the recipe, usually from Matugen source tokens.">source</span>
+            <span title="How much source color is mixed into the base or bloom color. 0 keeps base/bloom; 1 fully uses source.">mix</span>
+            <span title="Final resolved color that this target token will use in the generated spore/output.">result</span>
+          </div>
+          ${tokenRows}
+        </div>
+        <details class="raw-recipe-panel">
+          <summary>Raw JSON</summary>
+          <pre><code>${esc(JSON.stringify(activeRecipe.raw, null, 2))}</code></pre>
+        </details>
+      </section>
+    </section>`;
+
+  contentEl.querySelectorAll<HTMLButtonElement>('.recipe-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeRecipeId = btn.dataset['recipeId'] ?? activeRecipeId;
+      const selectedRecipe = targetRecipes.find(recipe => recipe.id === activeRecipeId);
+      if (selectedRecipe && profile.targets.some(target => target.name === selectedRecipe.target)) {
+        activeTarget = selectedRecipe.target;
+        actionTarget = selectedRecipe.target;
+      }
+      renderTargetList();
+      renderControls();
+      renderRecipes();
+    });
+  });
 }
 
 async function runAction(action: 'sow' | 'grow') {
@@ -365,19 +782,65 @@ function renderBloom() {
   const targetLine = profile
     ? `${profile.targets.length} targets · ${profile.targets.map(t => t.name).join(' ')}`
     : '';
+  const compositionBloomContext = profile?.runs && profile.runs.length > 0 ? `
+        <section class="group bloom-composition">
+            <div class="section-heading">
+                <h2>Composition Bloom Sources</h2>
+                <span>Selected profile is composed; one bloom does not feed every target.</span>
+            </div>
+            <div class="composition-list">
+                ${profile.runs.map((run, index) => {
+                  const runProfile = profiles.profiles.find(item => item.name === run.profile);
+                  const runBloom = blooms[run.profile];
+                  const runTargets = run.targets ?? runProfile?.targets.map(target => target.name) ?? [];
+                  const targetLabel = runTargets.length === 1
+                    ? `1 target: ${runTargets[0]}`
+                    : `${runTargets.length} targets`;
+                  return `
+                    <button class="composition-run" type="button" data-composition-profile="${esc(run.profile)}">
+                        <span class="composition-index">${index + 1}</span>
+                        <div>
+                            <h3>${esc(run.profile)}</h3>
+                            <p>${esc(targetLabel)} · ${esc(runProfile?.basePalette ?? 'unknown palette')} · ${esc(runProfile?.mood ?? 'unknown mood')} · bloom ${esc(fmtTime(runBloom?.generatedAt))}</p>
+                        </div>
+                    </button>`;
+                }).join('')}
+            </div>
+        </section>` : '';
+  const allSwatches = GROUP_ORDER.flatMap(group => Object.entries(preview.colors[group] ?? {})
+    .map(([name, hex]) => ({ group, name, hex })));
+  const heroSwatches = allSwatches.slice(0, 18);
+  const paletteStrip = heroSwatches.map(swatch => `
+        <span class="bloom-strip-swatch" style="background:${esc(swatch.hex)}" title="${esc(`${swatch.group}.${swatch.name} ${swatch.hex}`)}"></span>
+    `).join('');
+  const keyTokens = [
+    ['surface.base', preview.colors.surface?.base],
+    ['surface.raised', preview.colors.surface?.raised],
+    ['text.primary', preview.colors.text?.primary],
+    ['accent.primary', preview.colors.accent?.primary],
+    ['accent.secondary', preview.colors.accent?.secondary],
+    ['state.danger', preview.colors.state?.danger],
+  ].filter((item): item is [string, string] => typeof item[1] === 'string');
+  const keyTokenCards = keyTokens.map(([name, hex]) => `
+        <article class="bloom-token-card">
+            <span class="bloom-token-card-swatch" style="background:${esc(hex)}"></span>
+            <span class="bloom-token-card-name">${esc(name)}</span>
+            <code>${esc(hex)}</code>
+        </article>
+    `).join('');
   const summary = `
         <section class="bloom-overview">
             <div class="bloom-overview-copy">
                 <p class="eyebrow">Bloom Preview</p>
                 <h1>${esc(preview.profile)}</h1>
                 <p class="bloom-source-line">${esc(sourceLine)}</p>
+                ${profile?.type === 'composition' ? '<p class="bloom-source-line">composition view · preview follows the current/source bloom; runs below show the split.</p>' : ''}
                 <p class="bloom-generated">generated ${esc(fmtTime(preview.generatedAt))}</p>
                 ${targetLine ? `<p class="bloom-target-line">${esc(targetLine)}</p>` : ''}
             </div>
-            <div class="bloom-overview-legend">
-                <span><span class="legend-swatch" style="background:${esc(preview.colors.surface?.base ?? '#000000')}"></span> palette</span>
-                <span><span class="legend-swatch" style="background:${esc(preview.colors.accent?.primary ?? '#000000')}"></span> mood</span>
-                <span><span class="legend-swatch" style="background:${esc(preview.colors.text?.primary ?? '#000000')}"></span> bloom</span>
+            <div class="bloom-overview-side">
+                <div class="bloom-strip">${paletteStrip}</div>
+                <div class="bloom-token-card-grid">${keyTokenCards}</div>
             </div>
         </section>`;
 
@@ -385,9 +848,15 @@ function renderBloom() {
     .filter(group => Object.keys(preview.colors[group] ?? {}).length > 0)
     .map(group => {
       const rows = preview.rows.filter(row => row.group === group);
+      const groupSwatches = Object.entries(preview.colors[group] ?? {}).map(([name, hex]) => `
+                <span class="group-strip-swatch" style="background:${esc(hex)}" title="${esc(`${group}.${name} ${hex}`)}"></span>
+            `).join('');
       const rowsHtml = rows.map(row => `
                 <div class="bloom-derivation-row">
-                    <span class="bloom-derivation-token" title="${esc(row.path)}">${esc(row.path)}</span>
+                    <span class="bloom-derivation-token" title="${esc(row.path)}">
+                        <strong>${esc(row.name)}</strong>
+                        <span>${esc(row.path)}</span>
+                    </span>
                     <span class="bloom-derivation-cell">
                         <span class="mini-chip" style="background:${esc(row.baseHex)}"></span>
                         <span class="bloom-derivation-text">
@@ -396,8 +865,10 @@ function renderBloom() {
                         </span>
                     </span>
                     <span class="bloom-derivation-mood">
-                        <span class="mood-pill">${esc(row.group)}</span>
-                        <span class="bloom-derivation-hex">${esc(row.weight.toFixed(2))}</span>
+                        <span class="mix-meter" title="${esc(`source weight ${row.weight.toFixed(2)}`)}">
+                            <span style="width:${esc(`${Math.max(0, Math.min(1, row.weight)) * 100}%`)}"></span>
+                        </span>
+                        <span class="mood-pill">${esc(row.weight.toFixed(2))}</span>
                     </span>
                     <span class="bloom-derivation-cell">
                         <span class="mini-chip" style="background:${esc(row.sourceHex)}"></span>
@@ -417,12 +888,18 @@ function renderBloom() {
 
       return `
                 <section class="group bloom-derivation-group">
-                    <h2>${group}</h2>
+                    <div class="bloom-group-heading">
+                        <div>
+                            <h2>${group}</h2>
+                            <p>${rows.length} tokens · palette + source + mood weight</p>
+                        </div>
+                        <div class="group-strip">${groupSwatches}</div>
+                    </div>
                     <div class="bloom-derivation-table">
                         <div class="bloom-derivation-header">
                             <span>token</span>
-                            <span>palette</span>
-                            <span>mood</span>
+                            <span>base palette</span>
+                            <span>source pull</span>
                             <span>source</span>
                             <span>=&gt; bloom</span>
                         </div>
@@ -431,7 +908,22 @@ function renderBloom() {
                 </section>`;
     }).join('');
 
-  contentEl.innerHTML = summary + previewSections;
+  contentEl.innerHTML = summary + compositionBloomContext + previewSections;
+  contentEl.querySelectorAll<HTMLButtonElement>('[data-composition-profile]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const profileName = btn.dataset['compositionProfile'] ?? '';
+      if (!profiles.profiles.some(item => item.name === profileName)) return;
+      active = profileName;
+      activeTarget = '';
+      actionTarget = '';
+      resetRecipeSelection();
+      applyBloomUiPalette();
+      renderTabs();
+      renderTargetList();
+      renderControls();
+      renderBloom();
+    });
+  });
 }
 
 // --- Inspect view ---
@@ -444,6 +936,8 @@ function renderTargetTabs(data: InspectData): string {
   const targets = Object.keys(data.targets);
   if (!activeTarget || !(activeTarget in data.targets)) {
     activeTarget = targets[0] ?? '';
+    actionTarget = activeTarget;
+    resetRecipeSelection();
   }
 
   return `
@@ -459,29 +953,49 @@ function bindTargetTabs() {
   contentEl.querySelectorAll<HTMLButtonElement>('.target-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       activeTarget = btn.dataset['target'] ?? '';
+      actionTarget = activeTarget;
+      resetRecipeSelection();
+      renderTargetList();
+      renderControls();
       renderInspect();
     });
   });
 }
 
 function renderTokenRow(t: TokenRow): string {
+  const mixWidth = `${Math.max(0, Math.min(1, t.mix)) * 100}%`;
   return `
-        <div class="token-row">
-            <span class="col-name" title="${t.name}">${t.name}</span>
-            <span class="col-base" title="${t.baseKey}">
+        <div class="inspect-pipeline-row">
+            <span class="pipeline-token" title="${esc(t.name)}">
+                <strong>${esc(t.name)}</strong>
+                <span>target token</span>
+            </span>
+            <span class="pipeline-chip" title="${esc(t.baseKey)}">
                 ${chip(t.baseHex)}
-                <span class="hex">${t.baseHex}</span>
-                <span class="key">${t.baseKey}</span>
+                <span>
+                    <strong>${esc(t.baseKey)}</strong>
+                    <code>${esc(t.baseHex)}</code>
+                </span>
             </span>
-            <span class="col-src" title="${t.srcKey}">
+            <span class="pipeline-arrow">+</span>
+            <span class="pipeline-chip" title="${esc(t.srcKey)}">
                 ${chip(t.srcHex)}
-                <span class="hex">${t.srcHex}</span>
-                <span class="key">${t.srcKey}</span>
+                <span>
+                    <strong>${esc(t.srcKey)}</strong>
+                    <code>${esc(t.srcHex)}</code>
+                </span>
             </span>
-            <span class="col-mix">${t.mix.toFixed(2)}</span>
-            <span class="col-result">
+            <span class="pipeline-mix">
+                <span class="mix-meter"><span style="width:${esc(mixWidth)}"></span></span>
+                <code>${esc(t.mix.toFixed(2))}</code>
+            </span>
+            <span class="pipeline-arrow">=</span>
+            <span class="pipeline-chip pipeline-result">
                 ${chip(t.result)}
-                <span class="hex">${t.result}</span>
+                <span>
+                    <strong>target result</strong>
+                    <code>${esc(t.result)}</code>
+                </span>
             </span>
         </div>`;
 }
@@ -494,31 +1008,43 @@ function renderInspect() {
     return;
   }
 
-  const meta = `
-        <div class="inspect-meta">
-            <span class="meta-item"><span class="meta-key">palette</span> ${data.basePalette}</span>
-            <span class="meta-sep">·</span>
-            <span class="meta-item"><span class="meta-key">mood</span> ${data.mood}</span>
-            <span class="meta-sep">·</span>
-            <span class="meta-item"><span class="meta-key">source</span> ${data.source}</span>
-        </div>`;
-
   const targetTabs = renderTargetTabs(data);
   const target = activeTarget;
   const targetInspect = data.targets[target];
+  const referenceBloom = targetInspect?.bloom ?? data.bloom;
+  const referenceProfile = targetInspect?.profile ?? data.profile;
+  const referenceBasePalette = targetInspect?.basePalette ?? data.basePalette;
+  const referenceMood = targetInspect?.mood ?? data.mood;
+  const referenceSource = targetInspect?.source ?? data.source;
+  const targetResults = targetInspect?.tokens.slice(0, 12).map(token => `
+        <span class="inspect-result-strip-swatch" style="background:${esc(token.result)}" title="${esc(`${token.name} ${token.result}`)}"></span>
+    `).join('') ?? '';
   const targetSection = targetInspect ? `
+        <section class="inspect-hero">
+            <div>
+                <p class="eyebrow">Inspect Pipeline</p>
+                <h1>${esc(target)}</h1>
+                <p>${esc(data.profile)}${referenceProfile !== data.profile ? ` · from ${esc(referenceProfile)}` : ''} · recipe ${esc(targetInspect.recipe)} · ${targetInspect.tokens.length} tokens</p>
+            </div>
+            <div class="inspect-result-strip">${targetResults}</div>
+        </section>
         <section class="group inspect-target">
             <div class="target-heading">
-                <h2>${target} <span class="recipe-name">${targetInspect.recipe}</span></h2>
-                <span class="token-count">${targetInspect.tokens.length} tokens</span>
+                <div>
+                    <h2>Recipe transformation</h2>
+                    <p>Bloom/base token + source tint + mix weight => target color.</p>
+                </div>
+                <span class="recipe-name">${esc(targetInspect.recipe)}</span>
             </div>
-            <div class="token-table">
-                <div class="token-header">
+            <div class="inspect-pipeline-table">
+                <div class="inspect-pipeline-header">
                     <span class="col-name">token</span>
-                    <span class="col-base">bloom</span>
-                    <span class="col-src">source tint</span>
-                    <span class="col-mix">mix</span>
-                    <span class="col-result">result</span>
+                    <span>base / bloom</span>
+                    <span></span>
+                    <span>source tint</span>
+                    <span>mix</span>
+                    <span></span>
+                    <span>result</span>
                 </div>
                 ${targetInspect.tokens.map(renderTokenRow).join('')}
             </div>
@@ -526,8 +1052,11 @@ function renderInspect() {
 
   const bloomSection = `
         <section class="group inspect-bloom">
-            <h2>bloom</h2>
-            ${Object.entries(data.bloom).map(([group, tokens]) => `
+            <div class="section-heading">
+                <h2>Bloom Reference</h2>
+                <span>${esc(referenceProfile)} · ${esc(referenceBasePalette)} · ${esc(referenceMood)} · ${esc(referenceSource)}</span>
+            </div>
+            ${Object.entries(referenceBloom).map(([group, tokens]) => `
                 <div class="bloom-group">
                     <span class="bloom-group-name">${group}</span>
                     <div class="bloom-tokens">
@@ -541,8 +1070,10 @@ function renderInspect() {
                 </div>`).join('')}
         </section>`;
 
-  contentEl.innerHTML = meta + targetTabs + targetSection + bloomSection;
+  contentEl.innerHTML = targetTabs + targetSection + bloomSection;
   bindTargetTabs();
+  renderTargetList();
+  renderControls();
 }
 
 async function fetchInspect(profileName: string) {
@@ -552,6 +1083,7 @@ async function fetchInspect(profileName: string) {
     const data = await res.json() as InspectData;
     inspectCache[profileName] = data;
     if (active === profileName && view === 'inspect') renderInspect();
+    if (active === profileName && view === 'recipes') renderRecipes();
   } catch (err) {
     contentEl.innerHTML = `<p class="empty">Could not load inspect data: ${err instanceof Error ? err.message : String(err)}</p>`;
   }
@@ -565,6 +1097,17 @@ async function fetchBloomPreview(profileName: string) {
     if (view === 'bloom' && active === profileName) renderBloom();
   } catch (err) {
     contentEl.innerHTML = `<p class="empty">Could not load bloom preview: ${err instanceof Error ? err.message : String(err)}</p>`;
+  }
+}
+
+async function fetchRecipes() {
+  try {
+    const res = await fetch('/api/recipes');
+    if (!res.ok) throw new Error(`server returned ${res.status}`);
+    recipesData = await res.json() as RecipesResponse;
+    if (view === 'recipes') renderRecipes();
+  } catch (err) {
+    contentEl.innerHTML = `<p class="empty">Could not load recipes: ${err instanceof Error ? err.message : String(err)}</p>`;
   }
 }
 
@@ -601,15 +1144,14 @@ function bindDocActions() {
       active = profileName;
       activeTarget = targetName;
       actionTarget = targetName;
+      resetRecipeSelection();
       applyBloomUiPalette();
       renderTabs();
+      renderTargetList();
       renderControls();
 
       if (action === 'inspect') {
-        view = 'inspect';
-        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector<HTMLButtonElement>('.view-btn[data-view="inspect"]')?.classList.add('active');
-        renderInspect();
+        setView('inspect');
         return;
       }
 
@@ -907,10 +1449,14 @@ async function fetchDoc(docId: string) {
 // --- Render dispatcher ---
 
 function render() {
-  if (view === 'bloom') {
+  if (view === 'overview') {
+    renderOverview();
+  } else if (view === 'bloom') {
     renderBloom();
   } else if (view === 'inspect') {
     renderInspect();
+  } else if (view === 'recipes') {
+    renderRecipes();
   } else {
     renderDocs();
   }
@@ -922,8 +1468,10 @@ function applyBlooms(data: Blooms, pulse = true) {
   inspectCache = {}; // blooms changed → inspect data stale
   if (!active) active = pickInitialProfile();
   activeTarget = '';
+  resetRecipeSelection();
   applyBloomUiPalette();
   renderControls();
+  renderTargetList();
   render();
   if (pulse) {
     indicator.classList.add('pulse');
@@ -939,6 +1487,7 @@ function applyProfiles(data: ProfilesResponse, rerender = true) {
   }
   applyBloomUiPalette();
   renderTabs();
+  renderTargetList();
   renderControls();
   if (rerender) render();
 }
@@ -979,13 +1528,21 @@ Promise.all([
   fetch('/api/profiles').then(r => r.json() as Promise<ProfilesResponse>),
   fetch('/api/blooms').then(r => r.json() as Promise<Blooms>),
   fetch('/api/docs').then(r => r.json() as Promise<DocsIndexResponse>),
+  fetch('/api/recipes').then(r => r.json() as Promise<RecipesResponse>),
 ])
-  .then(([profileData, bloomData, docsData]) => {
+  .then(([profileData, bloomData, docsData, recipeData]) => {
     docsIndex = docsData;
     activeDoc = docsIndex.defaultDoc;
-    applyProfiles(profileData, false);
-    applyBlooms(bloomData, false);
+    recipesData = recipeData;
+    profiles = profileData;
+    blooms = bloomData;
+    active = pickInitialProfile();
+    activeTarget = '';
+    actionTarget = '';
+    resetRecipeSelection();
+    applyBloomUiPalette();
     renderTabs();
+    renderTargetList();
     renderControls();
     render();
   })

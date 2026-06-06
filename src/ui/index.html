@@ -9,19 +9,40 @@
 <body>
     <header>
         <div class="header-top">
-            <span class="title">Unclaimed Bloom</span>
+            <div class="brand-block">
+                <span class="title">Unclaimed Bloom</span>
+                <span class="subtitle">workbench</span>
+            </div>
             <span id="indicator" class="indicator disconnected" title="live updates"></span>
-            <div class="view-toggle">
-                <button class="view-btn active" data-view="bloom">bloom</button>
-                <button class="view-btn" data-view="inspect">inspect</button>
-                <button class="view-btn" data-view="docs">docs</button>
+            <div class="header-actions">
+                <span class="header-note">Theme forge, not a spreadsheet with ambitions.</span>
             </div>
         </div>
-        <nav id="profile-tabs"></nav>
-        <div id="controls" class="controls"></div>
     </header>
     <section id="run-output" class="run-output" hidden></section>
-    <main id="content"></main>
+    <div class="workbench-shell">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Profiles</div>
+                <nav id="profile-tabs" class="profile-list"></nav>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Targets</div>
+                <div id="target-list" class="target-list"></div>
+            </div>
+        </aside>
+        <section class="workspace">
+            <div class="view-toggle" aria-label="Workbench sections">
+                <button class="view-btn active" data-view="overview">overview</button>
+                <button class="view-btn" data-view="bloom">bloom</button>
+                <button class="view-btn" data-view="inspect">inspect</button>
+                <button class="view-btn" data-view="recipes">recipes</button>
+                <button class="view-btn" data-view="docs">docs</button>
+            </div>
+            <main id="content"></main>
+        </section>
+        <aside id="controls" class="context-panel"></aside>
+    </div>
     <script type="module" src="./main.ts"></script>
 </body>
 </html>

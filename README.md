@@ -271,11 +271,16 @@ spore recipe validate ghostty
 
 ## Workbench
 
-Recent changes (2026-06-05)
+Recent changes (2026-06-06)
 
 - Workbench now accepts an explicit notify trigger: POST /api/notify — useful for CLI-driven updates and external scripts. The server broadcasts blooms/profiles over WebSocket to connected clients.
 - UI: WebSocket connection will fall back to ws://<host>:7865/ws when same-origin WS is not available (helps dev setups where Vite proxies or ports differ).
 - CLI: `spore set` / `spore replant` updates a profile's target recipe; use `--apply` to sow+grow in one step. `spore cache` subcommands manage named cached spore variants.
+- UI redesign: workbench now uses a three-area layout with profile/target sidebar, main workbench views, and right context/actions panel.
+- Overview replaces the old live status hidden in Docs.
+- Bloom and Inspect are composition-aware, so `desktop` can show GTK from `daily-gtk` and the rest from `daily` without lying.
+- Recipes is now a read-only target-scoped Recipe Workshop. It explains base/bloom/source/result with concrete paths, shows color badges, and shows available recipe counts per target.
+- Next workbench step: add read-only preview for same-target recipes that are not assigned by the selected profile.
 
 ## Workbench
 
@@ -299,18 +304,27 @@ http://localhost:5173
 
 The workbench shows:
 
-- bloom swatches,
-- bloom/profile preview showing the palette → mood → source → bloom derivation table,
-- profile tabs,
-- selected profile palette/mood/source status,
-- per-profile target status with sown/grown timestamps,
-- target inspector,
-- bloom token rows with palette color, mood weight, source color, and bloom result,
-- recipe/token count per target,
+- profile and target sidebar with current/active markers,
+- overview with profile composition, target status, and per-target actions,
+- bloom preview showing palette → source/mood → bloom derivation,
+- target inspect view showing base/bloom/source/mix/result pipeline,
+- read-only Recipe Workshop scoped to selected profile and target,
+- recipe table with color badges and concrete path/context notes,
+- recipe count per target so unused recipes are visible without becoming misleading previews,
 - `sow` and `grow` buttons for all targets or one selected target,
-- docs/help view with README opened first and generated live help.
+- equivalent CLI snippets in the context panel,
+- docs/help view with README opened first and generated live help,
 - optional `Use Bloom palette` toggle with contrast guardrails and a small bloom preview.
-- target-row actions in Live Help for `inspect`, `sow`, and `grow`.
+
+Current Recipe Workshop rule:
+
+```text
+profile -> target -> recipe
+```
+
+Recipes are narrowed to the selected target. The profile-assigned recipe is active.
+Other recipes for that same target may be shown as available but are not treated as
+real previews until the workbench gets a dedicated read-only recipe preview API.
 
 If the workbench is already running, `scripts/unclaimed-bloom` opens the existing
 URL instead of starting a second server and losing a small argument with the port.
