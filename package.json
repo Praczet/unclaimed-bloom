@@ -7,11 +7,14 @@
     "spore": "./dist/cli/spore.js"
   },
   "scripts": {
-    "spore":          "tsx src/cli/spore.ts",
-    "dev:cli":        "tsx src/cli/spore.ts",
-    "build:cli":      "tsup src/cli/spore.ts --format esm --dts --out-dir dist/cli",
-    "typecheck":      "tsc --noEmit && tsc --project src/ui/tsconfig.json --noEmit",
-    "workbench":      "concurrently --names server,ui --prefix-colors cyan,magenta \"UB_DATA_DIR=$(pwd) tsx src/server/workbench.ts\" \"vite\""
+    "spore": "tsx src/cli/spore.ts",
+    "dev": "npm run dev:workbench",
+    "dev:workbench": "concurrently --names server,ui --prefix-colors cyan,magenta \"npm run dev:workbench:server\" \"npm run dev:workbench:ui\"",
+    "dev:workbench:server": "UB_DATA_DIR=$(pwd) tsx watch src/server/workbench.ts",
+    "dev:workbench:ui": "vite",
+    "workbench": "npm run dev:workbench",
+    "build:cli": "tsup src/cli/spore.ts --format esm --dts --out-dir dist/cli",
+    "typecheck": "tsc --noEmit && tsc --project src/ui/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
