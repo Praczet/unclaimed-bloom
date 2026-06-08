@@ -47,6 +47,11 @@
       "source": "surface_container_high",
       "mix": 0.15
     },
+    "surface_container_lowest": {
+      "bloom": "surface.lowest",
+      "source": "surface_container_lowest",
+      "mix": 0.15
+    },
     "outline": {
       "bloom": "border.subtle",
       "source": "outline",
