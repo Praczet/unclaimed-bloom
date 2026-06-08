@@ -1,0 +1,15 @@
+{
+  "name": "readable",
+  "target": "nvim",
+  "basePalette": "tiny-light",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "accent": {
+      "base": "blue",
+      "source": "primary",
+      "mix": 0.2
+    }
+  }
+}

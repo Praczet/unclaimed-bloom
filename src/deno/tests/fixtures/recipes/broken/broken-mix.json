@@ -1,0 +1,11 @@
+{
+  "name": "broken-mix",
+  "target": "broken",
+  "tokens": {
+    "background": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 1.5
+    }
+  }
+}

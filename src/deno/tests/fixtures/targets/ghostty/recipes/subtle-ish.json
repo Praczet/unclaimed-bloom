@@ -1,0 +1,17 @@
+{
+  "name": "subtle-ish",
+  "target": "ghostty",
+  "tokens": {
+    "background": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "foreground": {
+      "bloom": "text.primary"
+    },
+    "cursor": {
+      "base": "blue"
+    }
+  }
+}

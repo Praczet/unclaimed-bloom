@@ -1,0 +1,13 @@
+{
+  "name": "broken-source-variant",
+  "basePalette": "tiny-dark",
+  "mood": "budding",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "night-ish"
+  },
+  "targets": {
+    "ghostty": "subtle-ish"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "tiny",
+  "basePalette": "tiny-dark",
+  "mood": "budding",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "dark"
+  },
+  "targets": {
+    "ghostty": "subtle-ish",
+    "nvim": "readable"
+  }
+}
