@@ -1,0 +1,11 @@
+{
+  "name": "Tiny Light",
+  "slug": "tiny-light",
+  "kind": "light",
+  "source": "fixture",
+  "colors": {
+    "background": "#ffffff",
+    "foreground": "#111111",
+    "accent": "#3366cc"
+  }
+}

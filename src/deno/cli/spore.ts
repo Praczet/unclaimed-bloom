@@ -1,9 +1,10 @@
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
+import { PaletteLoader } from "../core/palettes/PaletteLoader.ts";
 
 const VERSION = "0.1.0-deno-experiment";
 
 class SporeCli {
-  public run(args: string[]): void {
+  public async run(args: string[]): Promise<void> {
     const commandArgs = args[0] === "--" ? args.slice(1) : args;
     const command = commandArgs[0] ?? "--help";
 
@@ -19,6 +20,11 @@ class SporeCli {
 
     if (command === "status") {
       this.printStatus();
+      return;
+    }
+
+    if (command === "palette") {
+      await this.runPaletteCommand(commandArgs.slice(1));
       return;
     }
 
@@ -69,6 +75,75 @@ default cache dir:
   ${paths.defaultCacheDir}`);
   }
 
+  private async runPaletteCommand(args: string[]): Promise<void> {
+    const subcommand = args[0] ?? "help";
+
+    if (
+      subcommand === "help" || subcommand === "--help" || subcommand === "-h"
+    ) {
+      this.printPaletteHelp();
+      return;
+    }
+
+    if (subcommand === "list") {
+      await this.listPalettes();
+      return;
+    }
+
+    if (subcommand === "inspect") {
+      await this.inspectPalette(args[1]);
+      return;
+    }
+
+    this.printUnknownCommand(`palette ${subcommand}`);
+    Deno.exit(1);
+  }
+
+  private printPaletteHelp(): void {
+    console.log(`Palette commands:
+  deno task spore:dev -- palette list
+  deno task spore:dev -- palette inspect <slug>`);
+  }
+
+  private async listPalettes(): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+    const loader = new PaletteLoader();
+    const palettes = await loader.list(paths.palettesDir());
+
+    for (const palette of palettes) {
+      console.log(
+        `  ${palette.slug.padEnd(28)} ${
+          palette.kind.padEnd(6)
+        } ${palette.name}  ${palette.colorCount} colors`,
+      );
+    }
+  }
+
+  private async inspectPalette(slug: string | undefined): Promise<void> {
+    if (!slug) {
+      console.error("Missing palette slug.");
+      console.error("");
+      this.printPaletteHelp();
+      Deno.exit(1);
+    }
+
+    const paths = BloomPaths.fromDeno();
+    const loader = new PaletteLoader();
+    const palette = await loader.inspect(paths.palettesDir(), slug);
+
+    console.log(`${palette.name} (${palette.slug})`);
+    console.log(`kind: ${palette.kind}`);
+    if (palette.source) {
+      console.log(`source: ${palette.source}`);
+    }
+    console.log(`colors: ${Object.keys(palette.colors).length}`);
+    console.log("");
+
+    for (const [name, hex] of Object.entries(palette.colors).sort()) {
+      console.log(`  ${name.padEnd(24)} ${hex}`);
+    }
+  }
+
   private printUnknownCommand(command: string): void {
     console.error(`Unknown command: ${command}`);
     console.error("");
@@ -77,4 +152,4 @@ default cache dir:
   }
 }
 
-new SporeCli().run(Deno.args);
+await new SporeCli().run(Deno.args);

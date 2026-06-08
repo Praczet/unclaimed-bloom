@@ -1,0 +1,8 @@
+{
+  "name": "Broken Invalid Color",
+  "slug": "broken-invalid-color",
+  "kind": "dark",
+  "colors": {
+    "background": "111111"
+  }
+}

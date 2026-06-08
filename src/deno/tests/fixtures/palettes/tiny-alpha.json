@@ -1,0 +1,12 @@
+{
+  "name": "Tiny Alpha",
+  "slug": "tiny-alpha",
+  "kind": "dark",
+  "source": "fixture",
+  "colors": {
+    "shortRgb": "#abc",
+    "shortRgba": "#abcd",
+    "rgb": "#aabbcc",
+    "rgba": "#aabbccdd"
+  }
+}

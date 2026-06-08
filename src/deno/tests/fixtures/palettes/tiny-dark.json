@@ -1,0 +1,11 @@
+{
+  "name": "Tiny Dark",
+  "slug": "tiny-dark",
+  "kind": "dark",
+  "source": "fixture",
+  "colors": {
+    "background": "#111111",
+    "foreground": "#eeeeee",
+    "accent": "#88aaff"
+  }
+}
