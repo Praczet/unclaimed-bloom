@@ -410,6 +410,9 @@ Global flags:
         { header: "report", value: (spore) => spore.reportPath, dim: true },
       ]));
     }
+    this.printHuman("");
+    const growArgs = [profileName, targetFilter].filter(Boolean).join(" ");
+    this.printHuman(this.display.dim(`  next: deno task spore:dev -- grow ${growArgs}`));
   }
 
   private printPaletteHelp(): void {
@@ -884,6 +887,9 @@ Global flags:
       { header: "output", value: (r) => r.outputPath, dim: true },
       { header: "report", value: (r) => r.reportPath, dim: true },
     ]));
+    this.printHuman("");
+    const plantArgs = [profileName, targetFilter].filter(Boolean).join(" ");
+    this.printHuman(this.display.dim(`  next: deno task spore:dev -- plant ${plantArgs}`));
   }
 
   private async inspectProfileOrTarget(args: string[]): Promise<void> {
