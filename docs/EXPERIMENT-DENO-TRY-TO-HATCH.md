@@ -191,6 +191,133 @@ This keeps the experiment easy to inspect and easy to delete if it grows horns.
 
 Later, if the experiment succeeds, the code can be moved from `src/deno/` into the main `src/core`, `src/cli`, and `src/server` structure.
 
+## Current state — as of 2026-06-09
+
+Branch: `experiment/deno-try-to-hatch`
+
+### What is built and working
+
+**CLI** (`deno task spore:dev -- <command>`):
+
+```
+help / version / status
+palette  list | inspect <slug>
+profile  list | inspect <name>
+recipe   list [target] | inspect <target/name>   ← shows available recipes if only target given
+mood     list
+sow      <profile> [target] [--dry-run]          ← bloom + spores into cache; hints "next: grow"
+grow     <profile> [target] [--dry-run]          ← renders templates from cache; hints "next: plant"
+inspect  <profile> [target]                      ← bloom colors or spore token table
+replant  <profile> <target> <recipe> [--apply]   ← updates profile JSON; --apply runs sow+grow
+plant    <profile> [target] [--dry-run]          ← deploys rendered files via hooks/plant.json
+```
+
+All commands support `--json` for machine-readable output.
+
+**Core modules** (all with `*.test.ts`):
+
+```
+src/deno/core/
+  paths/BloomPaths.ts          ← UB_DATA_DIR / UB_CACHE_DIR, all path methods
+  palettes/PaletteLoader.ts
+  profiles/ProfileLoader.ts
+  recipes/RecipeLoader.ts
+  moods/MoodLoader.ts          ← includes list() returning MoodSummary[]
+  blooms/BloomGenerator.ts
+  spores/SporeGenerator.ts
+  templates/TemplateRenderer.ts  ← {{token}}, {{token|rgba}}, {{token|rgba:0.75}}
+  hooks/HookRunner.ts          ← copy + exec steps, {{rendered}} etc. vars, dry-run
+  reports/ReportWriter.ts
+```
+
+**Templates** — every target has at least one:
+
+```
+targets/
+  ags/templates/matugen.css
+  ghostty/templates/ghostty.theme
+  hyprland/templates/matugen.conf     ← uses {{primary|rgba}} for Hyprland format
+  iced/templates/matugen.json
+  icons/templates/runtime.json        ← intermediate input for Python worker
+  mycli/templates/colors.ini
+  nvim/templates/matugen-colors.lua
+  potato/templates/theme.json
+  rofi/templates/matugen.rasi         ← uses {{background|rgba:0.75}} for CSS format
+  sddm/templates/theme.conf
+  sqlit/templates/theme.json
+  swaync/templates/matugen.css
+  waybar/templates/matugen.css
+  wlogout/templates/matugen.css
+  yazi/templates/theme.toml
+```
+
+**Plant hooks** — targets that need post-deploy steps:
+
+```
+targets/gtk/hooks/plant.json    ← copy to ~/.local/share/themes/... + gsettings
+targets/icons/hooks/plant.json  ← run adart-worker + gsettings
+```
+
+**Workbench API** (`deno task workbench:server` → port 7865):
+
+```
+GET /api/status
+GET /api/palettes
+GET /api/profiles          ← rich shape: targets[], bloomAt, sownAt per target
+GET /api/recipes[?target=]  ← includes usages[] and raw recipe
+GET /api/blooms            ← flat Record<profile, bloom> map (Vite UI compatible)
+GET /api/bloom-preview/<profile>
+GET /api/inspect/<profile>
+GET /api/docs              ← stub (returns empty list)
+```
+
+Vite workbench (`npm run dev:workbench:ui`) already proxies `/api` to port 7865.
+Run both servers to use the Deno backend with the existing UI.
+
+### Test suite
+
+```bash
+deno task test   # 61 tests, all passing
+```
+
+### Lifecycle for any target
+
+```bash
+deno task spore:dev -- sow daily yazi
+deno task spore:dev -- grow daily yazi
+deno task spore:dev -- plant daily yazi   # only if targets/yazi/hooks/plant.json exists
+```
+
+### Key architecture decisions made
+
+- **No adapters** — replaced by `targets/<target>/templates/` + generic `TemplateRenderer`
+- **Template lookup fallback** — tries `dataDir/targets/` first, then repo `targets/` (dev workflow works without UB_DATA_DIR)
+- **Hook system** — `targets/<target>/hooks/plant.json` with `copy` and `exec` steps; targets without hooks are silently skipped by `plant`
+- **`sow → grow → plant`** — three explicit stages; `grow` is always cache-only, `plant` is the real-files step
+- **`UB_DATA_DIR=$(pwd)`** — use this when editing profiles/recipes in the repo to avoid stale installed config
+- **`replant --apply`** — runs sow + grow inline; add `--plant` concept is next
+- **Composition profiles** — not supported yet in sow/grow/plant (throws a clear error)
+- **icons target** — `grow` produces `runtime.json` in cache; `plant` would call the Python worker (hook wired, worker path TBD)
+- **sddm** — template exists with 5 tokens; full recipe decision postponed
+
+### What is NOT done yet
+
+- `plant` does not yet support `--apply` chaining from `replant`
+- WebSocket live updates in workbench server
+- `/api/run` endpoint (sow/grow triggered from UI)
+- Composition profile support in any write command
+- `grow --plant` or `plant` for targets without a `hooks/plant.json` (they are skipped)
+- Python worker integration (Phase 11)
+- `spore:local` task shortcut (`UB_DATA_DIR=$(pwd)` pre-set)
+
+### Next phase
+
+**Phase 11 — Python worker runner** (`src/deno/core/workers/WorkerRunner.ts`)
+Use `Deno.Command` to run a Python worker, capture stdout/stderr/exit code, write a report.
+Start with a demo worker, then wire into the icons target via `plant`.
+
+---
+
 ## Phase 0 — Prepare the experiment
 
 ### Purpose
