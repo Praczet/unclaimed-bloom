@@ -1,3 +1,10 @@
+export interface MoodSummary {
+  readonly name: string;
+  readonly description: string;
+  readonly weights: MoodWeights;
+  readonly path: string;
+}
+
 export interface MoodWeights {
   readonly surface: number;
   readonly foreground: number;
@@ -12,6 +19,32 @@ export interface Mood {
 }
 
 export class MoodLoader {
+  public async list(moodsDir: string): Promise<MoodSummary[]> {
+    const summaries: MoodSummary[] = [];
+
+    try {
+      for await (const entry of Deno.readDir(moodsDir)) {
+        if (entry.isFile && entry.name.endsWith(".json")) {
+          const path = this.join(moodsDir, entry.name);
+          const mood = await this.loadFile(path);
+          summaries.push({
+            name: mood.name,
+            description: mood.description ?? "",
+            weights: mood.weights,
+            path,
+          });
+        }
+      }
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        throw new Error(`Moods directory not found:\n  ${moodsDir}`);
+      }
+      throw err;
+    }
+
+    return summaries.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   public async inspect(moodsDir: string, name: string): Promise<Mood> {
     return await this.loadFile(this.join(moodsDir, `${name}.json`));
   }

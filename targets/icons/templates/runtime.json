@@ -1,0 +1,28 @@
+{
+  "token_aliases": {
+    "__ADART_ICON_SURFACE__":         "{{__ADART_ICON_SURFACE__}}",
+    "__ADART_ICON_SURFACE_DIM__":     "{{__ADART_ICON_SURFACE_DIM__}}",
+    "__ADART_ICON_SURFACE_CONTAINER__": "{{__ADART_ICON_SURFACE_CONTAINER__}}",
+    "__ADART_ICON_SURFACE_HIGH__":    "{{__ADART_ICON_SURFACE_HIGH__}}",
+    "__ADART_ICON_SURFACE_LOWEST__":  "{{__ADART_ICON_SURFACE_LOWEST__}}",
+    "__ADART_ICON_ON_SURFACE__":      "{{__ADART_ICON_ON_SURFACE__}}",
+    "__ADART_ICON_ON_SURFACE_MUTED__": "{{__ADART_ICON_ON_SURFACE_MUTED__}}",
+    "__ADART_ICON_OUTLINE__":         "{{__ADART_ICON_OUTLINE__}}",
+    "__ADART_ICON_SHADOW__":          "{{__ADART_ICON_SHADOW__}}",
+    "__ADART_ICON_ACCENT_1__":        "{{__ADART_ICON_ACCENT_1__}}",
+    "__ADART_ICON_ACCENT_1_DIM__":    "{{__ADART_ICON_ACCENT_1_DIM__}}",
+    "__ADART_ICON_ACCENT_1_BRIGHT__": "{{__ADART_ICON_ACCENT_1_BRIGHT__}}",
+    "__ADART_ICON_ACCENT_2__":        "{{__ADART_ICON_ACCENT_2__}}",
+    "__ADART_ICON_ACCENT_2_DIM__":    "{{__ADART_ICON_ACCENT_2_DIM__}}",
+    "__ADART_ICON_ACCENT_2_BRIGHT__": "{{__ADART_ICON_ACCENT_2_BRIGHT__}}",
+    "__ADART_ICON_ACCENT_3__":        "{{__ADART_ICON_ACCENT_3__}}",
+    "__ADART_ICON_ACCENT_3_DIM__":    "{{__ADART_ICON_ACCENT_3_DIM__}}",
+    "__ADART_ICON_ACCENT_3_BRIGHT__": "{{__ADART_ICON_ACCENT_3_BRIGHT__}}",
+    "__ADART_ICON_SUCCESS__":         "{{__ADART_ICON_SUCCESS__}}",
+    "__ADART_ICON_SUCCESS_DIM__":     "{{__ADART_ICON_SUCCESS_DIM__}}",
+    "__ADART_ICON_WARNING__":         "{{__ADART_ICON_WARNING__}}",
+    "__ADART_ICON_WARNING_DIM__":     "{{__ADART_ICON_WARNING_DIM__}}",
+    "__ADART_ICON_ERROR__":           "{{__ADART_ICON_ERROR__}}",
+    "__ADART_ICON_ERROR_DIM__":       "{{__ADART_ICON_ERROR_DIM__}}"
+  }
+}

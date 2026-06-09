@@ -1,0 +1,17 @@
+{
+  "name": "unclaimed-bloom",
+  "fontFamily": "sans-serif",
+  "colors": {
+    "background":  "{{background}}",
+    "text":        "{{text}}",
+    "muted":       "{{muted}}",
+    "grid":        "{{grid}}",
+    "axis":        "{{axis}}",
+    "weightLine":  "{{weightLine}}",
+    "weightPoint": "{{text}}",
+    "stepsBar":    "{{stepsBar}}",
+    "success":     "{{success}}",
+    "warning":     "{{warning}}",
+    "danger":      "{{danger}}"
+  }
+}

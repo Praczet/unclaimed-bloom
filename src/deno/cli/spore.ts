@@ -3,7 +3,7 @@ import {
   BloomGenerator,
   type BloomPreview,
 } from "../core/blooms/BloomGenerator.ts";
-import { MoodLoader } from "../core/moods/MoodLoader.ts";
+import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
 import {
@@ -16,6 +16,7 @@ import {
 import { type Recipe, RecipeLoader } from "../core/recipes/RecipeLoader.ts";
 import { ReportWriter } from "../core/reports/ReportWriter.ts";
 import { type Spore, SporeGenerator } from "../core/spores/SporeGenerator.ts";
+import { TemplateRenderer } from "../core/templates/TemplateRenderer.ts";
 
 const VERSION = "0.1.0-deno-experiment";
 
@@ -79,7 +80,7 @@ class SporeCli {
     }
 
     if (command === "grow") {
-      this.printGrowReserved(commandArgs.slice(1));
+      await this.growProfile(commandArgs.slice(1));
       return;
     }
 
@@ -100,6 +101,16 @@ class SporeCli {
 
     if (command === "recipe") {
       await this.runRecipeCommand(commandArgs.slice(1));
+      return;
+    }
+
+    if (command === "mood") {
+      await this.runMoodCommand(commandArgs.slice(1));
+      return;
+    }
+
+    if (command === "replant") {
+      await this.replantTarget(commandArgs.slice(1));
       return;
     }
 
@@ -167,11 +178,13 @@ Commands:
   version   Show the experimental CLI version.
   status    Show detected runtime paths and environment overrides.
   sow       Generate bloom and spores into cache.
-  grow      Reserved for applying cached spores later.
+  grow      Render cached spores into target config files (cache only).
   inspect   Inspect generated bloom or target spore.
   palette   List or inspect palettes.
   profile   List or inspect profiles.
   recipe    List or inspect recipes.
+  mood      List moods.
+  replant   Change a target's recipe in a profile.
 
 Global flags:
   --json          Print machine-readable JSON.
@@ -580,7 +593,49 @@ Global flags:
       return;
     }
 
-    this.printHuman(JSON.stringify(profile, null, 2));
+    if (this.isCompositionProfile(profile)) {
+      this.printHuman(this.display.fields([
+        { label: "name", value: profile.name },
+        { label: "type", value: "composition" },
+        ...(profile.currentProfile
+          ? [{ label: "current", value: profile.currentProfile }]
+          : []),
+      ]));
+      this.printHuman("");
+      this.printHuman(this.display.table(profile.runs, [
+        { header: "profile", value: (run) => run.profile },
+        {
+          header: "targets",
+          value: (run) => run.targets?.join(", ") ?? "(all)",
+          dim: true,
+        },
+        {
+          header: "exclude",
+          value: (run) => run.exclude?.join(", ") ?? "",
+          dim: true,
+        },
+      ]));
+      return;
+    }
+
+    const sourceDesc = profile.source.type === "seed"
+      ? `seed: ${profile.source.color}`
+      : `matugen:${profile.source.variant}  ${profile.source.colorsPath}`;
+
+    this.printHuman(this.display.fields([
+      { label: "name", value: profile.name },
+      { label: "base palette", value: profile.basePalette },
+      { label: "mood", value: profile.mood },
+      { label: "source", value: sourceDesc, dim: true },
+    ]));
+    this.printHuman("");
+    this.printHuman(this.display.table(
+      Object.entries(profile.targets).map(([target, recipe]) => ({ target, recipe })),
+      [
+        { header: "target", value: (row) => row.target },
+        { header: "recipe", value: (row) => row.recipe },
+      ],
+    ));
   }
 
   private async runRecipeCommand(args: string[]): Promise<void> {
@@ -658,6 +713,35 @@ Global flags:
 
     const paths = BloomPaths.fromDeno();
     const loader = new RecipeLoader();
+
+    if (!id.includes("/")) {
+      const recipes = await loader.list(paths.recipesDir(), id);
+      if (this.outputMode === "json") {
+        this.printJson({
+          ok: false,
+          error: { message: `Recipe id must look like <target>/<name>. Received: ${id}` },
+          hint: recipes.map((r) => r.id),
+        });
+        Deno.exit(1);
+      }
+      if (recipes.length === 0) {
+        this.printUsageError(
+          `No recipes found for target "${id}".`,
+          "recipe inspect <target/name>",
+        );
+      } else {
+        this.printUsageError(
+          `Recipe id must include a name. Did you mean one of these?`,
+          "recipe inspect <target/name>",
+        );
+        this.printHuman("");
+        this.printHuman(this.display.table(recipes, [
+          { header: "id", value: (r) => r.id },
+          { header: "tokens", value: (r) => String(r.tokenCount), align: "right" },
+        ]));
+      }
+      Deno.exit(1);
+    }
     const recipe = await loader.inspect(paths.recipesDir(), id);
     if (this.outputMode === "json") {
       this.printJson({
@@ -668,35 +752,131 @@ Global flags:
       return;
     }
 
-    this.printHuman(JSON.stringify(recipe, null, 2));
+    const infoFields: Array<{ label: string; value: string; dim?: boolean }> = [
+      { label: "name", value: recipe.name },
+      { label: "target", value: recipe.target },
+    ];
+    if (recipe.basePalette) {
+      infoFields.push({ label: "base palette", value: recipe.basePalette, dim: true });
+    }
+    if (recipe.weights) {
+      const w = recipe.weights;
+      const parts = (["surface", "foreground", "accent", "semantic"] as const)
+        .filter((k) => w[k] !== undefined)
+        .map((k) => `${k}: ${w[k]}`);
+      if (parts.length > 0) {
+        infoFields.push({ label: "weights", value: parts.join("  "), dim: true });
+      }
+    }
+    infoFields.push({
+      label: "tokens",
+      value: String(Object.keys(recipe.tokens).length),
+    });
+
+    this.printHuman(this.display.fields(infoFields));
+    this.printHuman("");
+
+    const tokenRows = Object.entries(recipe.tokens).map(([name, token]) => {
+      if ("bloom" in token) {
+        const mix = token.mix !== undefined ? String(token.mix) : "";
+        const src = token.source ? ` + ${token.source}` : "";
+        return { name, kind: "bloom", ref: `${token.bloom}${src}`, mix };
+      }
+      if ("source" in token) {
+        return { name, kind: "direct", ref: `${token.source} + ${token.base}`, mix: String(token.mix) };
+      }
+      return { name, kind: "base", ref: token.base, mix: "" };
+    });
+
+    this.printHuman(this.display.table(tokenRows, [
+      { header: "token", value: (row) => row.name },
+      { header: "kind", value: (row) => row.kind, dim: true },
+      { header: "ref", value: (row) => row.ref, dim: true },
+      { header: "mix", value: (row) => row.mix, align: "right" },
+    ]));
   }
 
-  private printGrowReserved(args: string[]): void {
-    const profile = args.find((arg) => !arg.startsWith("-")) ?? "daily";
-    const target = args.find((arg, index) => index > 0 && !arg.startsWith("-"));
+  private async growProfile(args: string[]): Promise<void> {
+    const positional = args.filter((arg) => !arg.startsWith("-"));
+    const profileName = positional[0];
+    const targetFilter = positional[1];
+    const dryRun = args.includes("--dry-run");
 
-    if (this.outputMode === "json") {
-      this.printJson({
-        ok: false,
-        error: {
-          message: "Deno grow is reserved for applying cached spores later.",
-          usage: "deno task spore:dev -- sow <profile> [target]",
-          profile,
-          target,
-        },
-      });
+    if (!profileName) {
+      this.printUsageError(
+        "Missing profile name.",
+        "deno task spore:dev -- grow <profile> [target] [--dry-run]",
+      );
       Deno.exit(1);
     }
 
-    this.printHumanError(
-      "Deno grow is reserved for applying cached spores later.",
+    const paths = BloomPaths.fromDeno();
+    const profileLoader = new ProfileLoader();
+    const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
+
+    if (this.isCompositionProfile(profileEntry)) {
+      throw new Error(
+        `Deno grow does not handle composition profiles yet:\n  ${profileName}`,
+      );
+    }
+
+    const profile = profileEntry;
+    const targets = Object.entries(profile.targets).filter(([target]) =>
+      targetFilter === undefined || target === targetFilter
     );
-    this.printHumanError("");
-    this.printHumanError("Cache generation is:");
-    this.printHumanError(
-      `  deno task spore:dev -- sow ${profile}${target ? ` ${target}` : ""}`,
-    );
-    Deno.exit(1);
+
+    if (targets.length === 0 && targetFilter !== undefined) {
+      throw new Error(
+        `Target "${targetFilter}" not in profile "${profileName}".`,
+      );
+    }
+
+    const renderer = new TemplateRenderer();
+    const results: Array<{ target: string; outputPath: string; reportPath: string }> = [];
+
+    for (const [target] of targets) {
+      const { outputPath, reportPath } = await renderer.renderToCache(
+        paths,
+        profileName,
+        target,
+        dryRun,
+      );
+      results.push({ target, outputPath, reportPath });
+    }
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "grow",
+        profile: profileName,
+        dryRun,
+        results,
+      });
+      return;
+    }
+
+    if (dryRun) {
+      this.printHuman(this.display.fields([
+        {
+          label: "Dry run",
+          value: targetFilter
+            ? `grow ${targetFilter} for ${profileName}`
+            : `grow all targets for ${profileName}`,
+        },
+      ]));
+      this.printHuman("");
+      this.printHuman(this.display.table(results, [
+        { header: "target", value: (r) => r.target },
+        { header: "would write", value: (r) => r.outputPath, dim: true },
+      ]));
+      return;
+    }
+
+    this.printHuman(this.display.table(results, [
+      { header: "target", value: (r) => r.target },
+      { header: "output", value: (r) => r.outputPath, dim: true },
+      { header: "report", value: (r) => r.reportPath, dim: true },
+    ]));
   }
 
   private async inspectProfileOrTarget(args: string[]): Promise<void> {
@@ -727,12 +907,37 @@ Global flags:
       return;
     }
 
-    this.printHuman(this.display.fields([
+    const generatedAt =
+      bloom !== null && typeof bloom === "object" && "generatedAt" in bloom
+        ? String((bloom as { generatedAt: unknown }).generatedAt)
+        : undefined;
+
+    const colors =
+      bloom !== null && typeof bloom === "object" && "colors" in bloom
+        ? (bloom as { colors: Record<string, Record<string, string>> }).colors
+        : {};
+
+    const rows: Array<{ path: string; hex: string }> = [];
+    for (const [group, tokens] of Object.entries(colors)) {
+      for (const [token, hex] of Object.entries(tokens as Record<string, string>)) {
+        rows.push({ path: `${group}.${token}`, hex });
+      }
+    }
+
+    const fields: Array<{ label: string; value: string; dim?: boolean }> = [
       { label: "profile", value: profileName },
       { label: "bloom file", value: bloomPath, dim: true },
-    ]));
+    ];
+    if (generatedAt) {
+      fields.push({ label: "generated", value: generatedAt, dim: true });
+    }
+
+    this.printHuman(this.display.fields(fields));
     this.printHuman("");
-    this.printHuman(JSON.stringify(bloom, null, 2));
+    this.printHuman(this.display.table(rows, [
+      { header: "token", value: (row) => row.path },
+      { header: "color", value: (row) => this.display.colorValue(row.hex) },
+    ]));
   }
 
   private async inspectCachedSpore(
@@ -775,6 +980,153 @@ Global flags:
         { header: "color", value: (row) => this.display.colorValue(row.hex) },
       ],
     ));
+  }
+
+  private async runMoodCommand(args: string[]): Promise<void> {
+    const subcommand = args[0] ?? "list";
+
+    if (subcommand === "list") {
+      await this.listMoods();
+      return;
+    }
+
+    this.printUnknownCommand(`mood ${subcommand}`);
+    Deno.exit(1);
+  }
+
+  private async listMoods(): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+    const loader = new MoodLoader();
+    const moods = await loader.list(paths.moodsDir());
+
+    if (this.outputMode === "json") {
+      this.printJson({ ok: true, command: "mood list", moods });
+      return;
+    }
+
+    this.printHuman(this.display.table(moods, [
+      { header: "name", value: (mood: MoodSummary) => mood.name },
+      {
+        header: "surface",
+        value: (mood: MoodSummary) => String(mood.weights.surface),
+        align: "right",
+      },
+      {
+        header: "foreground",
+        value: (mood: MoodSummary) => String(mood.weights.foreground),
+        align: "right",
+      },
+      {
+        header: "accent",
+        value: (mood: MoodSummary) => String(mood.weights.accent),
+        align: "right",
+      },
+      {
+        header: "semantic",
+        value: (mood: MoodSummary) => String(mood.weights.semantic),
+        align: "right",
+      },
+      {
+        header: "description",
+        value: (mood: MoodSummary) => mood.description,
+        dim: true,
+      },
+    ]));
+  }
+
+  private async replantTarget(args: string[]): Promise<void> {
+    const positional = args.filter((arg) => !arg.startsWith("-"));
+    const profileName = positional[0];
+    const target = positional[1];
+    const recipeName = positional[2];
+    const apply = args.includes("--apply");
+
+    if (!profileName || !target || !recipeName) {
+      this.printUsageError(
+        "Missing arguments.",
+        "deno task spore:dev -- replant <profile> <target> <recipe> [--apply]",
+      );
+      Deno.exit(1);
+    }
+
+    const paths = BloomPaths.fromDeno();
+    const profilePath = `${paths.profilesDir()}/${profileName}.json`;
+
+    let raw: string;
+    try {
+      raw = await Deno.readTextFile(profilePath);
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        throw new Error(`Profile not found:\n  ${profilePath}`);
+      }
+      throw err;
+    }
+
+    let profileJson: unknown;
+    try {
+      profileJson = JSON.parse(raw);
+    } catch {
+      throw new Error(`Invalid JSON in profile:\n  ${profilePath}`);
+    }
+
+    if (
+      typeof profileJson !== "object" ||
+      profileJson === null ||
+      !("targets" in profileJson)
+    ) {
+      throw new Error(`Profile "${profileName}" has no targets field`);
+    }
+
+    const targets = (profileJson as Record<string, unknown>)["targets"];
+    if (typeof targets !== "object" || targets === null) {
+      throw new Error(`Profile "${profileName}" targets field is not an object`);
+    }
+
+    if (!(target in (targets as Record<string, unknown>))) {
+      const available = Object.keys(targets as Record<string, unknown>).join(", ");
+      throw new Error(
+        `Target "${target}" not in profile "${profileName}". Available: ${available}`,
+      );
+    }
+
+    const recipeLoader = new RecipeLoader();
+    await recipeLoader.inspect(paths.recipesDir(), `${target}/${recipeName}`);
+
+    const previous = (targets as Record<string, string>)[target];
+    (targets as Record<string, string>)[target] = recipeName;
+    await Deno.writeTextFile(profilePath, `${JSON.stringify(profileJson, null, 2)}\n`);
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "replant",
+        profile: profileName,
+        target,
+        previous,
+        recipe: recipeName,
+        apply,
+      });
+    } else {
+      this.printHuman(this.display.fields([
+        { label: "profile", value: profileName },
+        { label: "target", value: target },
+        { label: "recipe", value: `${previous} → ${recipeName}` },
+      ]));
+    }
+
+    if (apply) {
+      if (this.outputMode === "human") this.printHuman("");
+      await this.sowProfile([profileName, target]);
+      await this.growProfile([profileName, target]);
+    } else if (this.outputMode === "human") {
+      this.printHuman("");
+      this.printHuman(
+        `  hint: deno task spore:dev -- sow ${profileName} ${target}`,
+      );
+      this.printHuman(
+        `        deno task spore:dev -- grow ${profileName} ${target}`,
+      );
+    }
   }
 
   private printUnknownCommand(command: string): void {

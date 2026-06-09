@@ -54,6 +54,22 @@ Deno.test("BloomPaths exposes data directories", () => {
   assertEquals(paths.recipesDir(), "/data/ub/targets");
 });
 
+Deno.test("BloomPaths resolves target templates and rendered output dirs", () => {
+  const paths = new BloomPaths({
+    cwd: "/work/unclaimed-bloom",
+    home: "/home/adam",
+    dataDir: "/data/ub",
+    cacheDir: "/cache/ub",
+  });
+
+  assertEquals(paths.targetTemplatesDir("ghostty"), "/data/ub/targets/ghostty/templates");
+  assertEquals(paths.targetTemplatesDir("nvim"), "/data/ub/targets/nvim/templates");
+  assertEquals(paths.repoTargetTemplatesDir("ghostty"), "/work/unclaimed-bloom/targets/ghostty/templates");
+  assertEquals(paths.repoTargetTemplatesDir("nvim"), "/work/unclaimed-bloom/targets/nvim/templates");
+  assertEquals(paths.renderedDir("daily", "ghostty"), "/cache/ub/rendered/daily/ghostty");
+  assertEquals(paths.renderedDir("dark", "nvim"), "/cache/ub/rendered/dark/nvim");
+});
+
 Deno.test("BloomPaths exposes cache directories", () => {
   const paths = new BloomPaths({
     cwd: "/work/unclaimed-bloom",

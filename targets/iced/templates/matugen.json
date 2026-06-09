@@ -1,0 +1,11 @@
+{
+  "name": "matugen",
+  "mode": "dark",
+  "palette": {
+    "background": "{{background}}",
+    "text":       "{{text}}",
+    "primary":    "{{primary}}",
+    "success":    "{{success}}",
+    "danger":     "{{danger}}"
+  }
+}

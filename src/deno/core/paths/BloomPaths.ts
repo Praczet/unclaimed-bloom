@@ -84,6 +84,18 @@ export class BloomPaths {
     return profile ? this.join(reportsDir, profile) : reportsDir;
   }
 
+  public targetTemplatesDir(target: string): string {
+    return this.join(this.join(this.dataDir, "targets"), `${target}/templates`);
+  }
+
+  public repoTargetTemplatesDir(target: string): string {
+    return this.join(this.join(this.cwd, "targets"), `${target}/templates`);
+  }
+
+  public renderedDir(profile: string, target: string): string {
+    return this.join(this.join(this.cacheDir, "rendered"), `${profile}/${target}`);
+  }
+
   public timestampedSowReportFile(profile: string, timestamp: string): string {
     const safeTimestamp = timestamp.replace(/[:.]/g, "-");
     return this.join(

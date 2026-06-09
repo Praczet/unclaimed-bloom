@@ -1,0 +1,43 @@
+{
+  "theme": {
+    "name": "unclaimed-bloom",
+    "primary":    "{{primary}}",
+    "secondary":  "{{secondary}}",
+    "accent":     "{{accent}}",
+    "warning":    "{{warning}}",
+    "error":      "{{error}}",
+    "success":    "{{success}}",
+    "foreground": "{{foreground}}",
+    "background": "{{background}}",
+    "surface":    "{{surface}}",
+    "panel":      "{{panel}}",
+    "dark": true,
+    "variables": {
+      "border":                          "{{border}}",
+      "border-blurred":                  "{{border_blurred}}",
+      "footer-background":               "{{surface}}",
+      "footer-key-foreground":           "{{footer_key}}",
+      "footer-description-foreground":   "{{foreground}}",
+      "button-color-foreground":         "{{button_fg}}",
+      "input-selection-background":      "{{selection_bg}} 40%",
+      "input-selection-foreground":      "{{foreground}}",
+      "mode-normal-color":               "{{secondary}}",
+      "mode-insert-color":               "{{insert_mode}}",
+      "scrollbar":                       "{{primary}}",
+      "scrollbar-hover":                 "{{accent}}",
+      "scrollbar-active":                "{{primary}}",
+      "scrollbar-color":                 "{{primary}}",
+      "scrollbar-color-hover":           "{{accent}}",
+      "scrollbar-color-active":          "{{primary}}",
+      "scrollbar-background":            "{{surface}}",
+      "scrollbar-background-hover":      "{{panel}}",
+      "scrollbar-background-active":     "{{panel}}",
+      "scrollbar-corner-color":          "{{background}}",
+      "link-color":                      "{{primary}}",
+      "link-background":                 "{{background}}",
+      "block-cursor-background":         "{{primary}}",
+      "block-cursor-foreground":         "{{button_fg}}",
+      "block-cursor-text-style":         "none"
+    }
+  }
+}
