@@ -1,0 +1,18 @@
+{
+  "steps": [
+    {
+      "type": "exec",
+      "command": "~/.local/bin/adart-worker",
+      "args": [
+        "--runtime",  "{{rendered}}",
+        "--output",   "~/.local/share/icons/adart",
+        "--force"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "gsettings",
+      "args": ["set", "org.gnome.desktop.interface", "icon-theme", "adart"]
+    }
+  ]
+}

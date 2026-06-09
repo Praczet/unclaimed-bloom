@@ -3,6 +3,7 @@ import {
   BloomGenerator,
   type BloomPreview,
 } from "../core/blooms/BloomGenerator.ts";
+import { HookRunner } from "../core/hooks/HookRunner.ts";
 import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
@@ -114,6 +115,11 @@ class SporeCli {
       return;
     }
 
+    if (command === "plant") {
+      await this.plantProfile(commandArgs.slice(1));
+      return;
+    }
+
     this.printUnknownCommand(command);
     Deno.exit(1);
   }
@@ -185,6 +191,7 @@ Commands:
   recipe    List or inspect recipes.
   mood      List moods.
   replant   Change a target's recipe in a profile.
+  plant     Deploy rendered files to real config paths via hooks.
 
 Global flags:
   --json          Print machine-readable JSON.
@@ -1126,6 +1133,74 @@ Global flags:
       this.printHuman(
         `        deno task spore:dev -- grow ${profileName} ${target}`,
       );
+    }
+  }
+
+  private async plantProfile(args: string[]): Promise<void> {
+    const positional = args.filter((arg) => !arg.startsWith("-"));
+    const profileName = positional[0];
+    const targetFilter = positional[1];
+    const dryRun = args.includes("--dry-run");
+
+    if (!profileName) {
+      this.printUsageError(
+        "Missing profile name.",
+        "deno task spore:dev -- plant <profile> [target] [--dry-run]",
+      );
+      Deno.exit(1);
+    }
+
+    const paths = BloomPaths.fromDeno();
+    const profileLoader = new ProfileLoader();
+    const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
+
+    if (this.isCompositionProfile(profileEntry)) {
+      throw new Error(`Deno plant does not handle composition profiles yet:\n  ${profileName}`);
+    }
+
+    const targets = Object.entries(profileEntry.targets).filter(([target]) =>
+      targetFilter === undefined || target === targetFilter
+    );
+
+    if (targets.length === 0 && targetFilter !== undefined) {
+      throw new Error(`Target "${targetFilter}" not in profile "${profileName}".`);
+    }
+
+    const runner = new HookRunner();
+    const results: Array<{ target: string; hookPath: string | null; steps: Array<{ type: string; ok: boolean; detail: string }> }> = [];
+
+    for (const [target] of targets) {
+      results.push(await runner.run(paths, profileName, target, dryRun));
+    }
+
+    if (this.outputMode === "json") {
+      this.printJson({ ok: true, command: "plant", profile: profileName, dryRun, results });
+      return;
+    }
+
+    if (dryRun) {
+      this.printHuman(this.display.fields([{
+        label: "Dry run",
+        value: targetFilter
+          ? `plant ${targetFilter} for ${profileName}`
+          : `plant all targets for ${profileName}`,
+      }]));
+      this.printHuman("");
+    }
+
+    for (const result of results) {
+      if (!result.hookPath) {
+        this.printHuman(
+          `  ${result.target}  ${this.display.dim("no plant hook — skipped")}`,
+        );
+        continue;
+      }
+      this.printHuman(`  ${result.target}`);
+      for (const step of result.steps) {
+        this.printHuman(
+          `    ${step.type}  ${this.display.dim(step.detail)}`,
+        );
+      }
     }
   }
 

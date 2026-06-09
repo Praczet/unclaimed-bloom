@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": [
+        "~/.local/share/themes/unclaimed-bloom-{{recipe}}/gtk-4.0/gtk.css",
+        "~/.local/share/themes/unclaimed-bloom-{{recipe}}/gtk-3.0/gtk.css"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "gsettings",
+      "args": ["set", "org.gnome.desktop.interface", "gtk-theme", "unclaimed-bloom-{{recipe}}"]
+    }
+  ]
+}
