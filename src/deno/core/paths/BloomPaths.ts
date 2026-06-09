@@ -75,16 +75,32 @@ export class BloomPaths {
     return profile ? this.join(sporesDir, profile) : sporesDir;
   }
 
+  public sporeFile(profile: string, target: string): string {
+    return this.join(this.sporesDir(profile), `${target}.json`);
+  }
+
   public reportsDir(profile?: string): string {
     const reportsDir = this.join(this.cacheDir, "reports");
     return profile ? this.join(reportsDir, profile) : reportsDir;
   }
 
-  public timestampedGrowReportFile(profile: string, timestamp: string): string {
+  public timestampedSowReportFile(profile: string, timestamp: string): string {
     const safeTimestamp = timestamp.replace(/[:.]/g, "-");
     return this.join(
       this.reportsDir(),
-      `${safeTimestamp}-grow-${profile}.json`,
+      `${safeTimestamp}-sow-${profile}.json`,
+    );
+  }
+
+  public timestampedTargetSowReportFile(
+    profile: string,
+    target: string,
+    timestamp: string,
+  ): string {
+    const safeTimestamp = timestamp.replace(/[:.]/g, "-");
+    return this.join(
+      this.reportsDir(),
+      `${safeTimestamp}-target-sow-${profile}-${target}.json`,
     );
   }
 

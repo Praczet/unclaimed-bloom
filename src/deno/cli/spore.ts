@@ -1,4 +1,8 @@
-import { BloomGenerator } from "../core/blooms/BloomGenerator.ts";
+import { HumanDisplay } from "./HumanDisplay.ts";
+import {
+  BloomGenerator,
+  type BloomPreview,
+} from "../core/blooms/BloomGenerator.ts";
 import { MoodLoader } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
@@ -9,14 +13,44 @@ import {
   type ProfileEntry,
   ProfileLoader,
 } from "../core/profiles/ProfileLoader.ts";
-import { RecipeLoader } from "../core/recipes/RecipeLoader.ts";
+import { type Recipe, RecipeLoader } from "../core/recipes/RecipeLoader.ts";
 import { ReportWriter } from "../core/reports/ReportWriter.ts";
+import { type Spore, SporeGenerator } from "../core/spores/SporeGenerator.ts";
 
 const VERSION = "0.1.0-deno-experiment";
 
+type OutputMode = "human" | "json";
+
+interface ParsedArgs {
+  readonly outputMode: OutputMode;
+  readonly args: string[];
+}
+
+interface BloomContext {
+  readonly paths: BloomPaths;
+  readonly profile: Profile;
+  readonly basePalette: Palette;
+  readonly sourcePalette: Palette;
+  readonly moodName: string;
+  readonly preview: BloomPreview;
+}
+
+interface SownSporeResult {
+  readonly target: string;
+  readonly recipe: string;
+  readonly sporePath: string;
+  readonly reportPath: string;
+  readonly spore: Spore;
+}
+
 class SporeCli {
+  private readonly display = new HumanDisplay();
+  private outputMode: OutputMode = "human";
+
   public async run(args: string[]): Promise<void> {
-    const commandArgs = args[0] === "--" ? args.slice(1) : args;
+    const parsed = this.parseGlobalArgs(args);
+    this.outputMode = parsed.outputMode;
+    const commandArgs = parsed.args;
     const command = commandArgs[0] ?? "--help";
 
     if (command === "--help" || command === "-h" || command === "help") {
@@ -25,7 +59,12 @@ class SporeCli {
     }
 
     if (command === "--version" || command === "-v" || command === "version") {
-      console.log(`spore ${VERSION}`);
+      if (this.outputMode === "json") {
+        this.printJson({ ok: true, version: VERSION });
+        return;
+      }
+
+      this.printHuman(`spore ${VERSION}`);
       return;
     }
 
@@ -34,8 +73,18 @@ class SporeCli {
       return;
     }
 
+    if (command === "sow") {
+      await this.sowProfile(commandArgs.slice(1));
+      return;
+    }
+
     if (command === "grow") {
-      await this.growProfile(commandArgs.slice(1));
+      this.printGrowReserved(commandArgs.slice(1));
+      return;
+    }
+
+    if (command === "inspect") {
+      await this.inspectProfileOrTarget(commandArgs.slice(1));
       return;
     }
 
@@ -58,13 +107,58 @@ class SporeCli {
     Deno.exit(1);
   }
 
+  public printFatalError(error: unknown): void {
+    const message = error instanceof Error ? error.message : String(error);
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: false,
+        error: {
+          message,
+        },
+      });
+      return;
+    }
+
+    this.printHumanError(message);
+  }
+
+  private parseGlobalArgs(args: string[]): ParsedArgs {
+    const commandArgs = args[0] === "--" ? args.slice(1) : args;
+    const filtered: string[] = [];
+    let outputMode: OutputMode = "human";
+
+    for (let index = 0; index < commandArgs.length; index += 1) {
+      const arg = commandArgs[index];
+
+      if (arg === "--json") {
+        outputMode = "json";
+        continue;
+      }
+
+      if (arg === "--format" && commandArgs[index + 1] === "json") {
+        outputMode = "json";
+        index += 1;
+        continue;
+      }
+
+      filtered.push(arg);
+    }
+
+    return {
+      outputMode,
+      args: filtered,
+    };
+  }
+
   private printHelp(): void {
-    console.log(`spore ${VERSION}
+    this.printHuman(`spore ${VERSION}
 
 Experimental Deno CLI for Unclaimed Bloom.
 
 Usage:
   deno task spore:dev -- --help
+  deno task spore:dev -- --json status
   deno task spore:dev -- version
   deno task spore:dev -- status
 
@@ -72,37 +166,53 @@ Commands:
   help      Show this help.
   version   Show the experimental CLI version.
   status    Show detected runtime paths and environment overrides.
-  grow      Generate a bloom into cache.
+  sow       Generate bloom and spores into cache.
+  grow      Reserved for applying cached spores later.
+  inspect   Inspect generated bloom or target spore.
   palette   List or inspect palettes.
   profile   List or inspect profiles.
-  recipe    List or inspect recipes.`);
+  recipe    List or inspect recipes.
+
+Global flags:
+  --json          Print machine-readable JSON.
+  --format json  Same as --json.`);
   }
 
   private printStatus(): void {
     const paths = BloomPaths.fromDeno().summary();
 
-    console.log(`Unclaimed Bloom Deno experiment status
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        status: paths,
+      });
+      return;
+    }
 
-cwd:
-  ${paths.cwd}
-
-UB_DATA_DIR:
-  ${paths.dataDirSource === "env" ? paths.dataDir : "(not set)"}
-
-UB_CACHE_DIR:
-  ${paths.cacheDirSource === "env" ? paths.cacheDir : "(not set)"}
-
-resolved data dir:
-  ${paths.dataDir}
-
-resolved cache dir:
-  ${paths.cacheDir}
-
-default data dir:
-  ${paths.defaultDataDir}
-
-default cache dir:
-  ${paths.defaultCacheDir}`);
+    this.printHuman("Unclaimed Bloom Deno experiment status");
+    this.printHuman("");
+    this.printHuman(this.display.table([
+      { key: "cwd", value: paths.cwd },
+      {
+        key: "UB_DATA_DIR",
+        value: paths.dataDirSource === "env" ? paths.dataDir : "(not set)",
+      },
+      {
+        key: "UB_CACHE_DIR",
+        value: paths.cacheDirSource === "env" ? paths.cacheDir : "(not set)",
+      },
+      { key: "resolved data dir", value: paths.dataDir },
+      { key: "resolved cache dir", value: paths.cacheDir },
+      { key: "default data dir", value: paths.defaultDataDir },
+      { key: "default cache dir", value: paths.defaultCacheDir },
+    ], [
+      { header: "key", value: (row) => row.key },
+      {
+        header: "value",
+        value: (row) => row.value,
+        dim: true,
+      },
+    ]));
   }
 
   private async runPaletteCommand(args: string[]): Promise<void> {
@@ -129,91 +239,112 @@ default cache dir:
     Deno.exit(1);
   }
 
-  private async growProfile(args: string[]): Promise<void> {
+  private async sowProfile(args: string[]): Promise<void> {
     const profileName = args.find((arg) => !arg.startsWith("-"));
+    const targetFilter = args.find((arg, index) =>
+      index > 0 && !arg.startsWith("-") && args[index - 1] !== "--profile"
+    );
     const dryRun = args.includes("--dry-run");
 
     if (!profileName) {
-      console.error("Missing profile name.");
-      console.error("");
-      console.error("Usage:");
-      console.error("  deno task spore:dev -- grow <profile> [--dry-run]");
+      this.printUsageError(
+        "Missing profile name.",
+        "deno task spore:dev -- sow <profile> [target] [--dry-run]",
+      );
       Deno.exit(1);
     }
 
     const startedAt = new Date().toISOString();
-    const paths = BloomPaths.fromDeno();
-    const profileLoader = new ProfileLoader();
-    const paletteLoader = new PaletteLoader();
-    const moodLoader = new MoodLoader();
-    const generator = new BloomGenerator();
+    const context = await this.createBloomContext(profileName);
+    const paths = context.paths;
     const writer = new ReportWriter();
-    const profileEntry = await profileLoader.inspect(
-      paths.profilesDir(),
-      profileName,
-    );
-
-    if (this.isCompositionProfile(profileEntry)) {
-      throw new Error(
-        `Deno grow does not handle composition profiles yet:\n  ${profileName}`,
-      );
-    }
-
-    const profile = profileEntry;
-    const basePalette = await paletteLoader.inspect(
-      paths.palettesDir(),
-      profile.basePalette,
-    );
-    const sourcePalette = await this.loadSourcePalette(profile);
-    const mood = await moodLoader.inspect(paths.moodsDir(), profile.mood);
-    const generatedAt = new Date().toISOString();
-    const preview = generator.preview(
-      basePalette,
-      sourcePalette,
-      mood,
-      profile.name,
+    const generatedAt = context.preview.generatedAt;
+    const bloomPath = paths.bloomFile(context.profile.name);
+    const reportPath = paths.timestampedSowReportFile(
+      context.profile.name,
       generatedAt,
     );
-    const bloomPath = paths.bloomFile(profile.name);
-    const reportPath = paths.timestampedGrowReportFile(
-      profile.name,
-      generatedAt,
-    );
+    const result = {
+      profile: context.profile.name,
+      target: targetFilter,
+      dryRun,
+      basePalette: context.basePalette.slug,
+      source: context.sourcePalette.name,
+      mood: context.moodName,
+      bloomPath,
+      reportPath,
+      bloom: {
+        profile: context.preview.profile,
+        generatedAt: context.preview.generatedAt,
+        colors: context.preview.colors,
+      },
+      rows: context.preview.rows,
+    };
 
     if (dryRun) {
-      console.log(`Dry run: bloom for ${profile.name}`);
-      console.log(`base palette: ${basePalette.slug}`);
-      console.log(`source: ${sourcePalette.name}`);
-      console.log(`mood: ${mood.name}`);
-      console.log(`would write bloom: ${bloomPath}`);
-      console.log(`would write report: ${reportPath}`);
-      console.log("");
-
-      for (const row of preview.rows) {
-        console.log(
-          `  ${
-            row.path.padEnd(22)
-          } ${row.result}  base:${row.baseKey} ${row.baseHex} source:${row.sourceKey} ${row.sourceHex} mix:${row.weight}`,
-        );
+      if (this.outputMode === "json") {
+        this.printJson({
+          ok: true,
+          command: "sow",
+          result,
+        });
+        return;
       }
+
+      this.printHuman(this.display.fields([
+        {
+          label: "Dry run",
+          value: targetFilter
+            ? `bloom + ${targetFilter} spore for ${context.profile.name}`
+            : `bloom for ${context.profile.name}`,
+        },
+        { label: "base palette", value: context.basePalette.slug },
+        { label: "source", value: context.sourcePalette.name },
+        { label: "mood", value: context.moodName },
+        { label: "would write bloom", value: bloomPath, dim: true },
+        { label: "would write report", value: reportPath, dim: true },
+      ]));
+      this.printHuman("");
+      this.printHuman(this.display.table(context.preview.rows, [
+        { header: "token", value: (row) => row.path },
+        {
+          header: "result",
+          value: (row) => this.display.colorValue(row.result),
+        },
+        {
+          header: "base",
+          value: (row) => `${row.baseKey} ${row.baseHex}`,
+          dim: true,
+        },
+        {
+          header: "source",
+          value: (row) => `${row.sourceKey} ${row.sourceHex}`,
+          dim: true,
+        },
+        {
+          header: "mix",
+          value: (row) => String(row.weight),
+          align: "right",
+        },
+      ]));
 
       return;
     }
 
     await writer.writeJson(bloomPath, {
-      profile: preview.profile,
-      generatedAt: preview.generatedAt,
-      colors: preview.colors,
+      profile: context.preview.profile,
+      generatedAt: context.preview.generatedAt,
+      colors: context.preview.colors,
     });
     await writer.write(reportPath, {
       target: "bloom",
-      profile: profile.name,
+      profile: context.profile.name,
       recipe: "(bloom)",
       status: "ok",
       inputs: {
-        basePalette: basePalette.slug,
-        source: sourcePalette.name,
-        mood: mood.name,
+        basePalette: context.basePalette.slug,
+        source: context.sourcePalette.name,
+        mood: context.moodName,
       },
       outputs: [bloomPath],
       warnings: [],
@@ -222,12 +353,47 @@ default cache dir:
       finishedAt: new Date().toISOString(),
     });
 
-    console.log(`Bloom written: ${bloomPath}`);
-    console.log(`Report written: ${reportPath}`);
+    const sporeOutputs = await this.sowTargetSpores({
+      context,
+      targetFilter,
+      startedAt,
+    });
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "sow",
+        result: {
+          ...result,
+          spores: sporeOutputs,
+          outputs: [
+            bloomPath,
+            reportPath,
+            ...sporeOutputs.flatMap((spore) => [
+              spore.sporePath,
+              spore.reportPath,
+            ]),
+          ],
+        },
+      });
+      return;
+    }
+
+    this.printHuman(`Bloom written: ${this.display.dim(bloomPath)}`);
+    this.printHuman(`Report written: ${this.display.dim(reportPath)}`);
+    if (sporeOutputs.length > 0) {
+      this.printHuman("");
+      this.printHuman(this.display.table(sporeOutputs, [
+        { header: "target", value: (spore) => spore.target },
+        { header: "recipe", value: (spore) => spore.recipe },
+        { header: "spore", value: (spore) => spore.sporePath, dim: true },
+        { header: "report", value: (spore) => spore.reportPath, dim: true },
+      ]));
+    }
   }
 
   private printPaletteHelp(): void {
-    console.log(`Palette commands:
+    this.printHuman(`Palette commands:
   deno task spore:dev -- palette list
   deno task spore:dev -- palette inspect <slug>`);
   }
@@ -237,38 +403,89 @@ default cache dir:
     const loader = new PaletteLoader();
     const palettes = await loader.list(paths.palettesDir());
 
-    for (const palette of palettes) {
-      console.log(
-        `  ${palette.slug.padEnd(28)} ${
-          palette.kind.padEnd(6)
-        } ${palette.name}  ${palette.colorCount} colors`,
-      );
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "palette list",
+        palettes,
+      });
+      return;
     }
+
+    this.printHuman(this.display.table(palettes, [
+      { header: "slug", value: (palette) => palette.slug },
+      { header: "kind", value: (palette) => palette.kind },
+      { header: "name", value: (palette) => palette.name },
+      {
+        header: "colors",
+        value: (palette) => String(palette.colorCount),
+        align: "right",
+      },
+      { header: "path", value: (palette) => palette.path, dim: true },
+    ]));
   }
 
   private async inspectPalette(slug: string | undefined): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+    const loader = new PaletteLoader();
+
     if (!slug) {
-      console.error("Missing palette slug.");
-      console.error("");
-      this.printPaletteHelp();
+      this.printUsageError("Missing palette slug.", "palette inspect <slug>");
+      if (this.outputMode === "human") {
+        this.printHuman("");
+        const palettes = await loader.list(paths.palettesDir());
+        if (palettes.length > 0) {
+          this.printHuman("Available palettes:");
+          this.printHuman(this.display.fields(palettes.map((palette) => ({
+            label: `  ${palette.slug}`,
+            value: palette.kind,
+            dim: palette.kind === "dark",
+          }))));
+          this.printHuman("");
+        } else {
+          this.printHuman("No palettes found.");
+        }
+        this.printPaletteHelp();
+      }
       Deno.exit(1);
     }
 
-    const paths = BloomPaths.fromDeno();
-    const loader = new PaletteLoader();
     const palette = await loader.inspect(paths.palettesDir(), slug);
 
-    console.log(`${palette.name} (${palette.slug})`);
-    console.log(`kind: ${palette.kind}`);
-    if (palette.source) {
-      console.log(`source: ${palette.source}`);
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "palette inspect",
+        palette,
+      });
+      return;
     }
-    console.log(`colors: ${Object.keys(palette.colors).length}`);
-    console.log("");
 
-    for (const [name, hex] of Object.entries(palette.colors).sort()) {
-      console.log(`  ${name.padEnd(24)} ${hex}`);
+    this.printHuman("");
+    this.printHuman(`${palette.name} ${this.display.dim(`(${palette.slug})`)}`);
+    const infoFields = [];
+    infoFields.push({ label: "kind", value: palette.kind });
+    infoFields.push({
+      label: "colors",
+      value: String(Object.keys(palette.colors).length),
+    });
+    if (palette.source) {
+      infoFields.push({ label: "source", value: palette.source, dim: true });
     }
+    this.printHuman(this.display.fields(infoFields));
+    this.printHuman("");
+    this.printHuman(this.display.table(
+      Object.entries(palette.colors).sort(([a], [b]) =>
+        a.localeCompare(b, undefined, { numeric: true })
+      ).map(([name, hex]) => ({
+        name,
+        hex,
+      })),
+      [
+        { header: "token", value: (row) => row.name },
+        { header: "color", value: (row) => this.display.colorValue(row.hex) },
+      ],
+    ));
   }
 
   private async runProfileCommand(args: string[]): Promise<void> {
@@ -296,7 +513,7 @@ default cache dir:
   }
 
   private printProfileHelp(): void {
-    console.log(`Profile commands:
+    this.printHuman(`Profile commands:
   deno task spore:dev -- profile list
   deno task spore:dev -- profile inspect <name>`);
   }
@@ -306,34 +523,64 @@ default cache dir:
     const loader = new ProfileLoader();
     const profiles = await loader.list(paths.profilesDir());
 
-    for (const profile of profiles) {
-      if (profile.type === "composition") {
-        console.log(
-          `  ${profile.name.padEnd(24)} composition  ${profile.runCount} runs`,
-        );
-        continue;
-      }
-
-      console.log(
-        `  ${
-          profile.name.padEnd(24)
-        } profile      base:${profile.basePalette} mood:${profile.mood} targets:${profile.targetCount}`,
-      );
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "profile list",
+        profiles,
+      });
+      return;
     }
+
+    this.printHuman(this.display.table(profiles, [
+      { header: "name", value: (profile) => profile.name },
+      { header: "type", value: (profile) => profile.type },
+      {
+        header: "base",
+        value: (profile) => profile.basePalette ?? "",
+        dim: true,
+      },
+      {
+        header: "mood",
+        value: (profile) => profile.mood ?? "",
+        dim: true,
+      },
+      {
+        header: "targets",
+        value: (profile) => String(profile.targetCount ?? ""),
+        align: "right",
+      },
+      {
+        header: "runs",
+        value: (profile) => String(profile.runCount ?? ""),
+        align: "right",
+      },
+      { header: "path", value: (profile) => profile.path, dim: true },
+    ]));
   }
 
   private async inspectProfile(name: string | undefined): Promise<void> {
     if (!name) {
-      console.error("Missing profile name.");
-      console.error("");
-      this.printProfileHelp();
+      this.printUsageError("Missing profile name.", "profile inspect <name>");
+      if (this.outputMode === "human") {
+        this.printProfileHelp();
+      }
       Deno.exit(1);
     }
 
     const paths = BloomPaths.fromDeno();
     const loader = new ProfileLoader();
     const profile = await loader.inspect(paths.profilesDir(), name);
-    console.log(JSON.stringify(profile, null, 2));
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "profile inspect",
+        profile,
+      });
+      return;
+    }
+
+    this.printHuman(JSON.stringify(profile, null, 2));
   }
 
   private async runRecipeCommand(args: string[]): Promise<void> {
@@ -361,7 +608,7 @@ default cache dir:
   }
 
   private printRecipeHelp(): void {
-    console.log(`Recipe commands:
+    this.printHuman(`Recipe commands:
   deno task spore:dev -- recipe list [target]
   deno task spore:dev -- recipe inspect <target/name>`);
   }
@@ -371,37 +618,346 @@ default cache dir:
     const loader = new RecipeLoader();
     const recipes = await loader.list(paths.recipesDir(), target);
 
-    for (const recipe of recipes) {
-      const base = recipe.basePalette
-        ? `base:${recipe.basePalette}`
-        : "base:(profile)";
-      console.log(
-        `  ${recipe.id.padEnd(32)} ${
-          base.padEnd(24)
-        } ${recipe.tokenCount} tokens`,
-      );
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "recipe list",
+        target,
+        recipes,
+      });
+      return;
     }
+
+    this.printHuman(this.display.table(recipes, [
+      { header: "id", value: (recipe) => recipe.id },
+      {
+        header: "base",
+        value: (recipe) => recipe.basePalette ?? "(profile)",
+        dim: true,
+      },
+      {
+        header: "tokens",
+        value: (recipe) => String(recipe.tokenCount),
+        align: "right",
+      },
+      { header: "path", value: (recipe) => recipe.path, dim: true },
+    ]));
   }
 
   private async inspectRecipe(id: string | undefined): Promise<void> {
     if (!id) {
-      console.error("Missing recipe id.");
-      console.error("");
-      this.printRecipeHelp();
+      this.printUsageError(
+        "Missing recipe id.",
+        "recipe inspect <target/name>",
+      );
+      if (this.outputMode === "human") {
+        this.printRecipeHelp();
+      }
       Deno.exit(1);
     }
 
     const paths = BloomPaths.fromDeno();
     const loader = new RecipeLoader();
     const recipe = await loader.inspect(paths.recipesDir(), id);
-    console.log(JSON.stringify(recipe, null, 2));
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "recipe inspect",
+        recipe,
+      });
+      return;
+    }
+
+    this.printHuman(JSON.stringify(recipe, null, 2));
+  }
+
+  private printGrowReserved(args: string[]): void {
+    const profile = args.find((arg) => !arg.startsWith("-")) ?? "daily";
+    const target = args.find((arg, index) => index > 0 && !arg.startsWith("-"));
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: false,
+        error: {
+          message: "Deno grow is reserved for applying cached spores later.",
+          usage: "deno task spore:dev -- sow <profile> [target]",
+          profile,
+          target,
+        },
+      });
+      Deno.exit(1);
+    }
+
+    this.printHumanError(
+      "Deno grow is reserved for applying cached spores later.",
+    );
+    this.printHumanError("");
+    this.printHumanError("Cache generation is:");
+    this.printHumanError(
+      `  deno task spore:dev -- sow ${profile}${target ? ` ${target}` : ""}`,
+    );
+    Deno.exit(1);
+  }
+
+  private async inspectProfileOrTarget(args: string[]): Promise<void> {
+    const profileName = args[0] ?? "daily";
+    const target = args[1];
+
+    if (target) {
+      await this.inspectCachedSpore(profileName, target);
+      return;
+    }
+
+    await this.inspectBloom(profileName);
+  }
+
+  private async inspectBloom(profileName: string): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+    const bloomPath = paths.bloomFile(profileName);
+    const bloom = await this.readJson(bloomPath);
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "inspect",
+        profile: profileName,
+        bloomPath,
+        bloom,
+      });
+      return;
+    }
+
+    this.printHuman(this.display.fields([
+      { label: "profile", value: profileName },
+      { label: "bloom file", value: bloomPath, dim: true },
+    ]));
+    this.printHuman("");
+    this.printHuman(JSON.stringify(bloom, null, 2));
+  }
+
+  private async inspectCachedSpore(
+    profileName: string,
+    target: string,
+  ): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+    const sporePath = paths.sporeFile(profileName, target);
+    const spore = await this.readJson(sporePath) as Spore;
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "inspect",
+        profile: profileName,
+        target,
+        sporePath,
+        spore,
+      });
+      return;
+    }
+
+    this.printHuman(this.display.fields([
+      { label: "target", value: spore.target },
+      { label: "profile", value: spore.profile },
+      { label: "recipe", value: spore.recipe },
+      { label: "generated", value: spore.generatedAt, dim: true },
+      { label: "spore file", value: sporePath, dim: true },
+    ]));
+    this.printHuman("");
+    this.printHuman(this.display.table(
+      Object.entries(spore.colors).sort(([a], [b]) =>
+        a.localeCompare(b, undefined, { numeric: true })
+      ).map(([name, hex]) => ({
+        name,
+        hex,
+      })),
+      [
+        { header: "token", value: (row) => row.name },
+        { header: "color", value: (row) => this.display.colorValue(row.hex) },
+      ],
+    ));
   }
 
   private printUnknownCommand(command: string): void {
-    console.error(`Unknown command: ${command}`);
-    console.error("");
-    console.error("Run:");
-    console.error("  deno task spore:dev -- --help");
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: false,
+        error: {
+          message: `Unknown command: ${command}`,
+          usage: "deno task spore:dev -- --help",
+        },
+      });
+      return;
+    }
+
+    this.printHumanError(`Unknown command: ${command}`);
+    this.printHumanError("");
+    this.printHumanError("Run:");
+    this.printHumanError("  deno task spore:dev -- --help");
+  }
+
+  private printUsageError(message: string, usage: string): void {
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: false,
+        error: {
+          message,
+          usage,
+        },
+      });
+      return;
+    }
+
+    this.printHumanError(message);
+    this.printHumanError("");
+    this.printHumanError("Usage:");
+    this.printHumanError(`  ${usage}`);
+  }
+
+  private printHuman(message: string): void {
+    console.log(this.display.formatText(message));
+  }
+
+  private printHumanError(message: string): void {
+    console.error(this.display.formatText(message));
+  }
+
+  private printJson(data: unknown): void {
+    console.log(JSON.stringify(data, null, 2));
+  }
+
+  private async createBloomContext(profileName: string): Promise<BloomContext> {
+    const paths = BloomPaths.fromDeno();
+    const profileLoader = new ProfileLoader();
+    const paletteLoader = new PaletteLoader();
+    const moodLoader = new MoodLoader();
+    const generator = new BloomGenerator();
+    const profileEntry = await profileLoader.inspect(
+      paths.profilesDir(),
+      profileName,
+    );
+
+    if (this.isCompositionProfile(profileEntry)) {
+      throw new Error(
+        `Deno sow does not handle composition profiles yet:\n  ${profileName}`,
+      );
+    }
+
+    const profile = profileEntry;
+    const basePalette = await paletteLoader.inspect(
+      paths.palettesDir(),
+      profile.basePalette,
+    );
+    const sourcePalette = await this.loadSourcePalette(profile);
+    const mood = await moodLoader.inspect(paths.moodsDir(), profile.mood);
+    const preview = generator.preview(
+      basePalette,
+      sourcePalette,
+      mood,
+      profile.name,
+    );
+
+    return {
+      paths,
+      profile,
+      basePalette,
+      sourcePalette,
+      moodName: mood.name,
+      preview,
+    };
+  }
+
+  private async sowTargetSpores(options: {
+    readonly context: BloomContext;
+    readonly targetFilter?: string;
+    readonly startedAt: string;
+  }): Promise<SownSporeResult[]> {
+    const { context, targetFilter, startedAt } = options;
+    const targets = Object.entries(context.profile.targets).filter(([target]) =>
+      targetFilter === undefined || target === targetFilter
+    );
+
+    if (targets.length === 0 && targetFilter !== undefined) {
+      throw new Error(
+        `Target "${targetFilter}" not in profile "${context.profile.name}".`,
+      );
+    }
+
+    const recipeLoader = new RecipeLoader();
+    const generator = new SporeGenerator();
+    const writer = new ReportWriter();
+    const results: SownSporeResult[] = [];
+
+    for (const [target, recipeName] of targets) {
+      const recipe = await recipeLoader.inspect(
+        context.paths.recipesDir(),
+        `${target}/${recipeName}`,
+      );
+      const targetBasePalette = await this.loadRecipeBasePalette(
+        context.paths,
+        context.profile,
+        recipe,
+      );
+      const generatedAt = new Date().toISOString();
+      const spore = generator.generate(
+        targetBasePalette,
+        context.sourcePalette,
+        {
+          profile: context.preview.profile,
+          generatedAt: context.preview.generatedAt,
+          colors: context.preview.colors,
+        },
+        recipe,
+        context.profile.name,
+        generatedAt,
+      );
+      const sporePath = context.paths.sporeFile(context.profile.name, target);
+      const reportPath = context.paths.timestampedTargetSowReportFile(
+        context.profile.name,
+        target,
+        generatedAt,
+      );
+
+      await writer.writeJson(sporePath, spore);
+      await writer.write(reportPath, {
+        target,
+        profile: context.profile.name,
+        recipe: recipe.name,
+        status: "ok",
+        inputs: {
+          basePalette: targetBasePalette.slug,
+          source: context.sourcePalette.name,
+          mood: context.moodName,
+          bloomGeneratedAt: context.preview.generatedAt,
+        },
+        outputs: [sporePath],
+        warnings: [],
+        errors: [],
+        startedAt,
+        finishedAt: new Date().toISOString(),
+      });
+
+      results.push({
+        target,
+        recipe: recipe.name,
+        sporePath,
+        reportPath,
+        spore,
+      });
+    }
+
+    return results;
+  }
+
+  private async loadRecipeBasePalette(
+    paths: BloomPaths,
+    profile: Profile,
+    recipe: Recipe,
+  ): Promise<Palette> {
+    const paletteLoader = new PaletteLoader();
+    return await paletteLoader.inspect(
+      paths.palettesDir(),
+      recipe.basePalette ?? profile.basePalette,
+    );
   }
 
   private async loadSourcePalette(profile: Profile): Promise<Palette> {
@@ -500,4 +1056,11 @@ default cache dir:
   }
 }
 
-await new SporeCli().run(Deno.args);
+const cli = new SporeCli();
+
+try {
+  await cli.run(Deno.args);
+} catch (error) {
+  cli.printFatalError(error);
+  Deno.exit(1);
+}
