@@ -54,12 +54,20 @@ export class BloomPaths {
     return this.join(this.dataDir, "palettes");
   }
 
+  public moodsDir(): string {
+    return this.join(this.dataDir, "moods");
+  }
+
   public recipesDir(): string {
     return this.join(this.dataDir, "targets");
   }
 
   public bloomsDir(): string {
     return this.join(this.cacheDir, "blooms");
+  }
+
+  public bloomFile(profile: string): string {
+    return this.join(this.bloomsDir(), `${profile}.json`);
   }
 
   public sporesDir(profile?: string): string {
@@ -70,6 +78,14 @@ export class BloomPaths {
   public reportsDir(profile?: string): string {
     const reportsDir = this.join(this.cacheDir, "reports");
     return profile ? this.join(reportsDir, profile) : reportsDir;
+  }
+
+  public timestampedGrowReportFile(profile: string, timestamp: string): string {
+    const safeTimestamp = timestamp.replace(/[:.]/g, "-");
+    return this.join(
+      this.reportsDir(),
+      `${safeTimestamp}-grow-${profile}.json`,
+    );
   }
 
   public summary(): BloomPathSummary {

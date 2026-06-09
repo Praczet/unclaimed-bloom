@@ -1,0 +1,26 @@
+{
+  "colors": {
+    "background": {
+      "dark": {
+        "color": "#111111"
+      },
+      "default": {
+        "color": "#111111"
+      },
+      "light": {
+        "color": "#eeeeee"
+      }
+    },
+    "primary": {
+      "dark": {
+        "color": "#88aaff"
+      },
+      "default": {
+        "color": "#88aaff"
+      },
+      "light": {
+        "color": "#3366cc"
+      }
+    }
+  }
+}

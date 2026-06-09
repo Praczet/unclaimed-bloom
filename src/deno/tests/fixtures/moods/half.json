@@ -1,0 +1,10 @@
+{
+  "name": "half",
+  "description": "fixture mood with equal source/base mixing",
+  "weights": {
+    "surface": 0.5,
+    "foreground": 0.5,
+    "accent": 0.5,
+    "semantic": 0.5
+  }
+}
