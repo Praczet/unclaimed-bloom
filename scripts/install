@@ -95,17 +95,12 @@ REPO_DIR="$REPO_DIR"
 export UB_DATA_DIR="\${UB_DATA_DIR:-$CONFIG_DIR}"
 export UB_CACHE_DIR="\${UB_CACHE_DIR:-\${XDG_CACHE_HOME:-\$HOME/.cache}/unclaimed-bloom}"
 
-if [[ -f "\$REPO_DIR/dist/cli/spore.js" ]]; then
-    exec node "\$REPO_DIR/dist/cli/spore.js" "\$@"
-fi
-
-if [[ -x "\$REPO_DIR/node_modules/.bin/tsx" ]]; then
-    exec "\$REPO_DIR/node_modules/.bin/tsx" "\$REPO_DIR/src/cli/spore.ts" "\$@"
-fi
-
-echo "spore is installed, but neither dist/cli/spore.js nor node_modules/.bin/tsx exists." >&2
-echo "Run npm install in: \$REPO_DIR" >&2
-exit 1
+exec deno run \
+  --allow-read \
+  --allow-write \
+  --allow-env \
+  --allow-run \
+  "\$REPO_DIR/src/deno/cli/spore.ts" "\$@"
 EOF
     chmod +x "$SPORE_BIN"
     echo "  launcher -> $SPORE_BIN"
