@@ -132,6 +132,9 @@ export class TemplateRenderer {
   }
 
   private applyModifier(hex: string, modifier: string, token: string): string {
+    if (modifier === "rgb") {
+      return this.toCssRgb(hex, token);
+    }
     if (modifier === "rgba") {
       return `rgba(${this.normalizeHex(hex, token)}ff)`;
     }
@@ -142,6 +145,14 @@ export class TemplateRenderer {
     throw new Error(
       `Unknown modifier "${modifier}" in template token "{{${token}|${modifier}}}"`,
     );
+  }
+
+  private toCssRgb(hex: string, token: string): string {
+    const clean = this.normalizeHex(hex, token);
+    const r = parseInt(clean.slice(0, 2), 16);
+    const g = parseInt(clean.slice(2, 4), 16);
+    const b = parseInt(clean.slice(4, 6), 16);
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   private toCssRgba(hex: string, alpha: string, token: string): string {

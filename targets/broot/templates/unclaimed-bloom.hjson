@@ -5,101 +5,103 @@
 ###############################################################
 
 skin: {
-    default: {{fg}} None / {{fg}} {{bg_selected}}
-    tree: {{border}} None / {{bg_selected}} None
-    parent: {{fg}} None Italic / {{fg}} {{bg_selected}} Italic
-    file: {{fg_muted}} None / {{fg}} None Italic
-    directory: {{accent}} None Bold / {{accent}} None
-    exe: {{success}} None
-    link: {{accent3}} None
-    pruning: {{fg_dim}} None Italic
+    default: {{fg|rgb}} none
+    tree: {{border|rgb}} none
+    parent: {{fg|rgb}} none Italic
+    file: {{fg_muted|rgb}} none
+    directory: {{accent|rgb}} none Bold
+    exe: {{success|rgb}} none
+    link: {{accent3|rgb}} none
+    pruning: {{fg_dim|rgb}} none Italic
 
     # permissions
-    perm__: {{fg_muted}} None
-    perm_r: {{info}} None
-    perm_w: {{success}} None
-    perm_x: {{accent3}} None
-    owner: {{accent}} None Bold
-    group: {{accent2}} None
+    perm__: {{fg_muted|rgb}} none
+    perm_r: {{info|rgb}} none
+    perm_w: {{success|rgb}} none
+    perm_x: {{accent3|rgb}} none
+    owner: {{accent|rgb}} none Bold
+    group: {{accent2|rgb}} none
 
-    count: {{info}} {{bg_alt}}
-    dates: {{fg_muted}} None
-    sparse: {{warning}} None
+    count: {{info|rgb}} none
+    dates: {{fg_muted|rgb}} none
+    sparse: {{warning|rgb}} none
 
-    content_extract: {{info}} None Italic
-    content_match: {{accent}} None Bold
+    content_extract: {{info|rgb}} none Italic
+    content_match: {{accent|rgb}} none Bold
 
     # git
-    git_branch: {{accent3}} None
-    git_insertions: {{success}} None
-    git_deletions: {{danger}} None
-    git_status_current: {{fg_muted}} None
-    git_status_modified: {{warning}} None
-    git_status_new: {{success}} None Bold
-    git_status_ignored: {{fg_dim}} None
-    git_status_conflicted: {{danger}} None
-    git_status_other: {{danger}} None
+    git_branch: {{accent3|rgb}} none
+    git_insertions: {{success|rgb}} none
+    git_deletions: {{danger|rgb}} none
+    git_status_current: {{fg_muted|rgb}} none
+    git_status_modified: {{warning|rgb}} none
+    git_status_new: {{success|rgb}} none Bold
+    git_status_ignored: {{fg_dim|rgb}} none
+    git_status_conflicted: {{danger|rgb}} none
+    git_status_other: {{danger|rgb}} none
 
     # highlighting
-    selected_line: None {{bg_selected}} / None {{bg_selected}}
-    char_match: {{warning}} None
-    file_error: {{danger}} None
+    selected_line: none {{bg_selected|rgb}}
+    char_match: {{warning|rgb}} none
+    file_error: {{danger|rgb}} none
 
-    flag_label: {{fg_muted}} None
-    flag_value: {{accent3}} None Bold
+    flag_label: {{fg_muted|rgb}} none
+    flag_value: {{accent3|rgb}} none Bold
 
-    input: {{fg}} {{bg_alt}} / {{fg}} {{bg_alt}} Italic
+    input: {{fg|rgb}} {{bg_alt|rgb}}
 
     # status bar
-    status_error: {{fg}} {{danger}}
-    status_job: {{bg}} {{warning}}
-    status_normal: {{fg_muted}} {{bg_alt}} / None None
-    status_italic: {{accent3}} {{bg_alt}} Italic / None None
-    status_bold: {{accent3}} {{bg_alt}} Bold / None None
-    status_code: {{fg}} {{bg_alt}} / None None
-    status_ellipsis: {{fg}} {{bg_alt}} Bold / None None
+    status_error: {{fg|rgb}} {{danger|rgb}}
+    status_job: {{bg|rgb}} {{warning|rgb}}
+    status_normal: {{fg_muted|rgb}} {{bg_alt|rgb}}
+    status_italic: {{accent3|rgb}} {{bg_alt|rgb}} Italic
+    status_bold: {{accent3|rgb}} {{bg_alt|rgb}} Bold
+    status_code: {{fg|rgb}} {{bg_alt|rgb}}
+    status_ellipsis: {{fg|rgb}} {{bg_alt|rgb}} Bold
 
-    purpose_normal: None None
-    purpose_italic: {{accent}} None Italic
-    purpose_bold: {{accent}} None Bold
-    purpose_ellipsis: None None
+    purpose_normal: none none
+    purpose_italic: {{accent|rgb}} none Italic
+    purpose_bold: {{accent|rgb}} none Bold
+    purpose_ellipsis: none none
 
     # scrollbar
-    scrollbar_track: {{border}} None / {{bg_alt}} None
-    scrollbar_thumb: {{fg}} None / {{fg_muted}} None
+    scrollbar_track: {{border|rgb}} none
+    scrollbar_thumb: {{fg_muted|rgb}} none
 
     # documentation
-    help_paragraph: None None
-    help_bold: {{warning}} None Bold
-    help_italic: {{accent3}} None Italic
-    help_code: {{success}} {{bg_alt}}
+    help_paragraph: none none
+    help_headers: {{accent|rgb}} none Bold
+    help_bold: {{warning|rgb}} none Bold
+    help_italic: {{accent3|rgb}} none Italic
+    help_code: {{success|rgb}} {{bg_alt|rgb}}
+    help_table_border: {{border|rgb}} none
 
     # preview panel
-    preview_title: {{fg}} {{bg_alt}} / {{fg_muted}} {{bg_alt}}
-    preview: None None / None None
-    preview_line_number: {{fg_dim}} {{bg_alt}} / {{fg_dim}} None
-    preview_separator: {{border}} None / {{bg_selected}} None
-    preview_match: None {{warning}} Bold
+    preview_title: {{fg|rgb}} {{bg_alt|rgb}}
+    preview: {{fg|rgb}} {{bg_alt|rgb}}
+    preview_line_number: {{fg_dim|rgb}} none
+    preview_separator: {{border|rgb}} none
+    preview_match: {{warning|rgb}} none Bold
 
-    hex_null: {{fg_muted}} None
-    hex_ascii_graphic: {{fg}} None
-    hex_ascii_whitespace: {{fg_dim}} None
-    hex_ascii_other: {{warning}} None
-    hex_non_ascii: {{danger}} None
+    hex_null: {{fg_muted|rgb}} none
+    hex_ascii_graphic: {{fg|rgb}} none
+    hex_ascii_whitespace: {{fg_dim|rgb}} none
+    hex_ascii_other: {{warning|rgb}} none
+    hex_non_ascii: {{danger|rgb}} none
 
-    staging_area_title: {{fg}} {{bg_alt}} / {{fg_muted}} {{bg_alt}}
+    staging_area_title: {{fg|rgb}} {{bg_alt|rgb}}
 
-    mode_command_mark: {{bg}} {{accent3}} Bold
+    mode_command_mark: {{bg|rgb}} {{accent3|rgb}} Bold
 
     # file system occupation
-    good_to_bad_0: {{success}}
-    good_to_bad_1: {{success}}
-    good_to_bad_2: {{success}}
-    good_to_bad_3: {{success}}
-    good_to_bad_4: {{warning}}
-    good_to_bad_5: {{warning}}
-    good_to_bad_6: {{warning}}
-    good_to_bad_7: {{warning}}
-    good_to_bad_8: {{warning}}
-    good_to_bad_9: {{warning}}
+    good_to_bad_0: {{success|rgb}} none
+    good_to_bad_1: {{success|rgb}} none
+    good_to_bad_2: {{success|rgb}} none
+    good_to_bad_3: {{success|rgb}} none
+    good_to_bad_4: {{warning|rgb}} none
+    good_to_bad_5: {{warning|rgb}} none
+    good_to_bad_6: {{warning|rgb}} none
+    good_to_bad_7: {{warning|rgb}} none
+    good_to_bad_8: {{warning|rgb}} none
+    good_to_bad_9: {{warning|rgb}} none
 }
