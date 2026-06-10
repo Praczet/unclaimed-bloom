@@ -367,11 +367,23 @@ export class EventEmitter {
   }
 
   private async writeState(): Promise<void> {
-    const dir = this.dirname(this.stateFile);
-    await Deno.mkdir(dir, { recursive: true });
-    const tmp = `${this.stateFile}.tmp`;
-    await Deno.writeTextFile(tmp, `${JSON.stringify(this.state, null, 2)}\n`);
-    await Deno.rename(tmp, this.stateFile);
+    try {
+      const dir = this.dirname(this.stateFile);
+      await Deno.mkdir(dir, { recursive: true });
+      const payload = `${JSON.stringify(this.state, null, 2)}\n`;
+      const tmp = `${this.stateFile}.tmp`;
+      await Deno.writeTextFile(tmp, payload);
+      await Deno.rename(tmp, this.stateFile);
+      // Per-stage snapshot so the AGS store can read completed stages after they're replaced
+      const stageFile = this.stageStateFile(this.state.stage);
+      const stageTmp = `${stageFile}.tmp`;
+      await Deno.writeTextFile(stageTmp, payload);
+      await Deno.rename(stageTmp, stageFile);
+    } catch { /* state writes are best-effort — ignore if the process is being killed */ }
+  }
+
+  public stageStateFile(stage: string): string {
+    return this.stateFile.replace(/\.json$/, `-${stage}.json`);
   }
 
   private generateId(): string {

@@ -45,10 +45,54 @@ if [[ ! -f "$wallpaper" ]]; then
     exit 1
 fi
 
+CACHE_DIR="${UB_CACHE_DIR:-$HOME/.cache/unclaimed-bloom}"
+CURRENT_WALLPAPER_FILE="$CACHE_DIR/current-wallpaper"
+LOCK_FILE="$CACHE_DIR/wallset.lock"
+mkdir -p "$CACHE_DIR"
+
+# Recursively kill a process and all its descendants
+kill_tree() {
+    local pid=$1
+    local children
+    children=$(pgrep -P "$pid" 2>/dev/null || true)
+    for child in $children; do
+        kill_tree "$child"
+    done
+    kill -TERM "$pid" 2>/dev/null || true
+}
+
+# Kill any previous wallset-backend run so only one runs at a time
+if [[ -f "$LOCK_FILE" ]]; then
+    OLD_PID=$(cat "$LOCK_FILE" 2>/dev/null || echo "")
+    if [[ -n "$OLD_PID" ]] && kill -0 "$OLD_PID" 2>/dev/null; then
+        echo "Stopping previous run (pid $OLD_PID)..."
+        kill_tree "$OLD_PID"
+        sleep 0.3
+        # Force-kill anything that didn't respond to TERM
+        pgrep -P "$OLD_PID" 2>/dev/null | xargs -r kill -KILL 2>/dev/null || true
+        kill -KILL "$OLD_PID" 2>/dev/null || true
+    fi
+    rm -f "$LOCK_FILE"
+fi
+
+echo "$$" > "$LOCK_FILE"
+trap 'rm -f "$LOCK_FILE"' EXIT
+
 echo "Unclaimed Bloom wallpaper run"
 echo "  profile:   $PROFILE"
 echo "  wallpaper: $wallpaper"
 
+# Write current-wallpaper before sow so grow can inject it into templates
+echo "$wallpaper" > "$CURRENT_WALLPAPER_FILE"
+
 "$SPORE" sow "$PROFILE" --wallpaper "$wallpaper" --bloom-osd
 "$SPORE" grow "$PROFILE"
+
+# Set wallpaper first so the desktop changes immediately while the rest plants
+if ! pgrep -x awww-daemon > /dev/null 2>&1; then
+    awww-daemon &
+    sleep 0.5
+fi
+awww img "$wallpaper" --transition-type fade
+
 "$SPORE" plant "$PROFILE" --bloom-osd

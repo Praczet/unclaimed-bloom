@@ -1537,9 +1537,12 @@ Global flags:
     const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
 
     if (this.isCompositionProfile(profileEntry)) {
-      await this.plantCompositionProfile(profileEntry, args);
-      if (args.includes("--bloom-osd") && !dryRun) {
-        await this.notifyBloom("bloom-done");
+      try {
+        await this.plantCompositionProfile(profileEntry, args);
+      } finally {
+        if (args.includes("--bloom-osd") && !dryRun) {
+          await this.notifyBloom("bloom-done");
+        }
       }
       return;
     }
@@ -1594,10 +1597,10 @@ Global flags:
       const msg = err instanceof Error ? err.message : String(err);
       await emitter?.errorRun(msg);
       throw err;
-    }
-
-    if (args.includes("--bloom-osd") && !dryRun) {
-      await this.notifyBloom("bloom-done");
+    } finally {
+      if (args.includes("--bloom-osd") && !dryRun) {
+        await this.notifyBloom("bloom-done");
+      }
     }
 
     if (this.outputMode === "json") {
