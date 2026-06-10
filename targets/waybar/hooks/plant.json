@@ -1,0 +1,6 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/.config/waybar/colors/matugen.css"] },
+    { "type": "exec", "command": "bash", "args": ["-c", "pkill -SIGUSR2 waybar || true"] }
+  ]
+}

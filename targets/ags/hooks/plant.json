@@ -1,0 +1,5 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/Development/Hyprland/ags/shared/styles/matugen.css"] }
+  ]
+}

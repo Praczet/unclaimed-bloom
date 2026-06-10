@@ -1,0 +1,6 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/.config/swaync/colors/matugen.css"] },
+    { "type": "exec", "command": "bash", "args": ["-c", "swaync-client --reload-css || true"] }
+  ]
+}

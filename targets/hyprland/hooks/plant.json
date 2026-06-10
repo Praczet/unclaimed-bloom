@@ -1,0 +1,6 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/.config/hypr/colors/matugen.conf"] },
+    { "type": "exec", "command": "hyprctl", "args": ["reload"] }
+  ]
+}

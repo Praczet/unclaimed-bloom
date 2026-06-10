@@ -1,0 +1,5 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/.config/sqlit/themes/unclaimed-bloom.json"] }
+  ]
+}
