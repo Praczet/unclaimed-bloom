@@ -44,9 +44,9 @@ target recipes
         ↓
 spores
         ↓
-adapters
+template renderer  (sow + grow)
         ↓
-workers / templates / post-hooks
+plant hooks        (plant)
         ↓
 Ghostty / GTK / icons / AGS / swaync / waybar / Neovim / …
 ```
@@ -96,8 +96,8 @@ Unclaimed Bloom grew out of existing theming work:
 
 - **Matugen**: wallpaper color source and wallpaper setter.
 - **TokyoNight Moon**: the main dark base palette and taste memory.
-- **adart-matugener-icons**: Papirus-based recoloring, now called through the icons adapter.
-- **adart-matugener-gtk-theme**: sibling GTK theme repo, still provides the theme skeleton and widget/app CSS: <https://github.com/Praczet/adart-matugener-gtk-theme>
+- **adart-matugener-icons**: Papirus-based recoloring, now driven through the icons plant hook.
+- **adart-matugener-gtk-theme**: sibling GTK theme repo, still provides the theme skeleton and widget/app CSS.
 - **Ghostty**: terminal theme output.
 - **Neovim**: generated Lua colors for my Matugen/TokyoNight setup.
 - **AGS**: visual shell pieces using generated CSS.
@@ -454,6 +454,42 @@ docs: update project capsule
 ```
 
 Do not add `Co-authored-by` trailers.
+
+## Acknowledgements
+
+Unclaimed Bloom builds on and themes the work of others.
+
+**Color foundation:**
+
+- [Matugen](https://github.com/InioX/matugen) — Material You palette generator from wallpaper
+- [TokyoNight](https://github.com/folke/tokyonight.nvim) — base dark palette and taste memory
+
+**My related projects:**
+
+- [adart-matugener-icons](https://github.com/Praczet/adart-matugener-icons) — Papirus-based icon recoloring pipeline
+- [adart-matugener-gtk-theme](https://github.com/Praczet/adart-matugener-gtk-theme) — GTK theme skeleton and widget CSS
+
+**Themed tools:**
+
+- [Ghostty](https://ghostty.org/) — terminal emulator
+- [Neovim](https://neovim.io/) — text editor
+- [AGS](https://github.com/Aylur/ags) — Wayland shell / GTK layer shell toolkit
+- [SwayNotificationCenter](https://github.com/ErikReider/SwayNotificationCenter) — notification daemon (swaync)
+- [Waybar](https://github.com/Alexays/Waybar) — Wayland status bar
+- [Hyprland](https://hyprland.org/) — Wayland compositor
+- [Rofi](https://github.com/davatorium/rofi) — application launcher
+- [yazi](https://github.com/sxyazi/yazi) — terminal file manager
+- [wlogout](https://github.com/ArtsyMacaw/wlogout) — Wayland logout menu
+- [broot](https://dystroy.org/broot/) — terminal tree navigator
+- [mycli](https://www.mycli.net/) — MySQL/MariaDB CLI client
+- [Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme) — base icon theme used by adart-matugener-icons
+- GTK — because someone had to
+- sqlit — TUI SQL client
+- iced — Wayland application
+- potato — launcher
+- SDDM — display manager
+
+---
 
 ## Project Memory
 
