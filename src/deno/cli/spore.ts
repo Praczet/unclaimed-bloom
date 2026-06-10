@@ -936,14 +936,85 @@ Global flags:
       return;
     }
 
+    if (subcommand === "validate") {
+      await this.validateRecipes(args[1]);
+      return;
+    }
+
     this.printUnknownCommand(`recipe ${subcommand}`);
     Deno.exit(1);
   }
 
   private printRecipeHelp(): void {
     this.printHuman(`Recipe commands:
-  deno task spore:dev -- recipe list [target]
-  deno task spore:dev -- recipe inspect <target/name>`);
+  deno task dev -- recipe list [target]
+  deno task dev -- recipe inspect <target/name>
+  deno task dev -- recipe validate <target>`);
+  }
+
+  private async validateRecipes(target: string | undefined): Promise<void> {
+    if (!target) {
+      this.printUsageError("Missing target.", "recipe validate <target>");
+      Deno.exit(1);
+    }
+
+    const VALID_BLOOM = new Set([
+      "surface.base", "surface.dim", "surface.raised", "surface.highest",
+      "text.primary", "text.secondary", "text.muted", "text.disabled",
+      "accent.primary", "accent.secondary", "accent.tertiary",
+      "state.success", "state.warning", "state.danger", "state.info",
+      "border.subtle", "border.strong",
+      "selection.background", "selection.foreground",
+    ]);
+
+    const paths = BloomPaths.fromDeno();
+    const loader = new RecipeLoader();
+    const id = target.includes("/") ? target : undefined;
+    const summaries = id
+      ? [await loader.list(paths.recipesDir()).then((all) => all.find((r) => r.id === id)!)].filter(Boolean)
+      : await loader.list(paths.recipesDir(), target);
+
+    if (summaries.length === 0) {
+      this.printHuman(`No recipes found for: ${target}`);
+      Deno.exit(1);
+    }
+
+    let anyFailed = false;
+
+    for (const summary of summaries) {
+      const recipe = await loader.inspect(paths.recipesDir(), summary.id);
+      const bad: string[] = [];
+
+      for (const [name, token] of Object.entries(recipe.tokens)) {
+        if ("bloom" in token && !VALID_BLOOM.has(token.bloom)) {
+          bad.push(`  ${name}: bloom:${token.bloom}  (unknown token)`);
+        }
+      }
+
+      if (this.outputMode === "json") continue;
+
+      if (bad.length === 0) {
+        this.printHuman(`${this.display.dim("✓")} ${summary.id}`);
+      } else {
+        anyFailed = true;
+        this.printHuman(`✗ ${summary.id}`);
+        bad.forEach((line) => this.printHuman(line));
+      }
+    }
+
+    if (this.outputMode === "json") {
+      const results = await Promise.all(summaries.map(async (summary) => {
+        const recipe = await loader.inspect(paths.recipesDir(), summary.id);
+        const errors = Object.entries(recipe.tokens)
+          .filter(([, t]) => "bloom" in t && !VALID_BLOOM.has(t.bloom))
+          .map(([name, t]) => ({ token: name, ref: `bloom:${"bloom" in t ? t.bloom : ""}` }));
+        return { id: summary.id, ok: errors.length === 0, errors };
+      }));
+      this.printJson({ ok: results.every((r) => r.ok), results });
+      return;
+    }
+
+    if (anyFailed) Deno.exit(1);
   }
 
   private async listRecipes(target: string | undefined): Promise<void> {
