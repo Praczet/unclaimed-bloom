@@ -4,7 +4,7 @@ import {
   type BloomPreview,
 } from "../core/blooms/BloomGenerator.ts";
 import { EventEmitter } from "../core/events/EventEmitter.ts";
-import { HookRunner } from "../core/hooks/HookRunner.ts";
+import { HookRunner, type WorkerEventSink } from "../core/hooks/HookRunner.ts";
 import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
@@ -596,13 +596,19 @@ Global flags:
 
     if (!dryRun) {
       const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+      const workerSink: WorkerEventSink = {
+        start: (t, w) => emitter.startWorker(t, w),
+        progress: (t, w, p) => emitter.progressWorker(t, w, p.current, p.total, p.msg),
+        done: (t, w, current, total) => emitter.doneWorker(t, w, current, total),
+        error: (t, w, error) => emitter.errorWorker(t, w, error),
+      };
       await emitter.startRun(comp.name, "plant", allTargets);
       try {
         for (const { profile, targets } of runs) {
           for (const [target] of targets) {
             await emitter.startTarget(target);
             try {
-              const result = await runner.run(paths, profile.name, target, false);
+              const result = await runner.run(paths, profile.name, target, false, workerSink);
               if (!result.hookPath) {
                 await emitter.skipTarget(target, "no plant hook");
               } else {
@@ -1467,6 +1473,15 @@ Global flags:
       ? undefined
       : new EventEmitter(paths.eventsFile(), paths.stateFile());
 
+    const workerSink: WorkerEventSink | undefined = emitter
+      ? {
+        start: (t, w) => emitter.startWorker(t, w),
+        progress: (t, w, p) => emitter.progressWorker(t, w, p.current, p.total, p.msg),
+        done: (t, w, current, total) => emitter.doneWorker(t, w, current, total),
+        error: (t, w, error) => emitter.errorWorker(t, w, error),
+      }
+      : undefined;
+
     if (emitter) {
       await emitter.startRun(profileName, "plant", targets.map(([t]) => t));
     }
@@ -1475,7 +1490,7 @@ Global flags:
       for (const [target] of targets) {
         await emitter?.startTarget(target);
         try {
-          const result = await runner.run(paths, profileName, target, dryRun);
+          const result = await runner.run(paths, profileName, target, dryRun, workerSink);
           results.push(result);
           if (!result.hookPath) {
             await emitter?.skipTarget(target, "no plant hook");

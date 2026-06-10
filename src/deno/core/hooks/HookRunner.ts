@@ -1,4 +1,6 @@
 import type { BloomPaths } from "../paths/BloomPaths.ts";
+import { WorkerRunner } from "../workers/WorkerRunner.ts";
+import type { WorkerProgress } from "../workers/WorkerRunner.ts";
 
 export interface CopyStep {
   readonly type: "copy";
@@ -11,7 +13,20 @@ export interface ExecStep {
   readonly args: string[];
 }
 
-export type HookStep = CopyStep | ExecStep;
+export interface WorkerStep {
+  readonly type: "worker";
+  readonly command: string;
+  readonly args: string[];
+}
+
+export type HookStep = CopyStep | ExecStep | WorkerStep;
+
+export interface WorkerEventSink {
+  start(target: string, worker: string): Promise<void>;
+  progress(target: string, worker: string, p: WorkerProgress): Promise<void>;
+  done(target: string, worker: string, current: number, total: number): Promise<void>;
+  error(target: string, worker: string, error: string): Promise<void>;
+}
 
 export interface PlantHook {
   readonly steps: HookStep[];
@@ -44,6 +59,7 @@ export class HookRunner {
     profile: string,
     target: string,
     dryRun = false,
+    workerSink?: WorkerEventSink,
   ): Promise<PlantResult> {
     const recipe = await this.readRecipeFromSpore(paths.sporeFile(profile, target), target);
     const rendered = await this.findRenderedFile(paths.renderedDir(profile, target), target);
@@ -68,7 +84,7 @@ export class HookRunner {
       steps.push(
         dryRun
           ? this.dryRunStep(step, context)
-          : await this.executeStep(step, context),
+          : await this.executeStep(step, context, target, workerSink),
       );
     }
 
@@ -172,14 +188,14 @@ export class HookRunner {
         return { type: "copy", dest: step["dest"] as string[] };
       }
 
-      if (type === "exec") {
+      if (type === "exec" || type === "worker") {
         if (typeof step["command"] !== "string") {
-          throw new Error(`Step ${i} "exec" requires a "command" string:\n  ${path}`);
+          throw new Error(`Step ${i} "${type}" requires a "command" string:\n  ${path}`);
         }
         if (!Array.isArray(step["args"]) || step["args"].some((a) => typeof a !== "string")) {
-          throw new Error(`Step ${i} "exec" requires an "args" string array:\n  ${path}`);
+          throw new Error(`Step ${i} "${type}" requires an "args" string array:\n  ${path}`);
         }
-        return { type: "exec", command: step["command"], args: step["args"] as string[] };
+        return { type, command: step["command"], args: step["args"] as string[] };
       }
 
       throw new Error(`Step ${i} has unknown type "${type}" in hook file:\n  ${path}`);
@@ -188,9 +204,15 @@ export class HookRunner {
     return { steps };
   }
 
-  private async executeStep(step: HookStep, context: PlantContext): Promise<StepResult> {
+  private async executeStep(
+    step: HookStep,
+    context: PlantContext,
+    target: string,
+    workerSink?: WorkerEventSink,
+  ): Promise<StepResult> {
     if (step.type === "copy") return await this.executeCopy(step, context);
     if (step.type === "exec") return await this.executeExec(step, context);
+    if (step.type === "worker") return await this.executeWorker(step, context, target, workerSink);
     throw new Error(`Unknown hook step type: ${(step as { type: string }).type}`);
   }
 
@@ -217,15 +239,46 @@ export class HookRunner {
     return { type: "exec", ok: true, detail: `${command} ${args.join(" ")}` };
   }
 
+  private async executeWorker(
+    step: WorkerStep,
+    context: PlantContext,
+    target: string,
+    workerSink?: WorkerEventSink,
+  ): Promise<StepResult> {
+    const command = this.expandHome(this.substitute(step.command, context));
+    const args = step.args.map((a) => this.substitute(a, context));
+    const workerName = command.split("/").pop() ?? command;
+
+    await workerSink?.start(target, workerName);
+
+    const runner = new WorkerRunner();
+    let lastProgress: WorkerProgress | null = null;
+
+    const result = await runner.run({ command, args }, async (p) => {
+      lastProgress = p;
+      await workerSink?.progress(target, workerName, p);
+    });
+
+    if (result.ok) {
+      const final = lastProgress ?? { current: 0, total: 0, msg: "" };
+      await workerSink?.done(target, workerName, final.current, final.total);
+      return { type: "worker", ok: true, detail: `${command} ${args.join(" ")}` };
+    } else {
+      const error = result.stderr || `exit code ${result.exitCode}`;
+      await workerSink?.error(target, workerName, error);
+      throw new Error(`Worker failed: ${command} ${args.join(" ")}\n${error}`);
+    }
+  }
+
   private dryRunStep(step: HookStep, context: PlantContext): StepResult {
     if (step.type === "copy") {
       const dests = step.dest.map((d) => this.expandHome(this.substitute(d, context)));
       return { type: "copy", ok: true, detail: `would copy to: ${dests.join(", ")}` };
     }
-    if (step.type === "exec") {
+    if (step.type === "exec" || step.type === "worker") {
       const command = this.expandHome(this.substitute(step.command, context));
       const args = step.args.map((a) => this.substitute(a, context));
-      return { type: "exec", ok: true, detail: `would run: ${command} ${args.join(" ")}` };
+      return { type: step.type, ok: true, detail: `would run: ${command} ${args.join(" ")}` };
     }
     return { type: (step as { type: string }).type, ok: false, detail: "unknown step type" };
   }

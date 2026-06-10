@@ -1,7 +1,7 @@
 {
   "steps": [
     {
-      "type": "exec",
+      "type": "worker",
       "command": "~/.local/bin/adart-worker",
       "args": [
         "--runtime",  "{{rendered}}",
