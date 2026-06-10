@@ -2,3 +2,9 @@ node_modules
 dist
 watch_*
 workbench/ui/main.js
+
+# local/personal docs not meant for the repo
+docs/adart-matugener-gtk-theme-project-capsule.md
+docs/adart-matugener-icons-project-capsule.md
+docs/Prompt__create_palette.md
+docs/unclaimed-bloom-codex-ui-redesign-prompt.md

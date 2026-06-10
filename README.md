@@ -190,7 +190,8 @@ wallset → wallset-backend → spore sow desktop --wallpaper → spore grow des
 `wallset` and `wallset-backend` are owned by this repository and installed by
 `scripts/install`. The default profile is the `desktop` composition, which grows
 GTK from `daily-gtk` first and then grows the rest from `daily`.
-The old `walset` spelling is installed as a compatibility alias.
+The old `walset` spelling is installed as a compatibility alias — and a quiet acknowledgment
+that the letter `l` is apparently optional when your brain is moving faster than your fingers.
 
 So the simple version is:
 
@@ -257,6 +258,50 @@ Check what has been generated:
 ```bash
 spore status
 ```
+
+## AGS Bloom OSD
+
+Unclaimed Bloom can show a live progress overlay in AGS while `sow` and `plant` are running.
+
+Enable it with the `--bloom-osd` flag:
+
+```bash
+spore sow desktop --wallpaper ~/Pictures/wallpapers/something.png --bloom-osd
+spore plant desktop --bloom-osd
+```
+
+The `wallset-backend` script passes `--bloom-osd` automatically.
+
+### How it works
+
+`sow` and `plant` write two files as they run:
+
+```text
+~/.cache/unclaimed-bloom/state.json    — current run snapshot, atomically replaced
+~/.cache/unclaimed-bloom/events.jsonl  — append-only log of every event
+```
+
+AGS polls `state.json` at 200 ms to drive the bloom OSD widget. The `events.jsonl`
+file is available for any consumer that wants the full run history.
+
+The OSD is triggered by an AGS request command configured in:
+
+```text
+~/.config/unclaimed-bloom/notify.json
+```
+
+Example:
+
+```json
+{ "cmd": ["ags", "request", "-i", "adart", "--"] }
+```
+
+With that in place, `sow --bloom-osd` sends `bloom-show <profile>` before the run starts,
+and `plant --bloom-osd` sends `bloom-done` when the run finishes successfully. If the run
+errors, `bloom-done` is not sent — the OSD stays visible so you know something went wrong.
+
+The AGS bloom widget also recovers if AGS restarts mid-run: it reads `state.json` on startup
+and resumes tracking from where it left off.
 
 ## GTK Graphite Profile
 
