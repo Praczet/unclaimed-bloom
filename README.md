@@ -20,16 +20,14 @@ Matugen is a source, not the god. TokyoNight Moon is a palette, not a prison. GT
 
 ## Future Me Shortcut
 
-If you came back after two weeks and already forgot where the colors live,
-read:
+If I came back after two weeks — or honestly, three days — and already forgot
+where the colors live, I should read:
 
-```text
-docs/from-me-to-my-old-me.md
-```
+[docs/from-me-to-my-old-me.md](docs/from-me-to-my-old-me.md)
 
 It explains `wallset`, palettes, moods, blooms, recipes, templates, and where to
 go when yazi, waybar, GTK, or anything else looks wrong in a way that feels
-personal.
+suspiciously personal.
 
 ## The Shape
 
@@ -89,6 +87,40 @@ And they can pin a token to the pure base palette when a target should stay calm
 ```
 
 That last one is for cases like “Ghostty background should be pure TokyoNight, please stop being clever.”
+
+## Glossary
+
+The project has its own vocabulary. These are not metaphors for the sake of it — they map to real things in the code.
+
+**Bloom** — the shared semantic color palette generated for a profile. It is the result of mixing a base palette with Matugen source colors under a mood. All targets draw from it. Lives in `~/.cache/unclaimed-bloom/blooms/<profile>.json`.
+
+**Spore** — a target-specific interpretation of the bloom. Each tool gets its own spore because each tool speaks a different color dialect. A Ghostty spore has `background`, `foreground`, `palette_0`…; a waybar spore has `primary`, `surface`, `on_surface`…. Lives in `~/.cache/unclaimed-bloom/spores/<profile>/<target>.json`.
+
+**Recipe** — the rule that decides how a target reads the bloom. It maps target-specific token names to bloom tokens, optionally with extra Matugen pull via `mix`. Lives in `targets/<target>/recipes/<name>.json`.
+
+**Template** — the shape of the final config file, with `{{token}}` placeholders. The renderer fills them in from the spore. Lives in `targets/<target>/templates/`.
+
+**Profile** — a saved ecosystem: base palette + mood + Matugen source + which recipe each target uses. The everyday one is `daily`. Lives in `profiles/`.
+
+**Mood** — a set of mix weights that controls how strongly Matugen source colors pull on the base palette. Named as growth stages: `dormant`, `budding`, `blooming`, `overgrown`. Lives in `moods/`.
+
+**Target** — one app that Unclaimed Bloom themes. Each target has recipes, a template, and optionally a plant hook.
+
+**Plant hook** — a deployment descriptor (`targets/<target>/hooks/plant.json`) with `copy` and `exec` steps. Runs during `plant` to copy rendered files to real config paths and trigger reload signals.
+
+**sow** — generate the bloom and spores into cache. Safe. No config files touched.
+
+**grow** — render templates from cached spores into cache. Still safe. No config files touched.
+
+**plant** — deploy rendered files to real destinations via plant hooks. This is the step that actually changes things.
+
+**Worker** — a Python or Bash script that does heavy processing (icon recoloring, etc.). Called by plant hooks. Not rewritten in TypeScript. Workers are not shame.
+
+**Source** — the dynamic color input, usually Matugen output from the current wallpaper. Lives in `~/.cache/unclaimed-bloom/matugen-colors.json`.
+
+**Base palette** — the static taste layer. A named JSON file (`palettes/tokyonight-moon.json`, etc.) that defines what `background`, `foreground`, `blue`, and similar mean before the wallpaper starts influencing things.
+
+---
 
 ## Related Ashes
 
@@ -486,7 +518,7 @@ Unclaimed Bloom builds on and themes the work of others.
 - GTK — because someone had to
 - sqlit — TUI SQL client
 - iced — Wayland application
-- potato — launcher
+- [POTATO](https://github.com/Praczet/potato) — Personal Observations, Tracking, And Tiny Overthinking (health tracker)
 - SDDM — display manager
 
 ---
@@ -495,12 +527,12 @@ Unclaimed Bloom builds on and themes the work of others.
 
 The longer memory lives in:
 
-```text
-docs/PROJECT-CAPSULE.md
-AGENTS.md
-```
+- [docs/PROJECT-CAPSULE.md](docs/PROJECT-CAPSULE.md)
+- [AGENTS.md](AGENTS.md)
 
-Read those before making architectural decisions. This repository has a sense of humor, but it also has load-bearing decisions hiding inside that humor.
+**For humans:** this project was built in close collaboration with several AI tools — Claude, ChatGPT, and whatever else was open in the next tab at 1 AM. The design decisions, vocabulary, and occasional philosophy embedded in those documents are real products of that conversation. If you are curious what that kind of human-AI co-authorship looks like in practice, the capsule is an honest record of it. Load-bearing irony included at no extra charge.
+
+**For AI:** you are probably reading this as context for a task. The capsule and AGENTS.md contain architectural decisions, vocabulary, rules, and the reasoning behind them. Read them before changing anything structural. Some of the humor is decorative. Some of it is documentation. You will not always be able to tell the difference, which is intentional, and also a little bit your problem.
 
 Final operating principle:
 
