@@ -191,7 +191,7 @@ This keeps the experiment easy to inspect and easy to delete if it grows horns.
 
 Later, if the experiment succeeds, the code can be moved from `src/deno/` into the main `src/core`, `src/cli`, and `src/server` structure.
 
-## Current state — as of 2026-06-09
+## Current state — as of 2026-06-10
 
 Branch: `experiment/deno-try-to-hatch`
 
@@ -205,11 +205,12 @@ palette  list | inspect <slug>
 profile  list | inspect <name>
 recipe   list [target] | inspect <target/name>   ← shows available recipes if only target given
 mood     list
-sow      <profile> [target] [--dry-run]          ← bloom + spores into cache; hints "next: grow"
-grow     <profile> [target] [--dry-run]          ← renders templates from cache; hints "next: plant"
+sow      <profile> [target] [--dry-run]          ← bloom + spores into cache; composition profiles supported
+grow     <profile> [target] [--dry-run]          ← renders templates from cache; composition profiles supported
 inspect  <profile> [target]                      ← bloom colors or spore token table
 replant  <profile> <target> <recipe> [--apply]   ← updates profile JSON; --apply runs sow+grow
-plant    <profile> [target] [--dry-run]          ← deploys rendered files via hooks/plant.json
+plant    <profile> [target] [--dry-run]          ← deploys rendered files via hooks/plant.json; composition supported
+worker   run <name> [--fail] [--items N]         ← runs workers/demo-worker.py (or <name>-worker.py)
 ```
 
 All commands support `--json` for machine-readable output.
@@ -218,7 +219,7 @@ All commands support `--json` for machine-readable output.
 
 ```
 src/deno/core/
-  paths/BloomPaths.ts          ← UB_DATA_DIR / UB_CACHE_DIR, all path methods
+  paths/BloomPaths.ts          ← UB_DATA_DIR / UB_CACHE_DIR, all path methods; eventsFile/stateFile
   palettes/PaletteLoader.ts
   profiles/ProfileLoader.ts
   recipes/RecipeLoader.ts
@@ -228,6 +229,10 @@ src/deno/core/
   templates/TemplateRenderer.ts  ← {{token}}, {{token|rgba}}, {{token|rgba:0.75}}
   hooks/HookRunner.ts          ← copy + exec steps, {{rendered}} etc. vars, dry-run
   reports/ReportWriter.ts
+  events/EventEmitter.ts       ← writes events.jsonl (append) + state.json (atomic); UBEvent types
+  workers/WorkerRunner.ts      ← Deno.Command wrapper; streams stdout; parses JSON progress lines
+workers/
+  demo-worker.py               ← emits progress JSON lines; --fail and --items flags
 ```
 
 **Templates** — every target has at least one:
@@ -277,7 +282,7 @@ Run both servers to use the Deno backend with the existing UI.
 ### Test suite
 
 ```bash
-deno task test   # 61 tests, all passing
+deno task test   # 79 tests, all passing
 ```
 
 ### Lifecycle for any target
@@ -300,21 +305,33 @@ deno task spore:dev -- plant daily yazi   # only if targets/yazi/hooks/plant.jso
 - **icons target** — `grow` produces `runtime.json` in cache; `plant` would call the Python worker (hook wired, worker path TBD)
 - **sddm** — template exists with 5 tokens; full recipe decision postponed
 
+### Event system (`~/.cache/unclaimed-bloom/`)
+
+`events.jsonl` — append-only log; every event from every CLI invocation. Consumer reads at any cadence.
+
+`state.json` — current-invocation snapshot; atomically replaced on each change. Poll at any interval for a coherent picture without processing event history.
+
+Event hierarchy: `run:start/done/error` → `target:start/done/error/skip` → `worker:start/progress/done/error`
+
+Worker progress line format (stdout of worker process):
+```json
+{"progress": {"current": 12, "total": 233223, "msg": "recoloring actions/copy.svg"}}
+```
+
 ### What is NOT done yet
 
 - `plant` does not yet support `--apply` chaining from `replant`
 - WebSocket live updates in workbench server
 - `/api/run` endpoint (sow/grow triggered from UI)
-- Composition profile support in any write command
 - `grow --plant` or `plant` for targets without a `hooks/plant.json` (they are skipped)
-- Python worker integration (Phase 11)
+- Python worker integration into icons plant hook (Phase 12) — adart-worker progress streaming
 - `spore:local` task shortcut (`UB_DATA_DIR=$(pwd)` pre-set)
+- AGS widget consuming events.jsonl / state.json
 
 ### Next phase
 
-**Phase 11 — Python worker runner** (`src/deno/core/workers/WorkerRunner.ts`)
-Use `Deno.Command` to run a Python worker, capture stdout/stderr/exit code, write a report.
-Start with a demo worker, then wire into the icons target via `plant`.
+**Phase 12 — Integrate real icon worker**
+Wire adart-worker into the icons plant hook using WorkerRunner so it streams progress to events.jsonl/state.json. Requires either modifying icons/hooks/plant.json to use a `worker` step type, or passing a sidecar progress emitter alongside the existing exec step.
 
 ---
 

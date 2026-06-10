@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+# Drive the bloom OSD widget through a fake sow→grow→plant run.
+#
+# Usage:
+#   test-bloom-osd [--error <stage>] [--profile <name>] [--fast]
+#
+#   --error sow|grow|plant  fail mid-stage (tests error+dismiss path)
+#   --profile NAME          profile name shown in the widget header (default: daily)
+#   --fast                  skip sleeps (useful for quick sanity check)
+
+set -euo pipefail
+
+PROFILE="daily"
+ERROR_STAGE=""
+FAST=0
+WALLPAPER=""
+AGS_CMD=("ags" "request" "-i" "adart" "--")
+STATE_FILE="${HOME}/.cache/unclaimed-bloom/state.json"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --error)     ERROR_STAGE="$2"; shift 2 ;;
+    --profile)   PROFILE="$2";    shift 2 ;;
+    --wallpaper) WALLPAPER="$2";  shift 2 ;;
+    --fast)      FAST=1;           shift   ;;
+    *) echo "unknown arg: $1" >&2; exit 1 ;;
+  esac
+done
+
+pause() {
+  [[ $FAST -eq 1 ]] && return
+  sleep "${1:-1}"
+}
+
+# Fresh ISO-8601 timestamp on every call — always after bloom-show fired.
+ts() { date -u +"%Y-%m-%dT%H:%M:%S.%3NZ"; }
+
+write_state() {
+  cat > "$STATE_FILE"
+}
+
+bloom_cmd() {
+  "${AGS_CMD[@]}" "$@" 2>/dev/null || echo "[warn] ags request failed — is adart running?" >&2
+}
+
+RUN_ID="test$(date +%s | tail -c5)"
+SOW_START=$(ts)
+
+echo "→ bloom-show $PROFILE"
+if [[ -n "$WALLPAPER" ]]; then
+  bloom_cmd bloom-show "$PROFILE" --wallpaper "$WALLPAPER"
+else
+  bloom_cmd bloom-show "$PROFILE"
+fi
+pause 0.4
+
+# ── sow ─────────────────────────────────────────────────────────────────────
+
+echo "→ sow: starting"
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"sow","status":"running",
+ "started_at":"$SOW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"running"},"ghostty":{"status":"pending"},"gtk":{"status":"pending"}}}
+EOF
+pause 1
+
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"sow","status":"running",
+ "started_at":"$SOW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":820},"ghostty":{"status":"running"},"gtk":{"status":"pending"}}}
+EOF
+pause 0.8
+
+if [[ "$ERROR_STAGE" == "sow" ]]; then
+  echo "→ sow: injecting error"
+  write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"sow","status":"error",
+ "started_at":"$SOW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":820},"ghostty":{"status":"error","duration_ms":310},"gtk":{"status":"pending"}}}
+EOF
+  echo "→ done (error path — dismiss the widget manually)"
+  exit 0
+fi
+
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"sow","status":"done",
+ "started_at":"$SOW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":820},"ghostty":{"status":"done","duration_ms":310},"gtk":{"status":"done","duration_ms":190}}}
+EOF
+echo "→ sow: done"
+pause 0.6
+
+# ── grow ─────────────────────────────────────────────────────────────────────
+
+GROW_START=$(ts)
+
+echo "→ grow: starting"
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"grow","status":"running",
+ "started_at":"$GROW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"running","worker":{"current":0,"total":24,"pct":0,"msg":""}},"ghostty":{"status":"pending"},"gtk":{"status":"pending"}}}
+EOF
+pause 0.5
+
+for pct in 12 29 46 63 79 92 100; do
+  item=$(( (pct * 24) / 100 ))
+  write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"grow","status":"running",
+ "started_at":"$GROW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"running","worker":{"current":$item,"total":24,"pct":$pct,"msg":"processing icon_$(printf '%04d' $item).svg"}},"ghostty":{"status":"pending"},"gtk":{"status":"pending"}}}
+EOF
+  pause 0.35
+done
+
+if [[ "$ERROR_STAGE" == "grow" ]]; then
+  echo "→ grow: injecting error"
+  write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"grow","status":"error",
+ "started_at":"$GROW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"error","duration_ms":2100},"ghostty":{"status":"pending"},"gtk":{"status":"pending"}}}
+EOF
+  echo "→ done (error path — dismiss the widget manually)"
+  exit 0
+fi
+
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"grow","status":"running",
+ "started_at":"$GROW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":2100},"ghostty":{"status":"running"},"gtk":{"status":"pending"}}}
+EOF
+pause 0.6
+
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"grow","status":"done",
+ "started_at":"$GROW_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":2100},"ghostty":{"status":"done","duration_ms":540},"gtk":{"status":"done","duration_ms":210}}}
+EOF
+echo "→ grow: done"
+pause 0.6
+
+# ── plant ────────────────────────────────────────────────────────────────────
+
+PLANT_START=$(ts)
+
+echo "→ plant: starting"
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"plant","status":"running",
+ "started_at":"$PLANT_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"running"},"ghostty":{"status":"pending"},"gtk":{"status":"pending"}}}
+EOF
+pause 0.7
+
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"plant","status":"running",
+ "started_at":"$PLANT_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":180},"ghostty":{"status":"skipped"},"gtk":{"status":"running"}}}
+EOF
+pause 0.7
+
+if [[ "$ERROR_STAGE" == "plant" ]]; then
+  echo "→ plant: injecting error"
+  write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"plant","status":"error",
+ "started_at":"$PLANT_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":180},"ghostty":{"status":"skipped"},"gtk":{"status":"error","duration_ms":90}}}
+EOF
+  echo "→ done (error path — dismiss the widget manually)"
+  exit 0
+fi
+
+write_state << EOF
+{"run_id":"$RUN_ID","profile":"$PROFILE","stage":"plant","status":"done",
+ "started_at":"$PLANT_START","updated_at":"$(ts)",
+ "targets":{"yazi":{"status":"done","duration_ms":180},"ghostty":{"status":"skipped"},"gtk":{"status":"done","duration_ms":95}}}
+EOF
+echo "→ plant: done"
+pause 0.3
+
+echo "→ bloom-done (auto-dismiss in 4s)"
+bloom_cmd bloom-done

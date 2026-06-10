@@ -3,12 +3,14 @@ import {
   BloomGenerator,
   type BloomPreview,
 } from "../core/blooms/BloomGenerator.ts";
+import { EventEmitter } from "../core/events/EventEmitter.ts";
 import { HookRunner } from "../core/hooks/HookRunner.ts";
 import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
 import {
   type CompositionProfile,
+  type CompositionRun,
   type MatugenSource,
   type Profile,
   type ProfileEntry,
@@ -18,6 +20,7 @@ import { type Recipe, RecipeLoader } from "../core/recipes/RecipeLoader.ts";
 import { ReportWriter } from "../core/reports/ReportWriter.ts";
 import { type Spore, SporeGenerator } from "../core/spores/SporeGenerator.ts";
 import { TemplateRenderer } from "../core/templates/TemplateRenderer.ts";
+import { WorkerRunner } from "../core/workers/WorkerRunner.ts";
 
 const VERSION = "0.1.0-deno-experiment";
 
@@ -120,6 +123,11 @@ class SporeCli {
       return;
     }
 
+    if (command === "worker") {
+      await this.runWorkerCommand(commandArgs.slice(1));
+      return;
+    }
+
     this.printUnknownCommand(command);
     Deno.exit(1);
   }
@@ -192,6 +200,7 @@ Commands:
   mood      List moods.
   replant   Change a target's recipe in a profile.
   plant     Deploy rendered files to real config paths via hooks.
+  worker    Run a Python worker. Subcommands: run <name>
 
 Global flags:
   --json          Print machine-readable JSON.
@@ -274,6 +283,51 @@ Global flags:
       Deno.exit(1);
     }
 
+    const paths = BloomPaths.fromDeno();
+    const profileLoader = new ProfileLoader();
+    const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
+
+    if (args.includes("--bloom-osd") && !dryRun) {
+      await this.notifyBloom("bloom-show", profileName);
+    }
+
+    if (this.isCompositionProfile(profileEntry)) {
+      await this.sowCompositionProfile(profileEntry, args);
+      return;
+    }
+
+    const profile = profileEntry;
+    const targets = Object.entries(profile.targets).filter(([target]) =>
+      targetFilter === undefined || target === targetFilter
+    );
+
+    if (targets.length === 0 && targetFilter !== undefined) {
+      throw new Error(`Target "${targetFilter}" not in profile "${profileName}".`);
+    }
+
+    if (!dryRun) {
+      const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+      await emitter.startRun(profileName, "sow", targets.map(([t]) => t));
+      try {
+        await this.sowProfileInner(profileName, targetFilter, dryRun, emitter);
+        await emitter.finishRun();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await emitter.errorRun(msg);
+        throw err;
+      }
+      return;
+    }
+
+    await this.sowProfileInner(profileName, targetFilter, dryRun, undefined);
+  }
+
+  private async sowProfileInner(
+    profileName: string,
+    targetFilter: string | undefined,
+    dryRun: boolean,
+    emitter: EventEmitter | undefined,
+  ): Promise<void> {
     const startedAt = new Date().toISOString();
     const context = await this.createBloomContext(profileName);
     const paths = context.paths;
@@ -283,6 +337,9 @@ Global flags:
     const reportPath = paths.timestampedSowReportFile(
       context.profile.name,
       generatedAt,
+    );
+    const targets = Object.entries(context.profile.targets).filter(([target]) =>
+      targetFilter === undefined || target === targetFilter
     );
     const result = {
       profile: context.profile.name,
@@ -375,8 +432,9 @@ Global flags:
 
     const sporeOutputs = await this.sowTargetSpores({
       context,
-      targetFilter,
+      targets,
       startedAt,
+      emitter,
     });
 
     if (this.outputMode === "json") {
@@ -413,6 +471,208 @@ Global flags:
     this.printHuman("");
     const growArgs = [profileName, targetFilter].filter(Boolean).join(" ");
     this.printHuman(this.display.dim(`  next: deno task spore:dev -- grow ${growArgs}`));
+  }
+
+  private async sowCompositionProfile(
+    comp: CompositionProfile,
+    args: string[],
+  ): Promise<void> {
+    const dryRun = args.includes("--dry-run");
+    const paths = BloomPaths.fromDeno();
+    const runs = await this.expandCompositionRuns(comp, paths);
+    const allTargets = runs.flatMap((r) => r.targets.map(([t]) => t));
+
+    if (dryRun) {
+      if (this.outputMode === "json") {
+        this.printJson({
+          ok: true,
+          command: "sow",
+          profile: comp.name,
+          dryRun: true,
+          runs: runs.map(({ profile, targets }) => ({
+            profile: profile.name,
+            targets: targets.map(([t]) => t),
+          })),
+        });
+        return;
+      }
+      this.printHuman(this.display.fields([{
+        label: "Dry run",
+        value: `sow composition: ${comp.name}`,
+      }]));
+      this.printHuman("");
+      for (const { profile, targets } of runs) {
+        this.printHuman(`  ${profile.name}`);
+        for (const [target, recipe] of targets) {
+          this.printHuman(`    ${target}  ${this.display.dim(recipe)}`);
+        }
+      }
+      return;
+    }
+
+    const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+    await emitter.startRun(comp.name, "sow", allTargets);
+    try {
+      for (const { profile, targets } of runs) {
+        const startedAt = new Date().toISOString();
+        const context = await this.buildBloomContextForProfile(profile, paths);
+        await this.sowTargetSpores({ context, targets, startedAt, emitter });
+      }
+      await emitter.finishRun();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      await emitter.errorRun(msg);
+      throw err;
+    }
+
+    if (this.outputMode === "human") {
+      this.printHuman(
+        this.display.dim(`  next: deno task spore:dev -- grow ${comp.name}`),
+      );
+    }
+  }
+
+  private async growCompositionProfile(
+    comp: CompositionProfile,
+    args: string[],
+  ): Promise<void> {
+    const dryRun = args.includes("--dry-run");
+    const paths = BloomPaths.fromDeno();
+    const runs = await this.expandCompositionRuns(comp, paths);
+    const allTargets = runs.flatMap((r) => r.targets.map(([t]) => t));
+    const renderer = new TemplateRenderer();
+
+    if (!dryRun) {
+      const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+      await emitter.startRun(comp.name, "grow", allTargets);
+      try {
+        for (const { profile, targets } of runs) {
+          for (const [target] of targets) {
+            await emitter.startTarget(target);
+            try {
+              await renderer.renderToCache(paths, profile.name, target, false);
+              await emitter.doneTarget(target);
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : String(err);
+              await emitter.errorTarget(target, msg);
+              throw err;
+            }
+          }
+        }
+        await emitter.finishRun();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await emitter.errorRun(msg);
+        throw err;
+      }
+    } else {
+      for (const { profile, targets } of runs) {
+        for (const [target] of targets) {
+          await renderer.renderToCache(paths, profile.name, target, true);
+        }
+      }
+    }
+
+    if (this.outputMode === "human" && !dryRun) {
+      this.printHuman(
+        this.display.dim(
+          `  next: deno task spore:dev -- plant ${comp.name}`,
+        ),
+      );
+    }
+  }
+
+  private async plantCompositionProfile(
+    comp: CompositionProfile,
+    args: string[],
+  ): Promise<void> {
+    const dryRun = args.includes("--dry-run");
+    const paths = BloomPaths.fromDeno();
+    const runs = await this.expandCompositionRuns(comp, paths);
+    const allTargets = runs.flatMap((r) => r.targets.map(([t]) => t));
+    const runner = new HookRunner();
+
+    if (!dryRun) {
+      const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+      await emitter.startRun(comp.name, "plant", allTargets);
+      try {
+        for (const { profile, targets } of runs) {
+          for (const [target] of targets) {
+            await emitter.startTarget(target);
+            try {
+              const result = await runner.run(paths, profile.name, target, false);
+              if (!result.hookPath) {
+                await emitter.skipTarget(target, "no plant hook");
+              } else {
+                await emitter.doneTarget(target);
+              }
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : String(err);
+              await emitter.errorTarget(target, msg);
+              throw err;
+            }
+          }
+        }
+        await emitter.finishRun();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await emitter.errorRun(msg);
+        throw err;
+      }
+    } else {
+      for (const { profile, targets } of runs) {
+        for (const [target] of targets) {
+          await runner.run(paths, profile.name, target, true);
+        }
+      }
+    }
+  }
+
+  private async expandCompositionRuns(
+    comp: CompositionProfile,
+    paths: BloomPaths,
+  ): Promise<Array<{ profile: Profile; targets: Array<[string, string]> }>> {
+    const profileLoader = new ProfileLoader();
+    const result: Array<{ profile: Profile; targets: Array<[string, string]> }> = [];
+
+    for (const run of comp.runs) {
+      const entry = await profileLoader.inspect(paths.profilesDir(), run.profile);
+      if (this.isCompositionProfile(entry)) {
+        throw new Error(
+          `Nested composition profiles are not supported: ${run.profile}`,
+        );
+      }
+      const profile = entry;
+      const targets = this.filterRunTargets(profile.targets, run);
+      result.push({ profile, targets });
+    }
+
+    return result;
+  }
+
+  private filterRunTargets(
+    profileTargets: Record<string, string>,
+    run: CompositionRun,
+  ): Array<[string, string]> {
+    return Object.entries(profileTargets).filter(([target]) => {
+      if (run.targets) return run.targets.includes(target);
+      if (run.exclude) return !run.exclude.includes(target);
+      return true;
+    });
+  }
+
+  private async buildBloomContextForProfile(
+    profile: Profile,
+    paths: BloomPaths,
+  ): Promise<BloomContext> {
+    const paletteLoader = new PaletteLoader();
+    const moodLoader = new MoodLoader();
+    const generator = new BloomGenerator();
+    const basePalette = await paletteLoader.inspect(paths.palettesDir(), profile.basePalette);
+    const sourcePalette = await this.loadSourcePalette(profile);
+    const mood = await moodLoader.inspect(paths.moodsDir(), profile.mood);
+    const preview = generator.preview(basePalette, sourcePalette, mood, profile.name);
+    return { paths, profile, basePalette, sourcePalette, moodName: mood.name, preview };
   }
 
   private printPaletteHelp(): void {
@@ -825,9 +1085,8 @@ Global flags:
     const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
 
     if (this.isCompositionProfile(profileEntry)) {
-      throw new Error(
-        `Deno grow does not handle composition profiles yet:\n  ${profileName}`,
-      );
+      await this.growCompositionProfile(profileEntry, args);
+      return;
     }
 
     const profile = profileEntry;
@@ -844,14 +1103,37 @@ Global flags:
     const renderer = new TemplateRenderer();
     const results: Array<{ target: string; outputPath: string; reportPath: string }> = [];
 
-    for (const [target] of targets) {
-      const { outputPath, reportPath } = await renderer.renderToCache(
-        paths,
-        profileName,
-        target,
-        dryRun,
-      );
-      results.push({ target, outputPath, reportPath });
+    const emitter = dryRun
+      ? undefined
+      : new EventEmitter(paths.eventsFile(), paths.stateFile());
+
+    if (emitter) {
+      await emitter.startRun(profileName, "grow", targets.map(([t]) => t));
+    }
+
+    try {
+      for (const [target] of targets) {
+        await emitter?.startTarget(target);
+        try {
+          const { outputPath, reportPath } = await renderer.renderToCache(
+            paths,
+            profileName,
+            target,
+            dryRun,
+          );
+          results.push({ target, outputPath, reportPath });
+          await emitter?.doneTarget(target);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          await emitter?.errorTarget(target, msg);
+          throw err;
+        }
+      }
+      await emitter?.finishRun();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      await emitter?.errorRun(msg);
+      throw err;
     }
 
     if (this.outputMode === "json") {
@@ -1161,7 +1443,11 @@ Global flags:
     const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
 
     if (this.isCompositionProfile(profileEntry)) {
-      throw new Error(`Deno plant does not handle composition profiles yet:\n  ${profileName}`);
+      await this.plantCompositionProfile(profileEntry, args);
+      if (args.includes("--bloom-osd") && !dryRun) {
+        await this.notifyBloom("bloom-done");
+      }
+      return;
     }
 
     const targets = Object.entries(profileEntry.targets).filter(([target]) =>
@@ -1175,8 +1461,40 @@ Global flags:
     const runner = new HookRunner();
     const results: Array<{ target: string; hookPath: string | null; steps: Array<{ type: string; ok: boolean; detail: string }> }> = [];
 
-    for (const [target] of targets) {
-      results.push(await runner.run(paths, profileName, target, dryRun));
+    const emitter = dryRun
+      ? undefined
+      : new EventEmitter(paths.eventsFile(), paths.stateFile());
+
+    if (emitter) {
+      await emitter.startRun(profileName, "plant", targets.map(([t]) => t));
+    }
+
+    try {
+      for (const [target] of targets) {
+        await emitter?.startTarget(target);
+        try {
+          const result = await runner.run(paths, profileName, target, dryRun);
+          results.push(result);
+          if (!result.hookPath) {
+            await emitter?.skipTarget(target, "no plant hook");
+          } else {
+            await emitter?.doneTarget(target);
+          }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          await emitter?.errorTarget(target, msg);
+          throw err;
+        }
+      }
+      await emitter?.finishRun();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      await emitter?.errorRun(msg);
+      throw err;
+    }
+
+    if (args.includes("--bloom-osd") && !dryRun) {
+      await this.notifyBloom("bloom-done");
     }
 
     if (this.outputMode === "json") {
@@ -1207,6 +1525,136 @@ Global flags:
           `    ${step.type}  ${this.display.dim(step.detail)}`,
         );
       }
+    }
+  }
+
+  private async runWorkerCommand(args: string[]): Promise<void> {
+    const subcommand = args[0];
+
+    if (subcommand === "run") {
+      await this.runWorker(args.slice(1));
+      return;
+    }
+
+    this.printUsageError(
+      subcommand ? `Unknown worker subcommand: ${subcommand}` : "Missing subcommand.",
+      "deno task spore:dev -- worker run <name>",
+    );
+    Deno.exit(1);
+  }
+
+  private async runWorker(args: string[]): Promise<void> {
+    const workerName = args[0];
+
+    if (!workerName) {
+      this.printUsageError(
+        "Missing worker name.",
+        "deno task spore:dev -- worker run <name>",
+      );
+      Deno.exit(1);
+    }
+
+    const paths = BloomPaths.fromDeno();
+    const candidates = [
+      `${paths.cwd}/workers/${workerName}-worker.py`,
+      `${paths.cwd}/workers/${workerName}.py`,
+    ];
+
+    let workerPath: string | null = null;
+    for (const candidate of candidates) {
+      try {
+        await Deno.stat(candidate);
+        workerPath = candidate;
+        break;
+      } catch { /* try next */ }
+    }
+
+    if (!workerPath) {
+      throw new Error(
+        `Worker "${workerName}" not found. Tried:\n${
+          candidates.map((c) => `  ${c}`).join("\n")
+        }`,
+      );
+    }
+
+    const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+    await emitter.startRun(workerName, "worker", [workerName]);
+    await emitter.startTarget(workerName);
+    await emitter.startWorker(workerName, workerName);
+
+    if (this.outputMode === "human") {
+      this.printHuman(`  worker  ${this.display.dim(workerPath)}`);
+    }
+
+    const runner = new WorkerRunner();
+    let lastProgress = 0;
+    const workerArgs = args.slice(1);
+
+    const result = await runner.run(
+      { command: "python3", args: [workerPath, ...workerArgs] },
+      async (progress) => {
+        await emitter.progressWorker(
+          workerName,
+          workerName,
+          progress.current,
+          progress.total,
+          progress.msg,
+        );
+        if (this.outputMode === "human" && progress.total > 0) {
+          const pct = Math.floor((progress.current / progress.total) * 100);
+          if (pct !== lastProgress) {
+            lastProgress = pct;
+            const encoder = new TextEncoder();
+            await Deno.stdout.write(
+              encoder.encode(`\r  ${pct}%  ${progress.current}/${progress.total}  ${progress.msg}   `),
+            );
+          }
+        }
+      },
+    );
+
+    if (this.outputMode === "human" && result.ok) {
+      await Deno.stdout.write(new TextEncoder().encode("\r"));
+    }
+
+    if (result.ok) {
+      await emitter.doneWorker(workerName, workerName, 0, 0);
+      await emitter.doneTarget(workerName);
+      await emitter.finishRun();
+    } else {
+      await emitter.errorWorker(workerName, workerName, result.stderr);
+      await emitter.errorTarget(workerName, result.stderr);
+      await emitter.errorRun(result.stderr);
+    }
+
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: result.ok,
+        command: "worker run",
+        worker: workerName,
+        exitCode: result.exitCode,
+        durationMs: result.durationMs,
+        stdout: result.stdout,
+        stderr: result.stderr,
+      });
+      return;
+    }
+
+    if (!result.ok) {
+      throw new Error(
+        `Worker "${workerName}" failed (exit ${result.exitCode}):\n${result.stderr}`,
+      );
+    }
+
+    this.printHuman(this.display.fields([
+      { label: "worker", value: workerName },
+      { label: "duration", value: `${result.durationMs}ms` },
+      { label: "exit", value: String(result.exitCode) },
+    ]));
+
+    if (result.stdout) {
+      this.printHuman("");
+      this.printHuman(this.display.dim(result.stdout));
     }
   }
 
@@ -1271,7 +1719,7 @@ Global flags:
 
     if (this.isCompositionProfile(profileEntry)) {
       throw new Error(
-        `Deno sow does not handle composition profiles yet:\n  ${profileName}`,
+        `createBloomContext requires a plain profile, not a composition:\n  ${profileName}`,
       );
     }
 
@@ -1301,19 +1749,11 @@ Global flags:
 
   private async sowTargetSpores(options: {
     readonly context: BloomContext;
-    readonly targetFilter?: string;
+    readonly targets: Array<[string, string]>;
     readonly startedAt: string;
+    readonly emitter?: EventEmitter;
   }): Promise<SownSporeResult[]> {
-    const { context, targetFilter, startedAt } = options;
-    const targets = Object.entries(context.profile.targets).filter(([target]) =>
-      targetFilter === undefined || target === targetFilter
-    );
-
-    if (targets.length === 0 && targetFilter !== undefined) {
-      throw new Error(
-        `Target "${targetFilter}" not in profile "${context.profile.name}".`,
-      );
-    }
+    const { context, targets, startedAt, emitter } = options;
 
     const recipeLoader = new RecipeLoader();
     const generator = new SporeGenerator();
@@ -1321,61 +1761,69 @@ Global flags:
     const results: SownSporeResult[] = [];
 
     for (const [target, recipeName] of targets) {
-      const recipe = await recipeLoader.inspect(
-        context.paths.recipesDir(),
-        `${target}/${recipeName}`,
-      );
-      const targetBasePalette = await this.loadRecipeBasePalette(
-        context.paths,
-        context.profile,
-        recipe,
-      );
-      const generatedAt = new Date().toISOString();
-      const spore = generator.generate(
-        targetBasePalette,
-        context.sourcePalette,
-        {
-          profile: context.preview.profile,
-          generatedAt: context.preview.generatedAt,
-          colors: context.preview.colors,
-        },
-        recipe,
-        context.profile.name,
-        generatedAt,
-      );
-      const sporePath = context.paths.sporeFile(context.profile.name, target);
-      const reportPath = context.paths.timestampedTargetSowReportFile(
-        context.profile.name,
-        target,
-        generatedAt,
-      );
+      await emitter?.startTarget(target);
+      try {
+        const recipe = await recipeLoader.inspect(
+          context.paths.recipesDir(),
+          `${target}/${recipeName}`,
+        );
+        const targetBasePalette = await this.loadRecipeBasePalette(
+          context.paths,
+          context.profile,
+          recipe,
+        );
+        const generatedAt = new Date().toISOString();
+        const spore = generator.generate(
+          targetBasePalette,
+          context.sourcePalette,
+          {
+            profile: context.preview.profile,
+            generatedAt: context.preview.generatedAt,
+            colors: context.preview.colors,
+          },
+          recipe,
+          context.profile.name,
+          generatedAt,
+        );
+        const sporePath = context.paths.sporeFile(context.profile.name, target);
+        const reportPath = context.paths.timestampedTargetSowReportFile(
+          context.profile.name,
+          target,
+          generatedAt,
+        );
 
-      await writer.writeJson(sporePath, spore);
-      await writer.write(reportPath, {
-        target,
-        profile: context.profile.name,
-        recipe: recipe.name,
-        status: "ok",
-        inputs: {
-          basePalette: targetBasePalette.slug,
-          source: context.sourcePalette.name,
-          mood: context.moodName,
-          bloomGeneratedAt: context.preview.generatedAt,
-        },
-        outputs: [sporePath],
-        warnings: [],
-        errors: [],
-        startedAt,
-        finishedAt: new Date().toISOString(),
-      });
+        await writer.writeJson(sporePath, spore);
+        await writer.write(reportPath, {
+          target,
+          profile: context.profile.name,
+          recipe: recipe.name,
+          status: "ok",
+          inputs: {
+            basePalette: targetBasePalette.slug,
+            source: context.sourcePalette.name,
+            mood: context.moodName,
+            bloomGeneratedAt: context.preview.generatedAt,
+          },
+          outputs: [sporePath],
+          warnings: [],
+          errors: [],
+          startedAt,
+          finishedAt: new Date().toISOString(),
+        });
 
-      results.push({
-        target,
-        recipe: recipe.name,
-        sporePath,
-        reportPath,
-        spore,
-      });
+        results.push({
+          target,
+          recipe: recipe.name,
+          sporePath,
+          reportPath,
+          spore,
+        });
+        await emitter?.doneTarget(target);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await emitter?.errorTarget(target, msg);
+        throw err;
+      }
     }
 
     return results;
@@ -1480,6 +1928,31 @@ Global flags:
   private expandHome(path: string): string {
     const home = Deno.env.get("HOME") ?? "";
     return path.replace(/^~(?=\/|$)/, home);
+  }
+
+  private async notifyBloom(subcommand: string, profile?: string): Promise<void> {
+    const home = Deno.env.get("HOME") ?? "";
+    const configPath = `${home}/.config/unclaimed-bloom/notify.json`;
+    let cmd: string[];
+    try {
+      const text = await Deno.readTextFile(configPath);
+      const config = JSON.parse(text);
+      if (!Array.isArray(config.cmd) || config.cmd.length === 0) return;
+      cmd = config.cmd as string[];
+    } catch {
+      return;
+    }
+    const finalArgs = profile ? [subcommand, profile] : [subcommand];
+    try {
+      const proc = new Deno.Command(cmd[0], {
+        args: [...cmd.slice(1), ...finalArgs],
+        stdout: "null",
+        stderr: "null",
+      });
+      await proc.output();
+    } catch {
+      // notification failures are non-fatal
+    }
   }
 
   private isCompositionProfile(

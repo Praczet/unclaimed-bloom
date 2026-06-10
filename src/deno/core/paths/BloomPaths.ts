@@ -96,6 +96,14 @@ export class BloomPaths {
     return this.join(this.join(this.cacheDir, "rendered"), `${profile}/${target}`);
   }
 
+  public eventsFile(): string {
+    return this.join(this.cacheDir, "events.jsonl");
+  }
+
+  public stateFile(): string {
+    return this.join(this.cacheDir, "state.json");
+  }
+
   public timestampedSowReportFile(profile: string, timestamp: string): string {
     const safeTimestamp = timestamp.replace(/[:.]/g, "-");
     return this.join(
