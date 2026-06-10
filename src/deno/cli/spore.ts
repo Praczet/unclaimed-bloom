@@ -880,18 +880,20 @@ Global flags:
           : []),
       ]));
       this.printHuman("");
-      this.printHuman(this.display.table(profile.runs, [
-        { header: "profile", value: (run) => run.profile },
-        {
-          header: "targets",
-          value: (run) => run.targets?.join(", ") ?? "(all)",
-          dim: true,
-        },
-        {
-          header: "exclude",
-          value: (run) => run.exclude?.join(", ") ?? "",
-          dim: true,
-        },
+
+      const runRows = await Promise.all(profile.runs.map(async (run) => {
+        const sub = await loader.inspect(paths.profilesDir(), run.profile);
+        if (this.isCompositionProfile(sub)) return { profile: run.profile, palette: "", targets: "(nested — unsupported)" };
+        const allSubTargets = Object.keys(sub.targets);
+        let active = run.targets ? allSubTargets.filter((t) => run.targets!.includes(t)) : allSubTargets;
+        if (run.exclude) active = active.filter((t) => !run.exclude!.includes(t));
+        return { profile: run.profile, palette: sub.basePalette, targets: active.join("  ") };
+      }));
+
+      this.printHuman(this.display.table(runRows, [
+        { header: "profile", value: (r) => r.profile },
+        { header: "palette", value: (r) => r.palette, dim: true },
+        { header: "targets", value: (r) => r.targets, dim: true },
       ]));
       return;
     }
