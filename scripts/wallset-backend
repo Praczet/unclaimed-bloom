@@ -15,8 +15,9 @@ usage() {
 Usage: wallset-backend <wallpaper>
 
 Runs:
-  spore sow <profile> --wallpaper <wallpaper>
+  spore sow <profile> --wallpaper <wallpaper> --bloom-osd
   spore grow <profile>
+  spore plant <profile> --bloom-osd
 
 Default profile:
   $PROFILE
@@ -48,5 +49,6 @@ echo "Unclaimed Bloom wallpaper run"
 echo "  profile:   $PROFILE"
 echo "  wallpaper: $wallpaper"
 
-"$SPORE" sow "$PROFILE" --wallpaper "$wallpaper"
+"$SPORE" sow "$PROFILE" --wallpaper "$wallpaper" --bloom-osd
 "$SPORE" grow "$PROFILE"
+"$SPORE" plant "$PROFILE" --bloom-osd

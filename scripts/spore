@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # %name: spore
-# %desc: Dev wrapper for the spore CLI — sets XDG paths and delegates to tsx.
+# %desc: Dev wrapper for the spore CLI — sets XDG paths and delegates to Deno.
 # %icon: seedling
 # %terminal: true
 
@@ -11,4 +11,9 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export UB_DATA_DIR="${UB_DATA_DIR:-$REPO_DIR}"
 export UB_CACHE_DIR="${UB_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/unclaimed-bloom}"
 
-exec "$REPO_DIR/node_modules/.bin/tsx" "$REPO_DIR/src/cli/spore.ts" "$@"
+exec deno run \
+  --allow-read \
+  --allow-write \
+  --allow-env \
+  --allow-run \
+  "$REPO_DIR/src/deno/cli/spore.ts" "$@"

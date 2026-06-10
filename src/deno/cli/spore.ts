@@ -288,7 +288,9 @@ Global flags:
     const profileEntry = await profileLoader.inspect(paths.profilesDir(), profileName);
 
     if (args.includes("--bloom-osd") && !dryRun) {
-      await this.notifyBloom("bloom-show", profileName);
+      const wpIdx = args.indexOf("--wallpaper");
+      const wallpaperPath = wpIdx !== -1 ? args[wpIdx + 1] : undefined;
+      await this.notifyBloom("bloom-show", profileName, wallpaperPath);
     }
 
     if (this.isCompositionProfile(profileEntry)) {
@@ -1930,7 +1932,11 @@ Global flags:
     return path.replace(/^~(?=\/|$)/, home);
   }
 
-  private async notifyBloom(subcommand: string, profile?: string): Promise<void> {
+  private async notifyBloom(
+    subcommand: string,
+    profile?: string,
+    wallpaper?: string,
+  ): Promise<void> {
     const home = Deno.env.get("HOME") ?? "";
     const configPath = `${home}/.config/unclaimed-bloom/notify.json`;
     let cmd: string[];
@@ -1942,7 +1948,8 @@ Global flags:
     } catch {
       return;
     }
-    const finalArgs = profile ? [subcommand, profile] : [subcommand];
+    const finalArgs: string[] = profile ? [subcommand, profile] : [subcommand];
+    if (wallpaper) finalArgs.push("--wallpaper", wallpaper);
     try {
       const proc = new Deno.Command(cmd[0], {
         args: [...cmd.slice(1), ...finalArgs],
