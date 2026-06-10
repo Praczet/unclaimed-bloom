@@ -42,14 +42,49 @@
       "source": "on_surface",
       "mix": 0.15
     },
+    "on_surface_variant": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.15
+    },
+    "on_primary": {
+      "bloom": "text.primary",
+      "source": "on_primary",
+      "mix": 0.1
+    },
+    "surface_container": {
+      "bloom": "surface.raised",
+      "source": "surface_container",
+      "mix": 0.15
+    },
+    "surface_container_high": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.15
+    },
+    "surface_container_highest": {
+      "bloom": "surface.highest",
+      "source": "surface_container_highest",
+      "mix": 0.15
+    },
     "outline": {
       "bloom": "border.subtle",
       "source": "outline",
       "mix": 0.22
     },
+    "outline_variant": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.22
+    },
     "error": {
       "bloom": "state.danger",
       "source": "error",
+      "mix": 0.22
+    },
+    "error_container": {
+      "bloom": "state.danger",
+      "source": "error_container",
       "mix": 0.22
     }
   }
