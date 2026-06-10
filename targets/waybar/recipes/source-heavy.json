@@ -48,7 +48,7 @@
       "mix": 0.15
     },
     "surface_container_lowest": {
-      "bloom": "surface.lowest",
+      "bloom": "surface.dim",
       "source": "surface_container_lowest",
       "mix": 0.15
     },
