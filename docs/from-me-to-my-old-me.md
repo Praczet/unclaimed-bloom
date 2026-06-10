@@ -1,7 +1,7 @@
 type:: note
 tags:: [[unclaimed-bloom]], [[future-me]], [[wallset]], [[recipes]], [[themes]]
 status:: living
-updated:: [[2026-06-05]]
+updated:: [[2026-06-10]]
 project:: [[Projects/Unclaimed Bloom]]
 related:: [[docs/PROJECT-CAPSULE.md]], [[README.md]]
 
@@ -28,7 +28,8 @@ wallpaper
   -> bloom
   -> target recipe
   -> spore
-  -> adapter/template
+  -> template renderer  (sow + grow)
+  -> plant hook         (plant)
   -> real config file
 ```
 
@@ -63,6 +64,7 @@ The backend runs:
 ```bash
 spore sow desktop --wallpaper <wallpaper>
 spore grow desktop
+spore plant desktop
 ```
 
 `desktop` is a composition profile:
@@ -285,6 +287,7 @@ Then run:
 ```bash
 spore sow daily waybar
 spore grow daily waybar
+spore plant daily waybar
 ```
 
 ### Template
@@ -308,7 +311,21 @@ The recipe creates the value. The template decides where that value goes.
 If the color is wrong, check the recipe.
 
 If the generated file is structurally wrong, missing a variable, using the wrong
-CSS alias, or writing the wrong kind of config, check the template or adapter.
+CSS alias, or writing the wrong kind of config, check the template.
+
+### Plant hook
+
+A plant hook is what deploys the rendered file to its real destination.
+
+```text
+targets/<target>/hooks/plant.json
+```
+
+It has `copy` steps (copy rendered file to config path) and optional `exec` steps
+(run reload commands, gsettings updates, etc.).
+
+If a target is being grown but nothing is changing on disk after `grow`,
+you need to run `plant` as well. Or check if the hook is missing.
 
 ## Where Do I Change Yazi Colors?
 
@@ -329,6 +346,7 @@ Apply only yazi:
 ```bash
 spore sow daily yazi
 spore grow daily yazi
+spore plant daily yazi
 ```
 
 The adapter writes:
@@ -382,6 +400,7 @@ Commands:
 spore inspect daily waybar
 spore sow daily waybar
 spore grow daily waybar
+spore plant daily waybar
 ```
 
 If it is pastelish, first check whether `daily` uses `source-heavy`.
@@ -433,6 +452,7 @@ Use:
 spore inspect desktop gtk
 spore sow desktop gtk
 spore grow desktop gtk
+spore plant desktop gtk
 ```
 
 GTK surfaces should mostly come from Graphite base colors, not Matugen.
@@ -512,7 +532,7 @@ Change to:
 Or use the CLI:
 
 ```bash
-spore set daily waybar subtle-ish --apply
+spore replant daily waybar subtle-ish --apply
 ```
 
 If you only want to test without applying:
@@ -595,7 +615,7 @@ Check:
 
 ```text
 targets/<app>/templates/
-src/adapters/<App>Adapter.ts
+targets/<app>/hooks/plant.json
 ```
 
 ### I Changed A Recipe And Nothing Happened
@@ -609,6 +629,7 @@ Run:
 ```bash
 spore sow daily <target>
 spore grow daily <target>
+spore plant daily <target>
 ```
 
 For GTK:
@@ -616,6 +637,7 @@ For GTK:
 ```bash
 spore sow desktop gtk
 spore grow desktop gtk
+spore plant desktop gtk
 ```
 
 For everything:
@@ -623,11 +645,12 @@ For everything:
 ```bash
 spore sow desktop
 spore grow desktop
+spore plant desktop
 ```
 
 ## Final Reminder
 
-Do not start by rewriting the adapter.
+Do not start by rewriting the template.
 
 Do not start by blaming Matugen.
 
