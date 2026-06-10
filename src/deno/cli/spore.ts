@@ -1343,11 +1343,12 @@ Global flags:
     const target = positional[1];
     const recipeName = positional[2];
     const apply = args.includes("--apply");
+    const plant = args.includes("--plant");
 
     if (!profileName || !target || !recipeName) {
       this.printUsageError(
         "Missing arguments.",
-        "deno task spore:dev -- replant <profile> <target> <recipe> [--apply]",
+        "deno task spore:dev -- replant <profile> <target> <recipe> [--apply] [--plant]",
       );
       Deno.exit(1);
     }
@@ -1417,18 +1418,30 @@ Global flags:
       ]));
     }
 
-    if (apply) {
+    const doApply = apply || plant;
+
+    if (doApply) {
       if (this.outputMode === "human") this.printHuman("");
       await this.sowProfile([profileName, target]);
       await this.growProfile([profileName, target]);
+      if (plant) {
+        await this.plantProfile([profileName, target]);
+      } else if (this.outputMode === "human") {
+        this.printHuman(this.display.dim(
+          `  next: deno task spore:dev -- plant ${profileName} ${target}`,
+        ));
+      }
     } else if (this.outputMode === "human") {
       this.printHuman("");
-      this.printHuman(
-        `  hint: deno task spore:dev -- sow ${profileName} ${target}`,
-      );
-      this.printHuman(
+      this.printHuman(this.display.dim(
+        `  next: deno task spore:dev -- sow ${profileName} ${target}`,
+      ));
+      this.printHuman(this.display.dim(
         `        deno task spore:dev -- grow ${profileName} ${target}`,
-      );
+      ));
+      this.printHuman(this.display.dim(
+        `        deno task spore:dev -- plant ${profileName} ${target}`,
+      ));
     }
   }
 
