@@ -8,4 +8,5 @@
     selected:       {{selected}};
     active:         {{active}};
     urgent:         {{urgent}};
+    image:          url("{{wallpaper}}", width);
 }

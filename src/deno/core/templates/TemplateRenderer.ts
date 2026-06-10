@@ -77,10 +77,15 @@ export class TemplateRenderer {
       throw new Error(`Invalid JSON in spore file:\n  ${sporePath}`);
     }
 
-    const colors =
+    const colors: Record<string, string> =
       spore !== null && typeof spore === "object" && "colors" in spore
-        ? (spore as { colors: Record<string, string> }).colors
+        ? { ...(spore as { colors: Record<string, string> }).colors }
         : {};
+
+    try {
+      const wallpaper = (await Deno.readTextFile(paths.currentWallpaperFile())).trim();
+      if (wallpaper) colors["wallpaper"] = wallpaper;
+    } catch { /* no wallpaper set yet — skip */ }
 
     let outputText: string;
     try {

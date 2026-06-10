@@ -104,6 +104,10 @@ export class BloomPaths {
     return this.join(this.cacheDir, "state.json");
   }
 
+  public currentWallpaperFile(): string {
+    return this.join(this.cacheDir, "current-wallpaper");
+  }
+
   public timestampedSowReportFile(profile: string, timestamp: string): string {
     const safeTimestamp = timestamp.replace(/[:.]/g, "-");
     return this.join(
