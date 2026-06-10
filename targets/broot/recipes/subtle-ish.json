@@ -1,0 +1,76 @@
+{
+  "name": "subtle-ish",
+  "target": "broot",
+  "tokens": {
+    "bg": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "bg_alt": {
+      "bloom": "surface.dim",
+      "source": "surface_container_lowest",
+      "mix": 0.1
+    },
+    "bg_selected": {
+      "bloom": "surface.raised",
+      "source": "surface_container",
+      "mix": 0.1
+    },
+    "fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "fg_muted": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "fg_dim": {
+      "bloom": "text.muted",
+      "source": "outline_variant",
+      "mix": 0.1
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "accent2": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "accent3": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
+    "success": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "warning": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "danger": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    },
+    "info": {
+      "bloom": "state.info",
+      "source": "secondary",
+      "mix": 0.05
+    },
+    "border": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.1
+    }
+  }
+}
