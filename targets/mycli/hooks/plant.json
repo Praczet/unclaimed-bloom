@@ -1,0 +1,12 @@
+{
+  "steps": [
+    {
+      "type": "exec",
+      "command": "bash",
+      "args": [
+        "-c",
+        "awk '/^# mycli colors/{exit}1' \"$HOME/.myclirc\" > /tmp/ub-myclirc.tmp && cat '{{rendered}}' >> /tmp/ub-myclirc.tmp && mv /tmp/ub-myclirc.tmp \"$HOME/.myclirc\""
+      ]
+    }
+  ]
+}
