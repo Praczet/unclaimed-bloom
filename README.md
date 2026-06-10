@@ -108,16 +108,9 @@ Old Bash and Python scripts are not shame. They are workers. If they already kno
 
 ## Requirements
 
-- Node.js 20+
-- npm
+- Deno 2+
 - Matugen, for wallpaper-based palettes
 - zsh, if you want the completions
-
-Install dependencies:
-
-```bash
-npm install
-```
 
 ## Install
 
@@ -214,10 +207,17 @@ Apply cached spores to real config files:
 spore grow daily
 ```
 
-Apply one target only:
+Deploy rendered files to their config destinations:
+
+```bash
+spore plant daily
+```
+
+Apply or plant one target only:
 
 ```bash
 spore grow daily ghostty
+spore plant daily ghostty
 ```
 
 Check what has been generated:
@@ -268,19 +268,6 @@ spore recipe validate ghostty
 ```
 
 `recipe validate` checks bloom paths, pure base tokens, mix ranges, required target tokens, and old direct mix shapes that should not sneak into shipped recipes.
-
-## Workbench
-
-Recent changes (2026-06-06)
-
-- Workbench now accepts an explicit notify trigger: POST /api/notify — useful for CLI-driven updates and external scripts. The server broadcasts blooms/profiles over WebSocket to connected clients.
-- UI: WebSocket connection will fall back to ws://<host>:7865/ws when same-origin WS is not available (helps dev setups where Vite proxies or ports differ).
-- CLI: `spore set` / `spore replant` updates a profile's target recipe; use `--apply` to sow+grow in one step. `spore cache` subcommands manage named cached spore variants.
-- UI redesign: workbench now uses a three-area layout with profile/target sidebar, main workbench views, and right context/actions panel.
-- Overview replaces the old live status hidden in Docs.
-- Bloom and Inspect are composition-aware, so `desktop` can show GTK from `daily-gtk` and the rest from `daily` without lying.
-- Recipes is now a read-only target-scoped Recipe Workshop. It explains base/bloom/source/result with concrete paths, shows color badges, and shows available recipe counts per target.
-- Next workbench step: add read-only preview for same-target recipes that are not assigned by the selected profile.
 
 ## Workbench
 
@@ -352,7 +339,7 @@ unclaimed-bloom/
 ├── profiles/       saved ecosystems
 ├── targets/        target modules: recipes, templates, target-local assets
 ├── scripts/        launchers and workers
-└── src/            TypeScript core, CLI, adapters, workbench
+└── src/            Deno core, CLI, server, workbench
 ```
 
 Runtime cache:
@@ -401,48 +388,56 @@ sddm
 mycli
 sqlit
 potato
+broot
 ```
 
 Each target has:
 
 - recipes under `targets/<name>/recipes/`,
-- optional templates under `targets/<name>/templates/`,
-- a generated spore,
-- an adapter or worker path,
-- a report after `grow`.
+- a template under `targets/<name>/templates/`,
+- a plant hook under `targets/<name>/hooks/plant.json`,
+- a rendered spore in cache after `grow`,
+- a report after `plant`.
 
-Some targets write directly to config files. Some call existing workers. Icons still do icon things, because of course they do.
+Some targets call existing workers. Icons still do icon things, because of course they do.
 
 ## Development
 
-Use the repo wrapper while developing:
+Run with repo data (avoids stale installed config):
 
 ```bash
-scripts/spore <command> [args]
+deno task dev:local -- <command> [args]
 ```
 
-It sets:
+Or set manually:
 
-```text
-UB_DATA_DIR=<repo root>
-UB_CACHE_DIR=~/.cache/unclaimed-bloom
+```bash
+UB_DATA_DIR=$(pwd) deno task dev -- <command>
 ```
 
 Run checks:
 
 ```bash
-npm run typecheck
+deno task check
+deno task test
 spore recipe validate
 spore palette validate
 ```
 
-Build the CLI:
+Format and lint:
 
 ```bash
-npm run build:cli
+deno task fmt
+deno task lint
 ```
 
-Then refresh the installed launchers/data:
+Build and start the workbench:
+
+```bash
+deno task workbench
+```
+
+Refresh installed launchers and data:
 
 ```bash
 scripts/install --force

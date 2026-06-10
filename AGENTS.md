@@ -8,8 +8,8 @@
 - **CLI:** `spore`
 - **Motto:** Unclaimed Bloom grows from ash, borrowed soil, and unclaimed hope.
 - **Project capsule:** `docs/PROJECT-CAPSULE.md`
-- **Status:** early project, design agreed, implementation not yet sacred stone
-- **Updated:** 2026-06-03
+- **Status:** active — Deno migration complete, all adapters replaced by templates + hooks
+- **Updated:** 2026-06-10
 
 ## Read this first
 
@@ -48,17 +48,15 @@ unclaimed-bloom/
 
 ### Current technical decision
 
-Use:
-
 ```text
 core language: TypeScript
-runtime: Node.js
-workbench: Vite
-CLI: spore
-workers: existing Python/Bash scripts through adapters
+runtime:       Deno
+workbench:     Deno server (workbench.ts) + Vite UI frontend
+CLI:           spore — installed launcher or deno task dev -- <command>
+workers:       Python workers via WorkerRunner (Deno.Command)
 ```
 
-Do **not** use Deno unless Adam explicitly reopens that decision. Deno was considered and politely released back into the forest.
+The Deno migration is complete. Node.js and npm are gone from the core. Vite is kept only for the workbench UI frontend build.
 
 ### Main rule
 
@@ -122,9 +120,11 @@ A new target should usually join by adding:
 
 1. a folder under `targets/<name>/`
 2. one or more recipes under `targets/<name>/recipes/`
-3. templates under `targets/<name>/templates/`, if needed
-4. an adapter only if needed
-5. a worker only if the target requires heavier processing
+3. a template under `targets/<name>/templates/`
+4. a plant hook under `targets/<name>/hooks/plant.json` if deployment needs steps
+5. a worker only if the target requires heavier processing (icons, etc.)
+
+See `docs/adding-a-target.md` for a full walkthrough.
 
 ### Adapter
 
@@ -174,76 +174,58 @@ Workers should prefer JSON input/output contracts and should write reports where
 
 ---
 
-## First useful milestone
+## Current status
 
-Do not start with all targets.
+All core targets are working. The `sow → grow → plant` lifecycle is complete.
 
-Recommended order:
+Active targets: ghostty, gtk, icons, nvim, ags, swaync, waybar, hyprland, rofi, yazi, wlogout, iced, sddm, mycli, sqlit, potato, broot.
 
-1. **Ghostty** or **mycli/sqlit**
-   - small output
-   - easy to verify
-   - good proof of recipes/templates
-2. **Icons**
-   - important, existing work already exists
-   - likely uses existing Python/Bash workers
-3. **GTK**
-   - important but dangerous
-   - invite later, under supervision
-4. **Vite workbench**
-   - should preview palettes, blooms, spores, icons, recipes, and reports
-5. **AGS**
-   - possible later visual/controller layer
-
-First proof should demonstrate:
+Pending:
 
 ```text
-palette loading
-base palette loading
-recipe loading
-bloom generation
-spore generation
-template rendering or worker calling
-inspect/report output
+- icons plant hook: adart-worker integration via WorkerRunner (progress streaming)
+- workbench /api/run endpoint (sow/grow from UI)
+- workbench WebSocket events (live run progress)
+- composition profile support in plant command
 ```
 
 ---
 
-## CLI expectations
+## CLI reference
 
-Main command:
-
-```bash
-spore
-```
-
-Likely early commands:
+Main command: `spore` (installed) or `deno task dev -- <command>` (repo dev).
 
 ```bash
-spore profile list
+# Discovery
 spore palette list
+spore palette inspect <slug>
 spore mood list
-spore recipe list
+spore profile list
+spore profile inspect <name>
+spore recipe list [target]
+spore recipe inspect <target/name>
 
-spore grow daily
-spore inspect daily
-spore apply daily
+# Core lifecycle
+spore sow <profile> [target] [--wallpaper <path>] [--dry-run]
+spore grow <profile> [target] [--dry-run]
+spore plant <profile> [target] [--dry-run]
+spore inspect <profile> [target]
+spore status
 
-spore target list
-spore target inspect ghostty
-spore target apply ghostty
+# Recipe management
+spore replant <profile> <target> <recipe> [--apply]
+
+# Workers
+spore worker run <name>
 ```
 
-Possible later poetic verbs:
+All commands accept `--json` for machine-readable output.
+
+Dev with repo data instead of installed config:
 
 ```bash
-spore scatter daily
-spore seed icons
-spore imprint ghostty
-spore bloom daily
+deno task dev:local -- sow daily ghostty
 ```
-
-Use poetic verbs only if they remain clear. This is a CLI, not an enchanted herbarium with tab completion.
 
 ---
 
@@ -624,61 +606,19 @@ Co-authored-by: Some AI <ai@example.com>
 
 ---
 
-## Suggested initial package scripts
+## Deno task reference
 
-Possible `package.json` scripts:
-
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "dev:cli": "tsx src/cli/spore.ts",
-    "spore": "tsx src/cli/spore.ts",
-    "build": "vite build",
-    "build:cli": "tsup src/cli/spore.ts --format esm --dts",
-    "typecheck": "tsc --noEmit"
-  }
-}
+```bash
+deno task dev -- <command>          # run CLI (installed data)
+deno task dev:local -- <command>    # run CLI (repo data, UB_DATA_DIR=$(pwd))
+deno task test                      # run test suite
+deno task check                     # type-check CLI
+deno task fmt                       # format src/deno/
+deno task lint                      # lint src/deno/
+deno task workbench:build           # build workbench UI
+deno task workbench:server          # start workbench API server
+deno task workbench                 # build + serve workbench
 ```
-
-Tooling decision is still open:
-
-- `tsx` for development is convenient.
-- `tsup` or `esbuild` can bundle the CLI later.
-- plain `tsc` is boring and acceptable.
-- choose boring if unsure.
-
----
-
-## First implementation suggestion
-
-Start with a tiny vertical slice:
-
-```text
-profile daily
-  ↓
-load source palette fixture
-  ↓
-load base palette fixture
-  ↓
-load ghostty recipe
-  ↓
-generate bloom
-  ↓
-generate ghostty spore
-  ↓
-render Ghostty template into cache
-  ↓
-write report
-  ↓
-inspect output
-```
-
-Only after this works, invite icons.
-
-Only after icons are somewhat civilized, invite GTK.
-
-GTK will arrive wearing boots.
 
 ---
 

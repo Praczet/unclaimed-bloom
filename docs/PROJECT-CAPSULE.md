@@ -1,8 +1,8 @@
 type:: project-capsule
 tags:: [[project-capsule]], [[theme-system]], [[linux-theming]], [[matugen]], [[vite]], [[typescript]], [[unclaimed-bloom]]
 status:: active-development
-updated:: [[2026-06-06]]
-capsule-version:: 0.9
+updated:: [[2026-06-10]]
+capsule-version:: 1.0
 project:: [[Projects/Unclaimed Bloom]]
 related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Neovim]], [[mycli]], [[sqlit]], [[Hyprland]], [[SDDM]]
 
@@ -18,10 +18,10 @@ related:: [[Matugen]], [[GTK Theme]], [[Icon Theme]], [[AGS]], [[Ghostty]], [[Ne
 - project-name:: **Unclaimed Bloom**
 - command-name:: **spore**
 - core-language:: **TypeScript**
-- runtime:: **Node.js**
-- workbench:: **Vite**
-- workers:: Existing Python/Bash scripts are valid workers behind adapters.
-- architecture:: Shared TypeScript core, Node CLI, Vite visual workbench, adapter-orchestrated workers.
+- runtime:: **Deno**
+- workbench:: **Deno server + Vite UI frontend**
+- workers:: Python scripts as workers behind WorkerRunner (Deno.Command).
+- architecture:: Deno core + CLI, template renderer, hook system, Vite workbench UI.
 - core-metaphor:: **One bloom, many spores.**
 - immediate-goal:: Orchestrate existing theming work under one recipe-driven system.
 - first-implementation-style:: Practical, inspectable, config-first.
@@ -202,21 +202,15 @@ unclaimed-bloom/
 └── docs/           project capsule, design docs, notes
 ```
 
-## Why not Deno, for now
+## Why Deno (after hatching)
 
-- Deno would be elegant for a CLI-first TypeScript tool.
-- However, this project will very likely need a visual workbench:
-  - palette previews,
-  - icon previews,
-  - recipe editing,
-  - weight sliders,
-  - target reports,
-  - before/after comparisons.
-- The icon theme already has a Vite workbench direction.
-- Keeping the core, CLI, and UI inside a Node/Vite ecosystem reduces split-brain.
-- Therefore:
-  - **Node + TypeScript + Vite** is the current recommendation.
-  - Deno is not forbidden by the laws of nature, just not the chosen road today.
+- The Deno experiment (`experiment/deno-try-to-hatch`) ran through all phases and delivered.
+- No adapters: each target uses a template file + generic `TemplateRenderer` instead of a bespoke TypeScript class per tool.
+- No npm / Node.js: no `node_modules`, no `package.json` at the core level, no adapter entanglement.
+- `sow → grow → plant` is a cleaner lifecycle than the old `sow → grow` with adapters that did everything including deployment.
+- Deno permissions, built-in formatter/linter/test runner, and `deno task` reduced project friction.
+- Vite is kept for the workbench UI frontend build — that is not changing.
+- The verdict was: continue. Deno hatched.
 
 ## Existing Python/Bash scripts
 
@@ -908,10 +902,10 @@ These apply to all future work in this repository.
 
 ## Current implementation state
 
-updated:: [[2026-06-05]]
-capsule-version:: 0.8
+updated:: [[2026-06-10]]
+capsule-version:: 1.0
 
-### Actual repository structure (as of 0.8)
+### Actual repository structure (as of 1.0)
 
 ```text
 unclaimed-bloom/
@@ -999,9 +993,10 @@ unclaimed-bloom/
 ├── assets/wallpapers/           test wallpapers for Matugen runs
 ├── docs/
 │   ├── PROJECT-CAPSULE.md
+│   ├── adding-a-target.md
 │   ├── adart-matugener-gtk-theme-project-capsule.md
 │   └── adart-matugener-icons-project-capsule.md
-└── vite.config.ts               root:src/ui, proxies /api and /ws to workbench server :7865
+└── deno.json                    tasks: dev, dev:local, test, check, fmt, lint, workbench
 ```
 
 ### What is built
@@ -1011,7 +1006,8 @@ Core chain:
   palette (base taste) → source (Matugen JSON) → mood (mix weights)
     → BloomGenerator → bloom (shared semantic palette)
     → SporeGenerator + recipe → spore (target-specific color set)
-    → adapter → worker/template/post-hook → target config file
+    → TemplateRenderer → rendered config file in cache
+    → HookRunner (plant) → deployed to ~/.config/<app>/
 
 Recipe token modes:
   Bloom-backed:
@@ -1021,162 +1017,122 @@ Recipe token modes:
   Pure base:
     { "base": "background" }
 
-  Direct mix escape hatch, supported by the engine but not used by shipped recipes:
-    { "base": "blue", "source": "primary", "mix": 0.55 }
+Template modifier syntax:
+  {{token}}          → #rrggbb hex
+  {{token|rgb}}      → rgb(r, g, b)
+  {{token|rgba}}     → rgba(hex, ff)
+  {{token|rgba:0.5}} → rgba(r, g, b, 0.5)
 
-Use bloom-backed tokens for shared target roles. Use pure base when a target needs an
-untinted base-palette color, for example a pure TokyoNight background. Direct base/source
-mix recipes are reserved for future exceptions where a target needs deliberate disagreement
-that cannot be expressed as bloom, bloom plus source tint, or pure base.
+Targets (all working — sow, grow, plant):
+  ags, broot, ghostty, gtk, hyprland, iced, icons (grow only; plant TBD),
+  mycli, nvim, potato, rofi, sddm, sqlit, swaync, waybar, wlogout, yazi
 
-Adapters (all working):
-  GhosttyAdapter   — writes theme file, sends SIGUSR2 for live reload
-  MycliAdapter     — writes colors INI, calls ub-mycli-apply worker
-  SqlitAdapter     — writes Textual theme JSON, patches settings.json
-  IconsAdapter     — writes icons-runtime.json, calls icons-generate worker (live progress)
-  GtkAdapter       — renders gtk-adart-unclaimed-bloom.css with fully-resolved hex values;
-                     writes to both repo themes/ dir and ~/.local/share/themes/ live install
-  NvimAdapter      — writes ~/.config/nvim/lua/generated/matugen-colors.lua (same format
-                     as old matugen template); reloads all running nvim instances via socket glob
-  AgsAdapter       — writes AGS matugen.css from source + 10 recipe overrides; post-hook reloads AGS
-  SwayncAdapter    — writes ~/.config/swaync/colors/matugen.css from source + recipe overrides;
-                     reloads swaync CSS
-  WaybarAdapter    — writes ~/.config/waybar/colors/matugen.css from source + recipe overrides;
-                     sends SIGUSR2 to waybar
-  HyprlandAdapter  — writes two files: matugen.lua (rgba format, for decoration.lua) and
-                     matugen.conf ($var + $var_hex format, for hyprlock.conf); post-hook: hyprctl reload
-  RofiAdapter      — writes ~/.config/rofi/shared/matugen.rasi with 7 semantic CSS variables;
-                     reads wallpaper path from cache file for background-image
-  YaziAdapter      — writes full theme.toml from 21 recipe tokens; improved over old matugen
-                     template: semantic permission colors, adaptive filetype colors
-  WlogoutAdapter   — writes @define-color CSS from source + recipe overrides; fixes missing
-                     `foreground` variable the old template never defined
-  IcedAdapter      — writes rusty-screen theme JSON: palette (5 recipe-mixed keys) +
-                     extra (13 source color keys for Material You math)
-  SddmAdapter      — writes full theme.conf for sddm-adart-matugener from source + recipe overrides
-  PotatoAdapter    — writes ~/.config/potato/theme.json with 10 tokens; post-hook: potato-sync
+Plant hooks (targets/<name>/hooks/plant.json):
+  copy  — copies rendered file to one or more dest paths
+  exec  — runs a shell command (e.g. gsettings, reload signal)
+  worker — runs a Python worker through WorkerRunner (icons use this)
 
-matugen config.toml migration status: COMPLETE.
-  All [templates.*] entries have been replaced by UB adapters.
-  matugen/config.toml contains the wallpaper hook ([config.wallpaper]) + an empty [templates]
-  section (required by matugen's serde schema — removing it causes a parse error).
-  Retired entries archived in ~/.config/matugen/to-remove/old_matugen_conf.
+Event system:
+  events.jsonl — append-only log; every run/target/worker event
+  state.json   — current-invocation atomic snapshot; poll at any rate
 
 CLI commands:
-  sow     — generate bloom + spores into cache (no config side effects)
-  grow    — push cached spores through adapters to actual config files
-  inspect — live per-token view: base | source | mix | rendered (no writes)
-  status  — show sow/grow timestamps for all profiles and targets
+  sow <profile> [target]   — bloom + spores into cache; hints "next: grow"
+  grow <profile> [target]  — render templates into cache; hints "next: plant"
+  plant <profile> [target] — deploy via plant hooks; hints "done" or "next"
+  inspect <profile> [target]
+  status
+  palette list / inspect <slug>
+  profile list / inspect <name>
+  recipe list [target] / inspect <target/name>
+  mood list
+  replant <profile> <target> <recipe> [--apply]
+  worker run <name>
 
-List commands:
-  palette list      — name, kind (dark/light), color count
-  mood list         — name + weight values
-  profile list      — name, basePalette, mood, targets
-  recipe list       — name, basePalette override or (profile), token count
-  recipe validate   — bloom path, required token, mix range, and shipped recipe shape checks
+All commands support --dry-run and --json.
 
-Workbench (npm run workbench):
-  Node server on :7865 — HTTP /api/blooms, /api/profiles, /api/inspect/:profile,
-  /api/bloom-preview/:profile, /api/recipes, /api/docs, /api/docs/:id,
-  POST /api/run for constrained sow/grow actions, WebSocket /ws, fs.watch on blooms dir.
-  Vite dev server on :5173 — three-area shell with profile/target sidebar,
-  main workbench views, and context/action panel. Views: overview, bloom, inspect,
-  recipes, docs. Overview owns live profile/target status. Bloom and inspect are
-  composition-aware. Recipes is a read-only target-scoped Recipe Workshop with
-  concrete path/context notes and color badges.
-  Optional Use Bloom palette toggle themes the workbench from the active profile bloom.
-  Live-updates via WebSocket when sow writes a new bloom.
-  Ports can be overridden with UB_WORKBENCH_PORT and UB_WORKBENCH_UI_PORT.
-  scripts/unclaimed-bloom detects an already-running workbench URL and opens it instead
-  of starting a second server.
+Workbench (deno task workbench → http://localhost:7865):
+  Deno HTTP server serves built Vite UI + JSON API.
+  Endpoints: /api/status, /api/palettes, /api/profiles, /api/recipes,
+             /api/blooms, /api/bloom-preview/<profile>, /api/inspect/<profile>
+  Vite frontend: profile/target sidebar, bloom preview, inspect, recipes view.
+  Pending: /api/run (sow/grow from UI), WebSocket events.
 
 Wallpaper integration (wallset/wallset-backend):
-  wallset optionally picks a wallpaper from UB_WALLPAPER_DIR and calls wallset-backend.
-  wallset-backend calls spore sow <profile> --wallpaper <image> then spore grow <profile>.
-  Default profile is the "desktop" composition, so GTK grows from daily-gtk before
-  the rest of the desktop grows from daily. sow runs matugen twice internally:
-  full run (templates + wallpaper set), then dry-run to extract clean colors JSON.
+  wallset picks a wallpaper from UB_WALLPAPER_DIR and calls wallset-backend.
+  wallset-backend calls spore sow desktop --wallpaper <image> then spore grow desktop
+  then spore plant desktop. Default profile is the "desktop" composition:
+  daily-gtk for GTK first, then daily for the rest of the desktop.
 
-Key design decisions implemented:
-  - sow/grow separation: sow is always safe; grow is explicit and side-effectful
+Key design decisions:
+  - sow/grow/plant separation: sow = safe cache; grow = renders; plant = deploys
+  - No adapters: generic TemplateRenderer + per-target hooks/plant.json
   - Spores namespaced by profile: spores/{profile}/{target}.json
+  - Template lookup: user config first, repo targets/ fallback (dev workflow)
   - basePalette optional in recipes: omit to inherit from profile
-  - Matugen source: nested JSON with dark/light/default variants per token
-  - --wallpaper flag on sow: full matugen run (templates + wallpaper) then dry-run for JSON
-  - Two-run matugen: without --dry-run stdout is template logs not JSON; keep them separate
-  - Palette normalization: gruvbox-light carries canonical alias keys so any
-    recipe written against tokyonight-moon vocabulary works unchanged
-  - GTK ownership: UB generates fully-resolved hex CSS (no mix() with hardcoded TN values);
-    base palette is the mixing anchor, not Tokyonight — daily-light with gruvbox-light
-    produces gruvbox-anchored GTK colors
-  - Icons token display: inspect strips common __ADART_ICON_*__ prefix for alignment
-  - current-profile file: written by sow; composition profiles can restore it after multi-profile runs
-  - current-wallpaper file: written by sow --wallpaper, read by RofiAdapter for background-image
-  - swaync blur: backdrop-filter: blur(16px) in style.css + Hyprland layerrule blur for
-    namespace swaync-notification-window + ignore_alpha = 0.1 to prevent halo on transparent padding
-  - matugen [templates] required: even with no entries, the key must exist in config.toml or
-    matugen's serde parser throws "missing field `templates`" — keep an empty [templates] section
-  - daily profile uses ags/source-heavy (matugen-dominant mix); daily-light keeps subtle-ish
-  - All commands accept optional [target] filter: sow/grow/inspect/status
+  - current-profile file: written by sow; composition profiles restore it
+  - current-wallpaper file: written by sow --wallpaper, used by rofi template
+  - matugen [templates] required: keep empty [templates] section or serde fails
+  - Composition profiles: desktop runs daily-gtk then daily in sequence
+  - Deno migration complete: Node, npm, src/adapters/ all removed
 ```
 
 ### What works today
 
 ```bash
-# Full workflow — one command per step:
-scripts/spore sow daily --wallpaper ~/.config/backgrounds/wallpaper.png
-scripts/spore inspect daily ghostty
-scripts/spore grow daily
+# Full workflow:
+spore sow daily --wallpaper ~/.config/backgrounds/wallpaper.png
+spore inspect daily ghostty
+spore grow daily
+spore plant daily
 
-# Switch profile (light theme):
-scripts/spore sow daily-light --wallpaper ~/.config/backgrounds/wallpaper.png
-scripts/spore grow daily-light
+# Or just set a wallpaper (runs the full pipeline automatically):
+wallset
 
-# Per-target operations:
-scripts/spore sow daily ghostty
-scripts/spore grow daily ghostty
-scripts/spore inspect daily mycli
+# Per-target:
+spore sow daily ghostty
+spore grow daily ghostty
+spore plant daily ghostty
 
 # Status and discovery:
-scripts/spore status
-scripts/spore palette list
-scripts/spore mood list
-scripts/spore profile list
-scripts/spore recipe list
-scripts/spore recipe list ghostty
-scripts/spore recipe validate
-```
+spore status
+spore palette list
+spore mood list
+spore profile list
+spore recipe list
+spore recipe list ghostty
 
-Ghostty reloads live on `grow` (SIGUSR2). mycli and sqlit update their configs immediately.
+# Dev with repo data (avoids stale installed config):
+deno task dev:local -- sow daily ghostty
+```
 
 ### Answered design questions
 
-- Dev invocation: `scripts/spore <command>` (wrapper sets UB_DATA_DIR automatically).
-- Data vs cache: data in repo / `~/.config/unclaimed-bloom/`; generated outputs in `~/.cache/unclaimed-bloom/`.
-- Sow vs grow separation: `sow` = safe, cache-only; `grow` = explicit, writes to `~/.config/`.
+- Dev invocation: `deno task dev -- <cmd>` or `deno task dev:local -- <cmd>` (repo data).
+- Installed invocation: `spore <cmd>` via `~/.local/bin/spore`.
+- Data vs cache: data in `~/.config/unclaimed-bloom/`; generated outputs in `~/.cache/unclaimed-bloom/`.
+- Sow/grow/plant: sow = safe cache; grow = renders to cache; plant = deploys to config.
 - Spore namespacing: `spores/{profile}/{target}.json` — profiles never clobber each other.
 - Recipe mix weights: `0.0..1.0` range, per-token explicit values, optional per-recipe basePalette override.
-- Matugen source: nested JSON read at sow time; variant (dark/light/default) selected per-profile.
-- Direct Matugen invocation: `sow --wallpaper <path>` calls matugen and updates the cache file.
-- Palette vocabulary: all palettes should carry canonical alias keys matching the recipe token vocabulary.
+- No adapters: `TemplateRenderer` + `HookRunner` are generic; target-specific behavior lives in templates and hooks.
+- Template format: `{{token}}`, `{{token|rgb}}`, `{{token|rgba}}`, `{{token|rgba:0.5}}`.
+- Palette vocabulary: all palettes carry canonical alias keys matching recipe token vocabulary.
 - Old scripts: retired to `scripts/retired/`; `ub-mycli-apply` stays as active worker.
-- Template format: adapters write output directly; plain text templates can be added when needed.
 
 ## Current decision snapshot
 
 - project:: **Unclaimed Bloom**
 - motto:: **Unclaimed Bloom grows from ash, borrowed soil, and unclaimed hope.**
 - CLI:: **spore**
-- commands:: **sow** (cache) | **grow** (apply) | **inspect** | **status** | **list**
+- commands:: **sow** (cache) | **grow** (render) | **plant** (deploy) | **inspect** | **status** | **list**
 - core:: **TypeScript**
-- runtime:: **Node.js**
-- workbench:: **Vite** (live swatch preview, inspect view, docs/help view, bloom-themed UI toggle, profile/status controls, sow/grow bridge)
-- workers:: **existing Python/Bash scripts through adapters**
-- architecture:: config-first, recipe-driven, adapter-rendered, worker-friendly, UI-previewable.
-- core metaphor:: one bloom, many spores. sow seeds into cache, grow them into config.
-- status:: broad adapter set working. wallset integrated. workbench can inspect, show profile status, and run sow/grow.
-- next major target:: neovim.
-- eventual visual layer:: Vite workbench interactive features after palette normalization.
+- runtime:: **Deno**
+- workbench:: **Deno server + Vite UI frontend** (palette, bloom, inspect, recipes views)
+- workers:: **Python workers via WorkerRunner**
+- architecture:: recipe-driven, template-rendered, hook-deployed, Deno-native.
+- core metaphor:: one bloom, many spores. sow seeds into cache, grow them to rendered files, plant deploys them.
+- status:: all 17 targets working. wallset/wallset-backend integrated. Deno migration complete.
+- pending:: icons plant hook (adart-worker progress streaming), workbench /api/run + WebSocket events.
 
 ## Suggested cache shape (current)
 
@@ -1214,176 +1170,59 @@ Ghostty reloads live on `grow` (SIGUSR2). mycli and sqlit update their configs i
 
 ## Do not do next
 
-- Do not build interactive Vite workbench features before palette normalization is solid.
-- Do not move existing scripts unless imports/calls are updated and tested.
 - Do not add more palettes without ensuring they carry the canonical alias keys.
+- Do not move existing scripts unless imports/calls are updated and tested.
+- Do not build workbench interactive features before the recipe preview API exists.
 
 ## Next steps
 
-### ✅ 1. Icons target — DONE
-IconsAdapter writes icons-runtime.json + calls icons-generate worker.
-Output theme: ADArt-Papirus-Unclaimed-Bloom.
+### ✅ All targets — DONE (2026-06-10)
 
-### ✅ 2. Vite workbench skeleton — DONE
-src/ui/ + src/server/workbench.ts. npm run workbench → :5173.
-Live swatch preview via WebSocket, auto-reconnect.
+17 targets fully working: ags, broot, ghostty, gtk, hyprland, iced, icons (grow only),
+mycli, nvim, potato, rofi, sddm, sqlit, swaync, waybar, wlogout, yazi.
 
-### ✅ 6. GTK target — DONE
-GtkAdapter renders gtk-adart-unclaimed-bloom.css with fully-resolved hex.
-Writes to repo themes/ and ~/.local/share/themes/ live install simultaneously.
+sow → grow → plant lifecycle complete for all targets with plant hooks.
+Deno migration complete — Node, npm, adapters removed.
 
-### ✅ 3. Palette normalization spec — DONE
+### ✅ Deno migration — DONE
 
-18 canonical keys enforced across all palettes. `spore palette validate` added.
-`docs/Prompt__create_palette.md` documents AI-assisted palette creation.
-Palettes: catppuccin-mocha/latte, rose-pine-dawn, solarized-light, gruvbox-light, dracula, tokyonight-moon/day.
+Node.js and npm removed. All adapters replaced by templates + TemplateRenderer + HookRunner.
+Event system (events.jsonl / state.json) added for AGS OSD progress integration.
+WorkerRunner added for Python worker subprocess management.
+Install script updated to generate Deno-based launcher.
 
-### ✅ 4. Additional moods — DONE
+### Workbench /api/run + WebSocket events
 
-Four moods, named as growth stages:
-- `dormant`   — surface:0.05 fg:0.08 accent:0.20 semantic:0.10 — palette is the law
-- `budding`   — surface:0.15 fg:0.18 accent:0.45 semantic:0.25 — gentle, for light profiles
-- `blooming`  — surface:0.25 fg:0.32 accent:0.50 semantic:0.40 — balanced default
-- `overgrown` — surface:0.70 fg:0.60 accent:0.90 semantic:0.70 — Matugen dominates
+Wire sow/grow/plant triggers from the workbench UI.
+Add WebSocket `/ws` endpoint broadcasting run/target/worker events from events.jsonl.
+This will make the workbench useful for running the full pipeline interactively.
 
-`daily` uses `blooming`, `daily-light` uses `budding`.
+### Icons plant hook — adart-worker integration
 
-### ✅ 5. Neovim target — DONE
+Wire adart-worker into the icons plant hook via WorkerRunner so it streams
+progress to events.jsonl/state.json and the AGS bloom OSD shows real icon progress.
+Worker path TBD — adart-worker must be installed separately.
 
-NvimAdapter writes `~/.config/nvim/lua/generated/matugen-colors.lua` (same format
-Matugen used). Reloads all running nvim instances via socket glob.
-Recipes: `subtle-ish` and `source-heavy` (stronger Matugen pull).
-matugen-mix.nvim plugin unchanged — UB just took over the file.
+### Workbench recipe preview API
 
-### ✅ 6. GTK target — DONE (see earlier entry above)
-
-### ✅ 9. AGS target — DONE
-AgsAdapter writes matugen.css from source colors + 10 recipe-mixed overrides.
-Post-hook reloads AGS only.
-Recipes: `subtle-ish` and `source-heavy`.
-
-### ✅ 9b. swaync + waybar targets — DONE
-SwayncAdapter writes `~/.config/swaync/colors/matugen.css` and reloads swaync CSS.
-WaybarAdapter writes `~/.config/waybar/colors/matugen.css` and sends SIGUSR2 to waybar.
-Recipes: `subtle-ish` and `source-heavy`.
-
-### ✅ 10. SDDM target — DONE
-SddmAdapter writes full theme.conf for sddm-adart-matugener.
-HyprlandAdapter writes matugen.lua + matugen.conf (two output files, two formats).
-RofiAdapter, YaziAdapter, WlogoutAdapter, IcedAdapter, PotatoAdapter also added.
-matugen/config.toml is now template-free — all targets owned by UB.
-
-### ✅ 7. Install script — DONE
-
-`scripts/install` installs a `spore` launcher to `~/.local/bin/spore` by default.
-The launcher keeps code execution tied to the repo checkout, but uses
-`~/.config/unclaimed-bloom/` as `UB_DATA_DIR` by default.
-
-It also copies first-run data files and scripts to `~/.config/unclaimed-bloom/`,
-installs zsh completions to `~/.config/zsh/completions/`, and supports `--force`
-for refreshing installed data files when future Adam knowingly chooses violence.
-
-### ✅ 8a. Workbench profile/status + sow/grow bridge — DONE
-
-Workbench now shows selected profile metadata, per-target sown/grown status, and
-provides constrained `sow`/`grow` controls for all targets or one selected target.
-The local server exposes `/api/profiles` and `/api/run`; `/api/run` only accepts
-`sow` or `grow` with a known profile and optional target. It returns stdout/stderr
-so the UI can show what happened without inventing a second command language,
-because one is enough.
-
-### ✅ 8a.1 Workbench docs/help view — DONE
-
-Workbench has a `docs` view backed by `/api/docs`. It opens `README.md` first and
-can switch to generated `Live Help`, which is built from current profiles, targets,
-recipes, and cache status. Repo-internal docs like `PROJECT-CAPSULE.md`, prompts,
-and old project capsules stay in the folder structure and are not shown in the Vite
-workbench. Markdown is rendered locally in the UI with support for headings,
-paragraphs, lists, tables, blockquotes, fenced code, inline code, links, and
-emphasis. All H2 sections render as collapsible details blocks. Live Help target
-status renders as a table so profile targets line up like data, not a shopping
-list after rain. Profile sections render as nested collapsible details blocks,
-with the current profile sorted first, opened by default, and marked with a current
-badge. Target table rows include `inspect`, `sow`, and `grow` actions wired to the
-existing workbench controls. This is documentation, not a static-site generator audition.
-
-### ✅ 8a.2 Workbench Bloom UI palette toggle — DONE
-
-Workbench has a `Use Bloom palette` toggle in the profile control strip plus a bloom
-derivation preview. When enabled, it maps the active profile bloom onto the workbench CSS variables:
-`surface.base` → background, `surface.raised` → panel surface,
-`text.primary`/`text.muted` → text, `accent.primary` → accent,
-`border.subtle` → borders, and state colors for success/warning/danger.
-The UI derives softer surface/accent/border variables from those raw bloom values and
-keeps fallback text/accent colors when contrast would drop too far. The preference is
-stored in localStorage and reapplies when the active profile changes or a WebSocket
-bloom update arrives. The workbench uses the bloom, not raw Matugen, because Matugen
-is source and the bloom is the supervised result.
-
-### ✅ 8a.3 Workbench redesign shell + read-only Recipe Workshop — DONE
-
-Workbench now uses the redesigned three-area shell:
-- left sidebar: profiles and selected-profile targets,
-- main area: `overview`, `bloom`, `inspect`, `recipes`, `docs`,
-- right panel: selected context, actions, CLI snippets, workbench palette toggle.
-
-Important behavior:
-- `desktop` composition is visible instead of flattened into a lie.
-- Overview replaces the live status table that used to live in Docs.
-- Bloom view shows composition bloom sources when selected profile is composed.
-- Inspect view resolves target context from the profile that actually owns the target.
-- Recipes view follows the rule: `profile -> target -> recipe`.
-- The recipe browser is narrowed to the selected target.
-- Target rows show how many recipes exist for that target.
-- Same-target recipes that are not assigned by the selected profile are visible but disabled until the workbench can preview them without writing files.
-
-### 8b. Workbench read-only preview for unassigned target recipes
-
-Next workbench step.
-
-Build a safe preview API for:
-
-```text
-profile + target + recipeName -> resolved token rows + result colors
-```
-
-This must:
-- handle composition profiles by resolving the target to the profile run that owns it,
-- load a requested same-target recipe even when the selected profile does not currently assign it,
-- reuse core bloom/spore generation logic,
-- write no bloom, spore, report, profile, or recipe files,
-- return profile, target, recipe, base palette path, source path, bloom path, and token rows.
-
-Suggested endpoint:
-
+Build a read-only preview API:
 ```text
 GET /api/recipe-preview?profile=daily&target=waybar&recipe=source-heavy
 ```
+Returns resolved token rows + result colors without writing any files.
+Enables the recipe browser to preview unassigned same-target recipes.
 
-After this exists, the Recipe Workshop can enable unassigned same-target recipes
-and label them `preview only` instead of leaving them disabled.
+### Hyprlock target
 
-### 8c. Workbench interactive recipe editing
+Dedicated hyprlock template with lock-screen-specific color variables.
+Currently hyprlock reads from matugen.conf (HyprlandAdapter output).
+A separate template could expose more tailored lock-screen tokens.
 
-Extend the Vite workbench with:
-- Per-token mix weight sliders (recipe editing)
-- Palette selector per profile
-- Mood selector
-- Before/after swatch comparison
+### Workbench interactive recipe editing
 
-Do not save to disk until preview works reliably. No heroic button of doom.
-
-### 8d. Workbench recipe assignment and saving
-
-After preview/editing:
-- assign recipe to target,
-- save recipe,
-- save as new recipe,
-- show affected profiles/targets when editing shared recipes,
-- keep CLI/core config format stable.
-
-### 11. Hyprlock target
-
-Add a dedicated adapter for hyprlock.conf color variables.
-Currently hyprlock reads from matugen.conf (written by HyprlandAdapter).
-A HyprlockAdapter could write more tailored lock-screen colors separately.
+After recipe preview works:
+- per-token mix weight sliders
+- palette and mood selector
+- before/after swatch comparison
+- save / save as new recipe
+- no heroic button of doom
