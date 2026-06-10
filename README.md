@@ -478,6 +478,8 @@ Each target has:
 
 Some targets call existing workers. Icons still do icon things, because of course they do.
 
+To add a new target: [docs/adding-a-target.md](docs/adding-a-target.md)
+
 ## Development
 
 Run with repo data (avoids stale installed config):
@@ -545,6 +547,7 @@ Unclaimed Bloom builds on and themes the work of others.
 
 - [adart-matugener-icons](https://github.com/Praczet/adart-matugener-icons) — Papirus-based icon recoloring pipeline
 - [adart-matugener-gtk-theme](https://github.com/Praczet/adart-matugener-gtk-theme) — GTK theme skeleton and widget CSS
+- [ags-hyprland](https://github.com/Praczet/ags-hyprland) — AGS shell configuration, home of the bloom OSD widget
 
 **Themed tools:**
 
