@@ -4,8 +4,8 @@
     "fmt": "deno fmt",
     "lint": "deno lint",
     "test": "deno test src/deno/ --allow-read --allow-write --allow-env --allow-run",
-    "spore:dev": "deno run --allow-read --allow-write --allow-env --allow-run src/deno/cli/spore.ts",
-    "spore:local": "UB_DATA_DIR=$(pwd) deno run --allow-read --allow-write --allow-env --allow-run src/deno/cli/spore.ts",
+    "dev": "deno run --allow-read --allow-write --allow-env --allow-run src/deno/cli/spore.ts",
+    "dev:local": "UB_DATA_DIR=$(pwd) deno run --allow-read --allow-write --allow-env --allow-run src/deno/cli/spore.ts",
     "workbench:build": "deno run --allow-read --allow-write --allow-env --allow-run workbench/build.ts",
     "workbench:server": "deno run --allow-read --allow-write --allow-env --allow-run --allow-net=127.0.0.1,localhost src/deno/server/workbench.ts",
     "workbench": "deno task workbench:build && deno task workbench:server"

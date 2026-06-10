@@ -1,13 +1,12 @@
-# Experiment: Deno Try to Hatch
+# Architecture
 
-> A guided migration experiment for Unclaimed Bloom.
-> Not a rewrite. Not a religious conversion. A controlled hatching.
+> Pure Deno — no adapters, no Node, no npm.
 
-## Context
+## Overview
 
-Unclaimed Bloom currently uses a JavaScript/TypeScript + Vite/Node-style setup. The project is a local Linux desktop theming system that grows shared palettes/blooms and scatters target-specific spores into tools such as Ghostty, GTK, icons, Neovim, Rofi, SDDM, mycli, sqlit, and future desktop creatures.
+Unclaimed Bloom is a local Linux desktop theming system. It grows shared palettes/blooms and scatters target-specific spores into tools such as Ghostty, GTK, icons, Neovim, Rofi, SDDM, mycli, sqlit, and future desktop creatures.
 
-The desired experimental architecture is:
+The architecture is:
 
 ```text
 Deno core
