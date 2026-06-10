@@ -13,9 +13,11 @@ import { RecipeLoader } from "../core/recipes/RecipeLoader.ts";
 const PORT = 7865;
 const HOST = "127.0.0.1";
 
+const UI_DIR = new URL("../../../workbench/ui/", import.meta.url).pathname;
+
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
@@ -408,6 +410,40 @@ async function handleDocs(): Promise<Response> {
   return jsonResponse({ defaultDoc: null, docs: [] });
 }
 
+async function handleRun(req: Request): Promise<Response> {
+  const body = await req.json() as { action?: string; profile?: string; target?: string };
+  const { action, profile, target } = body;
+
+  if (!action || !profile || !["sow", "grow"].includes(action)) {
+    return jsonResponse({ ok: false, error: "action must be 'sow' or 'grow', profile is required" }, 400);
+  }
+
+  const sporeTs = new URL("../cli/spore.ts", import.meta.url).pathname;
+  const cmdArgs = [
+    "run", "--allow-read", "--allow-write", "--allow-env", "--allow-run",
+    sporeTs, action, profile,
+    ...(target ? [target] : []),
+  ];
+
+  const cmd = new Deno.Command("deno", { args: cmdArgs, stdout: "piped", stderr: "piped" });
+  const { code, stdout, stderr } = await cmd.output();
+
+  return jsonResponse({
+    ok: code === 0,
+    stdout: new TextDecoder().decode(stdout),
+    stderr: new TextDecoder().decode(stderr),
+  });
+}
+
+async function serveFile(filePath: string, contentType: string): Promise<Response> {
+  try {
+    const body = await Deno.readFile(filePath);
+    return new Response(body, { headers: { "Content-Type": contentType } });
+  } catch {
+    return new Response(`Not found: run 'deno task workbench:build' first`, { status: 404 });
+  }
+}
+
 // --- Router ---
 
 async function router(req: Request): Promise<Response> {
@@ -416,11 +452,27 @@ async function router(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
+
+  if (req.method === "POST" && url.pathname === "/api/run") {
+    try { return await handleRun(req); }
+    catch (err) { return jsonResponse({ ok: false, error: String(err) }, 500); }
+  }
+
   if (req.method !== "GET") {
     return jsonResponse({ ok: false, error: "Method not allowed" }, 405);
   }
 
   try {
+    if (url.pathname === "/" || url.pathname === "/index.html") {
+      return await serveFile(`${UI_DIR}index.html`, "text/html; charset=utf-8");
+    }
+    if (url.pathname === "/main.js") {
+      return await serveFile(`${UI_DIR}main.js`, "application/javascript");
+    }
+    if (url.pathname === "/style.css") {
+      return await serveFile(`${UI_DIR}style.css`, "text/css");
+    }
+
     if (url.pathname === "/api/status") return await handleStatus();
     if (url.pathname === "/api/palettes") return await handlePalettes();
     if (url.pathname === "/api/profiles") return await handleProfiles();
@@ -441,14 +493,7 @@ async function router(req: Request): Promise<Response> {
   }
 }
 
-console.log(`Workbench API listening on http://${HOST}:${PORT}`);
-console.log(`  GET /api/status`);
-console.log(`  GET /api/palettes`);
-console.log(`  GET /api/profiles`);
-console.log(`  GET /api/recipes[?target=<name>]`);
-console.log(`  GET /api/blooms`);
-console.log(`  GET /api/bloom-preview/<profile>`);
-console.log(`  GET /api/inspect/<profile>`);
-console.log(`  GET /api/docs`);
+console.log(`Workbench listening on http://${HOST}:${PORT}`);
+console.log(`  UI  http://${HOST}:${PORT}/`);
 
 Deno.serve({ hostname: HOST, port: PORT }, router);

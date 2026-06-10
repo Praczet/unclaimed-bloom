@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unclaimed Bloom — Workbench</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="brand-block">
+                <span class="title">Unclaimed Bloom</span>
+                <span class="subtitle">workbench</span>
+            </div>
+            <span id="indicator" class="indicator disconnected" title="live updates"></span>
+            <div class="header-actions">
+                <span class="header-note">Theme forge, not a spreadsheet with ambitions.</span>
+            </div>
+        </div>
+    </header>
+    <section id="run-output" class="run-output" hidden></section>
+    <div class="workbench-shell">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Profiles</div>
+                <nav id="profile-tabs" class="profile-list"></nav>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Targets</div>
+                <div id="target-list" class="target-list"></div>
+            </div>
+        </aside>
+        <section class="workspace">
+            <div class="view-toggle" aria-label="Workbench sections">
+                <button class="view-btn active" data-view="overview">overview</button>
+                <button class="view-btn" data-view="bloom">bloom</button>
+                <button class="view-btn" data-view="inspect">inspect</button>
+                <button class="view-btn" data-view="recipes">recipes</button>
+                <button class="view-btn" data-view="docs">docs</button>
+            </div>
+            <main id="content"></main>
+        </section>
+        <aside id="controls" class="context-panel"></aside>
+    </div>
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

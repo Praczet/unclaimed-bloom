@@ -1,0 +1,32 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/internal@^1.0.14": "1.0.14",
+    "jsr:@std/path@*": "1.1.5"
+  },
+  "jsr": {
+    "@std/internal@1.0.14": {
+      "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
+    },
+    "@std/path@1.1.5": {
+      "integrity": "ccea00982ea28c36becaf6e62f855406c76a8c32d462f66f415bbb7d83a271bc",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@types/node@22",
+        "npm:@types/ws@^8.18.1",
+        "npm:concurrently@^10.0.3",
+        "npm:tsup@8",
+        "npm:tsx@4",
+        "npm:typescript@^5.5.0",
+        "npm:vite@^8.0.16",
+        "npm:ws@^8.21.0"
+      ]
+    }
+  }
+}

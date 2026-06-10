@@ -1,3 +1,4 @@
 node_modules
 dist
 watch_*
+workbench/ui/main.js
