@@ -410,12 +410,62 @@ async function handleDocs(): Promise<Response> {
   return jsonResponse({ defaultDoc: null, docs: [] });
 }
 
+// --- WebSocket broadcast ---
+
+const wsClients = new Set<WebSocket>();
+
+function handleWebSocket(req: Request): Response {
+  const { socket, response } = Deno.upgradeWebSocket(req);
+  socket.onopen = () => wsClients.add(socket);
+  socket.onclose = () => wsClients.delete(socket);
+  socket.onerror = () => wsClients.delete(socket);
+  return response;
+}
+
+function broadcast(data: unknown): void {
+  const msg = JSON.stringify(data);
+  for (const ws of wsClients) {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(msg);
+    } else {
+      wsClients.delete(ws);
+    }
+  }
+}
+
+async function broadcastUpdates(): Promise<void> {
+  if (wsClients.size === 0) return;
+  try {
+    const [bloomsRes, profilesRes] = await Promise.all([handleBlooms(), handleProfiles()]);
+    const [blooms, profiles] = await Promise.all([bloomsRes.json(), profilesRes.json()]);
+    broadcast({ type: "blooms", blooms });
+    broadcast({ type: "profiles", profiles });
+  } catch { /* best-effort */ }
+}
+
+async function startCacheWatcher(): Promise<void> {
+  const cacheDir = BloomPaths.fromDeno().cacheDir;
+  try {
+    await Deno.mkdir(cacheDir, { recursive: true });
+    const watcher = Deno.watchFs(cacheDir, { recursive: true });
+    let debounce: ReturnType<typeof setTimeout> | undefined;
+    for await (const _event of watcher) {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => void broadcastUpdates(), 300);
+    }
+  } catch {
+    setTimeout(() => void startCacheWatcher(), 5000);
+  }
+}
+
+// --- Run handler ---
+
 async function handleRun(req: Request): Promise<Response> {
   const body = await req.json() as { action?: string; profile?: string; target?: string };
   const { action, profile, target } = body;
 
-  if (!action || !profile || !["sow", "grow"].includes(action)) {
-    return jsonResponse({ ok: false, error: "action must be 'sow' or 'grow', profile is required" }, 400);
+  if (!action || !profile || !["sow", "grow", "plant"].includes(action)) {
+    return jsonResponse({ ok: false, error: "action must be 'sow', 'grow', or 'plant'; profile is required" }, 400);
   }
 
   const sporeTs = new URL("../cli/spore.ts", import.meta.url).pathname;
@@ -451,6 +501,10 @@ async function router(req: Request): Promise<Response> {
 
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
+  if (url.pathname === "/ws") {
+    return handleWebSocket(req);
   }
 
   if (req.method === "POST" && url.pathname === "/api/run") {
@@ -492,6 +546,8 @@ async function router(req: Request): Promise<Response> {
     return jsonResponse({ ok: false, error: message }, 500);
   }
 }
+
+void startCacheWatcher();
 
 console.log(`Workbench listening on http://${HOST}:${PORT}`);
 console.log(`  UI  http://${HOST}:${PORT}/`);

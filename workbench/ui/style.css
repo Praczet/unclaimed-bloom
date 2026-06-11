@@ -433,6 +433,11 @@ nav {
     background: var(--accent);
 }
 
+.action-btn.plant {
+    border-color: color-mix(in srgb, var(--success), var(--border) 40%);
+    color: var(--success);
+}
+
 .action-btn:disabled,
 .target-select:disabled {
     cursor: wait;

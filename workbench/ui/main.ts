@@ -393,6 +393,7 @@ function renderControls() {
                 <select id="target-select" class="target-select" ${isRunning ? 'disabled' : ''}>${targetOptions}</select>
                 <button id="sow-btn" class="action-btn" ${isRunning ? 'disabled' : ''}>sow</button>
                 <button id="grow-btn" class="action-btn primary" ${isRunning ? 'disabled' : ''}>grow</button>
+                <button id="plant-btn" class="action-btn plant" ${isRunning ? 'disabled' : ''} title="Deploy rendered files to system paths">plant</button>
             </div>
             <p class="target-meta">${targetMeta}</p>
         </div>
@@ -425,6 +426,7 @@ spore inspect spore ${esc(profile.name)} ${esc(selectedTargetName())}</code></pr
   });
   controlsEl.querySelector<HTMLButtonElement>('#sow-btn')?.addEventListener('click', () => runAction('sow'));
   controlsEl.querySelector<HTMLButtonElement>('#grow-btn')?.addEventListener('click', () => runAction('grow'));
+  controlsEl.querySelector<HTMLButtonElement>('#plant-btn')?.addEventListener('click', () => runAction('plant'));
 }
 
 function showRunOutput(title: string, text: string, ok: boolean): void {
@@ -532,7 +534,7 @@ function renderOverview(): void {
         setView('pipeline');
         return;
       }
-      if (action === 'sow' || action === 'grow') void runAction(action);
+      if (action === 'sow' || action === 'grow' || action === 'plant') void runAction(action);
     });
   });
 
@@ -739,7 +741,7 @@ function renderRecipes(): void {
   });
 }
 
-async function runAction(action: 'sow' | 'grow') {
+async function runAction(action: 'sow' | 'grow' | 'plant') {
   const profile = activeProfile();
   if (!profile || isRunning) return;
 
@@ -1156,7 +1158,7 @@ function bindDocActions() {
         return;
       }
 
-      if (action === 'sow' || action === 'grow') {
+      if (action === 'sow' || action === 'grow' || action === 'plant') {
         void runAction(action);
       }
     });
