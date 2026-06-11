@@ -1650,8 +1650,20 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     profileName: string | undefined,
     target: string | undefined,
   ): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+
     if (!profileName) {
       this.printUsageError("Missing profile name.", "inspect spore <profile> <target>");
+      if (this.outputMode === "human") {
+        const profiles = await new ProfileLoader().list(paths.profilesDir());
+        if (profiles.length > 0) {
+          this.printHumanError("");
+          this.printHumanError("Available profiles:");
+          for (const p of profiles) {
+            this.printHumanError(`  ${p.name}`);
+          }
+        }
+      }
       Deno.exit(1);
     }
     if (!target) {
@@ -1659,7 +1671,6 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       Deno.exit(1);
     }
 
-    const paths = BloomPaths.fromDeno();
     const sporePath = paths.sporeFile(profileName, target);
     const spore = await this.readJson(sporePath) as Spore;
 
