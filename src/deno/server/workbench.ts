@@ -114,8 +114,21 @@ async function handleStatus(): Promise<Response> {
 
 async function handlePalettes(): Promise<Response> {
   const paths = BloomPaths.fromDeno();
-  const palettes = await new PaletteLoader().list(paths.palettesDir());
+  const loader = new PaletteLoader();
+  const summaries = await loader.list(paths.palettesDir());
+  const palettes = await Promise.all(
+    summaries.map(async (s) => {
+      const full = await loader.inspect(paths.palettesDir(), s.slug);
+      return { ...full, path: s.path };
+    }),
+  );
   return jsonResponse({ ok: true, palettes });
+}
+
+async function handleMoods(): Promise<Response> {
+  const paths = BloomPaths.fromDeno();
+  const moods = await new MoodLoader().list(paths.moodsDir());
+  return jsonResponse({ ok: true, moods });
 }
 
 async function handleProfiles(): Promise<Response> {
@@ -406,6 +419,41 @@ async function buildCompositionPipeline(
   return { ...sourceData, profile: profileName, targets };
 }
 
+// --- Write handlers ---
+
+async function handleSaveRecipe(req: Request): Promise<Response> {
+  const body = await req.json() as { path?: string; recipe?: unknown };
+  if (typeof body.path !== "string" || !body.recipe) {
+    return jsonResponse({ ok: false, error: "path and recipe required" }, 400);
+  }
+  await Deno.writeTextFile(body.path, JSON.stringify(body.recipe, null, 2) + "\n");
+  return jsonResponse({ ok: true, path: body.path });
+}
+
+async function handleSaveMood(name: string, req: Request): Promise<Response> {
+  const paths = BloomPaths.fromDeno();
+  const body = await req.json() as unknown;
+  const filePath = `${paths.moodsDir()}/${name}.json`;
+  await Deno.writeTextFile(filePath, JSON.stringify(body, null, 2) + "\n");
+  return jsonResponse({ ok: true, path: filePath });
+}
+
+async function handleSaveProfile(name: string, req: Request): Promise<Response> {
+  const paths = BloomPaths.fromDeno();
+  const body = await req.json() as unknown;
+  const filePath = `${paths.profilesDir()}/${name}.json`;
+  await Deno.writeTextFile(filePath, JSON.stringify(body, null, 2) + "\n");
+  return jsonResponse({ ok: true, path: filePath });
+}
+
+async function handleSavePalette(slug: string, req: Request): Promise<Response> {
+  const paths = BloomPaths.fromDeno();
+  const body = await req.json() as unknown;
+  const filePath = `${paths.palettesDir()}/${slug}.json`;
+  await Deno.writeTextFile(filePath, JSON.stringify(body, null, 2) + "\n");
+  return jsonResponse({ ok: true, path: filePath });
+}
+
 async function handleState(): Promise<Response> {
   const paths = BloomPaths.fromDeno();
   const state = await readJsonFile(paths.stateFile());
@@ -524,6 +572,18 @@ async function router(req: Request): Promise<Response> {
     catch (err) { return jsonResponse({ ok: false, error: String(err) }, 500); }
   }
 
+  if (req.method === "PUT") {
+    try {
+      if (url.pathname === "/api/recipe") return await handleSaveRecipe(req);
+      const moodSave = url.pathname.match(/^\/api\/mood\/(.+)$/);
+      if (moodSave) return await handleSaveMood(decodeURIComponent(moodSave[1]), req);
+      const profileSave = url.pathname.match(/^\/api\/profile\/(.+)$/);
+      if (profileSave) return await handleSaveProfile(decodeURIComponent(profileSave[1]), req);
+      const paletteSave = url.pathname.match(/^\/api\/palette\/(.+)$/);
+      if (paletteSave) return await handleSavePalette(decodeURIComponent(paletteSave[1]), req);
+    } catch (err) { return jsonResponse({ ok: false, error: String(err) }, 500); }
+  }
+
   if (req.method !== "GET") {
     return jsonResponse({ ok: false, error: "Method not allowed" }, 405);
   }
@@ -542,6 +602,7 @@ async function router(req: Request): Promise<Response> {
     if (url.pathname === "/api/status") return await handleStatus();
     if (url.pathname === "/api/state") return await handleState();
     if (url.pathname === "/api/palettes") return await handlePalettes();
+    if (url.pathname === "/api/moods") return await handleMoods();
     if (url.pathname === "/api/profiles") return await handleProfiles();
     if (url.pathname === "/api/recipes") return await handleRecipes(url);
     if (url.pathname === "/api/blooms") return await handleBlooms();

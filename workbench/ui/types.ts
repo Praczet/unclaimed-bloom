@@ -265,6 +265,45 @@ interface RecipesResponse {
   recipes: WorkbenchRecipeSummary[];
 }
 
+interface MoodFull {
+  name: string;
+  description?: string;
+  weights: { surface: number; foreground: number; accent: number; semantic: number };
+  path: string;
+}
+
+interface PaletteWithColors {
+  name: string;
+  slug: string;
+  kind: 'dark' | 'light';
+  colors: Record<string, string>;
+  path: string;
+}
+
+interface SaveResult {
+  ok: boolean;
+  path?: string;
+  error?: string;
+}
+
+interface RecipeEditToken {
+  _id: string;
+  name: string;
+  base: string;
+  baseHex: string;
+  bloom: string;
+  bloomHex: string;
+  source: string;
+  sourceHex: string;
+  mix: number;
+}
+
+interface RecipeEditState {
+  name: string;
+  basePalette: string;
+  tokens: RecipeEditToken[];
+}
+
 type StageStatus = 'pending' | 'running' | 'done' | 'error' | 'skipped';
 
 interface TargetRunState {
