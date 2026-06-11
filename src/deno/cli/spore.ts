@@ -3,7 +3,7 @@ import {
   BloomGenerator,
   type BloomPreview,
 } from "../core/blooms/BloomGenerator.ts";
-import { EventEmitter } from "../core/events/EventEmitter.ts";
+import { EventEmitter, type RunState } from "../core/events/EventEmitter.ts";
 import { HookRunner, type WorkerEventSink } from "../core/hooks/HookRunner.ts";
 import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
@@ -73,7 +73,7 @@ class SporeCli {
     }
 
     if (command === "status") {
-      this.printStatus();
+      await this.printStatus();
       return;
     }
 
@@ -215,41 +215,128 @@ Global flags:
   --format json    Same as --json.`);
   }
 
-  private printStatus(): void {
-    const paths = BloomPaths.fromDeno().summary();
+  private async printStatus(): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+    const pathSummary = paths.summary();
+    const stateBase = paths.stateFile().replace(/\.json$/, "");
+    const sowState = await this.readStageState(`${stateBase}-sow.json`);
+    const growState = await this.readStageState(`${stateBase}-grow.json`);
+    const plantState = await this.readStageState(`${stateBase}-plant.json`);
+    const lastProfile = [plantState, growState, sowState].find((s) => s?.profile)?.profile;
 
     if (this.outputMode === "json") {
       this.printJson({
         ok: true,
-        status: paths,
+        status: { ...pathSummary, sow: sowState, grow: growState, plant: plantState },
       });
       return;
     }
 
-    this.printHuman("Unclaimed Bloom status");
+    this.printHuman("Unclaimed Bloom");
     this.printHuman("");
-    this.printHuman(this.display.table([
-      { key: "cwd", value: paths.cwd },
-      {
-        key: "UB_DATA_DIR",
-        value: paths.dataDirSource === "env" ? paths.dataDir : "(not set)",
-      },
-      {
-        key: "UB_CACHE_DIR",
-        value: paths.cacheDirSource === "env" ? paths.cacheDir : "(not set)",
-      },
-      { key: "resolved data dir", value: paths.dataDir },
-      { key: "resolved cache dir", value: paths.cacheDir },
-      { key: "default data dir", value: paths.defaultDataDir },
-      { key: "default cache dir", value: paths.defaultCacheDir },
-    ], [
-      { header: "key", value: (row) => row.key },
-      {
-        header: "value",
-        value: (row) => row.value,
-        dim: true,
-      },
-    ]));
+
+    const infoFields: Array<{ label: string; value: string; dim?: boolean }> = [];
+
+    if (lastProfile) {
+      infoFields.push({ label: "profile", value: lastProfile });
+      try {
+        const profile = await new ProfileLoader().inspect(paths.profilesDir(), lastProfile);
+        if (!this.isCompositionProfile(profile)) {
+          infoFields.push({ label: "palette", value: profile.basePalette });
+          infoFields.push({ label: "mood", value: profile.mood });
+        }
+      } catch { /* profile not in data dir — skip */ }
+    }
+
+    const fmtStage = (state: RunState | null): string => {
+      if (!state) return this.display.dim("(never)");
+      return `${this.formatDate(state.updated_at)}  ${this.display.dim(state.status)}`;
+    };
+
+    infoFields.push({ label: "sow", value: fmtStage(sowState) });
+    infoFields.push({ label: "grow", value: fmtStage(growState) });
+    infoFields.push({ label: "plant", value: fmtStage(plantState) });
+    infoFields.push({ label: "data", value: pathSummary.dataDir, dim: true });
+    infoFields.push({ label: "cache", value: pathSummary.cacheDir, dim: true });
+
+    this.printHuman(this.display.fields(infoFields));
+
+    if (lastProfile) {
+      const sporeRows = await this.readSporeRows(paths, lastProfile);
+      if (sporeRows.length > 0) {
+        this.printHuman("");
+        this.printHuman(this.display.table(sporeRows, [
+          { header: "target", value: (r) => r.target },
+          { header: "recipe", value: (r) => r.recipe },
+          { header: "sown", value: (r) => r.sownAt, dim: true },
+          { header: "colors", value: (r) => r.colors },
+        ]));
+      }
+    }
+  }
+
+  private async readStageState(path: string): Promise<RunState | null> {
+    try {
+      const text = await Deno.readTextFile(path);
+      return JSON.parse(text) as RunState;
+    } catch {
+      return null;
+    }
+  }
+
+  private async readSporeRows(
+    paths: BloomPaths,
+    profile: string,
+  ): Promise<Array<{ target: string; recipe: string; sownAt: string; colors: string }>> {
+    const profileEntry = await new ProfileLoader().inspect(paths.profilesDir(), profile).catch(() => null);
+    const subProfiles: string[] = profileEntry && this.isCompositionProfile(profileEntry)
+      ? profileEntry.runs.map((r) => r.profile)
+      : [profile];
+
+    const rows: Array<{ target: string; recipe: string; sownAt: string; colors: string }> = [];
+    for (const sub of subProfiles) {
+      try {
+        for await (const entry of Deno.readDir(paths.sporesDir(sub))) {
+          if (!entry.isFile || !entry.name.endsWith(".json") || entry.name.includes("__")) continue;
+          const target = entry.name.replace(/\.json$/, "");
+          try {
+            const spore = await this.readJson(paths.sporeFile(sub, target)) as Spore;
+            rows.push({
+              target: subProfiles.length > 1 ? `${sub}/${target}` : target,
+              recipe: spore.recipe,
+              sownAt: this.formatDate(spore.generatedAt),
+              colors: this.sporeSwatches(spore.colors, 8),
+            });
+          } catch { /* skip unreadable spore */ }
+        }
+      } catch { /* no spores dir yet */ }
+    }
+    return rows.sort((a, b) => a.target.localeCompare(b.target));
+  }
+
+  private sporeSwatches(colors: Record<string, string>, count: number): string {
+    const hexValues = Object.values(colors);
+    if (hexValues.length === 0) return "";
+    const step = Math.max(1, Math.floor(hexValues.length / count));
+    const picked: string[] = [];
+    for (let i = 0; i < hexValues.length && picked.length < count; i += step) {
+      picked.push(hexValues[i]);
+    }
+    return picked.map((hex) => this.display.swatch(hex)).join("");
+  }
+
+  private formatDate(iso: string): string {
+    try {
+      const d = new Date(iso);
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = months[d.getMonth()];
+      const day = String(d.getDate()).padStart(2, " ");
+      const hours = String(d.getHours()).padStart(2, "0");
+      const mins = String(d.getMinutes()).padStart(2, "0");
+      return `${month} ${day} ${hours}:${mins}`;
+    } catch {
+      return iso;
+    }
   }
 
   private async runInspectCommand(args: string[]): Promise<void> {
