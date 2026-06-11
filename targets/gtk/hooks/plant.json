@@ -3,14 +3,15 @@
     {
       "type": "copy",
       "dest": [
-        "~/.local/share/themes/unclaimed-bloom-{{recipe}}/gtk-4.0/gtk.css",
-        "~/.local/share/themes/unclaimed-bloom-{{recipe}}/gtk-3.0/gtk.css"
+        "~/.local/share/themes/ADArt-Unclaimed-Bloom/gtk-4.0/gtk-adart-unclaimed-bloom.css",
+        "~/.local/share/themes/ADArt-Unclaimed-Bloom/gtk-3.0/gtk-adart-unclaimed-bloom.css",
+        "~/.config/gtk-4.0/gtk.css"
       ]
     },
     {
       "type": "exec",
       "command": "gsettings",
-      "args": ["set", "org.gnome.desktop.interface", "gtk-theme", "unclaimed-bloom-{{recipe}}"]
+      "args": ["set", "org.gnome.desktop.interface", "gtk-theme", "ADArt-Unclaimed-Bloom"]
     }
   ]
 }
