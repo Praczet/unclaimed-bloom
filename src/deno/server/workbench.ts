@@ -307,19 +307,19 @@ async function buildBloomPreview(
   };
 }
 
-async function handleInspect(profileName: string): Promise<Response> {
+async function handlePipeline(profileName: string): Promise<Response> {
   const paths = BloomPaths.fromDeno();
   const profileLoader = new ProfileLoader();
   const entry = await profileLoader.inspect(paths.profilesDir(), profileName);
 
   if (isCompositionProfile(entry)) {
-    return jsonResponse(await buildCompositionInspect(paths, profileLoader, entry, profileName));
+    return jsonResponse(await buildCompositionPipeline(paths, profileLoader, entry, profileName));
   }
 
-  return jsonResponse(await buildInspect(paths, profileName));
+  return jsonResponse(await buildPipeline(paths, profileName));
 }
 
-async function buildInspect(paths: BloomPaths, profileName: string): Promise<unknown> {
+async function buildPipeline(paths: BloomPaths, profileName: string): Promise<unknown> {
   const profileLoader = new ProfileLoader();
   const paletteLoader = new PaletteLoader();
   const moodLoader = new MoodLoader();
@@ -384,20 +384,20 @@ async function buildInspect(paths: BloomPaths, profileName: string): Promise<unk
   return { profile: profileName, basePalette: entry.basePalette, mood: entry.mood, source: entry.source.type, bloom: bloomColors, targets };
 }
 
-async function buildCompositionInspect(
+async function buildCompositionPipeline(
   paths: BloomPaths,
   profileLoader: ProfileLoader,
   composition: CompositionProfile,
   profileName: string,
 ): Promise<unknown> {
   const sourceProfileName = composition.currentProfile ?? composition.runs[0]?.profile ?? profileName;
-  const sourceData = await buildInspect(paths, sourceProfileName) as Record<string, unknown>;
+  const sourceData = await buildPipeline(paths, sourceProfileName) as Record<string, unknown>;
   const targets: Record<string, unknown> = {};
 
   for (const run of composition.runs) {
     const runEntry = await profileLoader.inspect(paths.profilesDir(), run.profile);
     if (isCompositionProfile(runEntry)) continue;
-    const runData = await buildInspect(paths, run.profile) as { targets: Record<string, unknown> };
+    const runData = await buildPipeline(paths, run.profile) as { targets: Record<string, unknown> };
     for (const [target, data] of Object.entries(runData.targets)) {
       targets[target] = data;
     }
@@ -480,8 +480,8 @@ async function router(req: Request): Promise<Response> {
     if (url.pathname === "/api/blooms") return await handleBlooms();
     if (url.pathname === "/api/docs") return await handleDocs();
 
-    const inspectMatch = url.pathname.match(/^\/api\/inspect\/(.+)$/);
-    if (inspectMatch) return await handleInspect(decodeURIComponent(inspectMatch[1]));
+    const pipelineMatch = url.pathname.match(/^\/api\/pipeline\/(.+)$/);
+    if (pipelineMatch) return await handlePipeline(decodeURIComponent(pipelineMatch[1]));
 
     const previewMatch = url.pathname.match(/^\/api\/bloom-preview\/(.+)$/);
     if (previewMatch) return await handleBloomPreview(decodeURIComponent(previewMatch[1]));

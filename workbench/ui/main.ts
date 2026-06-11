@@ -3,10 +3,10 @@
 let blooms: Blooms = {};
 let profiles: ProfilesResponse = { profiles: [] };
 let active = '';
-type WorkbenchView = 'overview' | 'bloom' | 'inspect' | 'recipes' | 'docs';
+type WorkbenchView = 'overview' | 'bloom' | 'pipeline' | 'recipes' | 'docs';
 let view: WorkbenchView = 'overview';
 let activeTarget = '';
-let inspectCache: Record<string, InspectData> = {};
+let pipelineCache: Record<string, InspectData> = {};
 let actionTarget = '';
 let isRunning = false;
 let docsIndex: DocsIndexResponse = { defaultDoc: 'README.md', docs: [] };
@@ -322,7 +322,7 @@ function renderTargetList(): void {
       resetRecipeSelection();
       renderTargetList();
       renderControls();
-      if (view === 'overview' || view === 'inspect' || view === 'recipes') render();
+      if (view === 'overview' || view === 'pipeline' || view === 'recipes') render();
     });
   });
 }
@@ -346,8 +346,8 @@ function renderControls() {
     ...profile.targets.map(t => `<option value="${esc(t.name)}"${t.name === selectedTarget ? ' selected' : ''}>${esc(t.name)}</option>`),
   ].join('');
   const target = profile.targets.find(t => t.name === selectedTarget);
-  const inspectTarget = view === 'inspect' && selectedTarget
-    ? inspectCache[active]?.targets[selectedTarget]
+  const inspectTarget = view === 'pipeline' && selectedTarget
+    ? pipelineCache[active]?.targets[selectedTarget]
     : undefined;
   const contextTitle = target ? target.name : profile.name;
   const contextSubtitle = target
@@ -400,7 +400,8 @@ function renderControls() {
             <p class="eyebrow">CLI</p>
             <pre class="command-stack"><code>spore sow ${esc(profile.name)}${esc(commandTarget)}
 spore grow ${esc(profile.name)}${esc(commandTarget)}
-spore inspect ${esc(profile.name)}${esc(commandTarget || ` ${selectedTargetName()}`)}</code></pre>
+spore inspect bloom ${esc(profile.name)}
+spore inspect spore ${esc(profile.name)} ${esc(selectedTargetName())}</code></pre>
         </div>
         <div class="context-block">
             <p class="eyebrow">Workbench Palette</p>
@@ -417,7 +418,7 @@ spore inspect ${esc(profile.name)}${esc(commandTarget || ` ${selectedTargetName(
     resetRecipeSelection();
     renderTargetList();
     renderControls();
-    if (view === 'inspect' || view === 'recipes') render();
+    if (view === 'pipeline' || view === 'recipes') render();
   });
   controlsEl.querySelector<HTMLInputElement>('#bloom-ui-toggle')?.addEventListener('change', e => {
     setBloomUiPalettePreference((e.currentTarget as HTMLInputElement).checked);
@@ -528,7 +529,7 @@ function renderOverview(): void {
       renderControls();
       const action = btn.dataset['overviewAction'];
       if (action === 'inspect') {
-        setView('inspect');
+        setView('pipeline');
         return;
       }
       if (action === 'sow' || action === 'grow') void runAction(action);
@@ -592,9 +593,9 @@ function renderRecipes(): void {
     return;
   }
 
-  const inspectData = inspectCache[active];
+  const inspectData = pipelineCache[active];
   if (!inspectData) {
-    void fetchInspect(active);
+    void fetchPipeline(active);
   }
   const previewTarget = inspectData?.targets[activeRecipe.target];
   const previewRows = new Map((previewTarget?.tokens ?? []).map(row => [row.name, row]));
@@ -957,7 +958,7 @@ function bindTargetTabs() {
       resetRecipeSelection();
       renderTargetList();
       renderControls();
-      renderInspect();
+      renderPipeline();
     });
   });
 }
@@ -1000,11 +1001,11 @@ function renderTokenRow(t: TokenRow): string {
         </div>`;
 }
 
-function renderInspect() {
-  const data = inspectCache[active];
+function renderPipeline() {
+  const data = pipelineCache[active];
   if (!data) {
     contentEl.innerHTML = '<p class="empty">Loading inspect data…</p>';
-    fetchInspect(active);
+    fetchPipeline(active);
     return;
   }
 
@@ -1076,16 +1077,16 @@ function renderInspect() {
   renderControls();
 }
 
-async function fetchInspect(profileName: string) {
+async function fetchPipeline(profileName: string) {
   try {
-    const res = await fetch(`/api/inspect/${encodeURIComponent(profileName)}`);
+    const res = await fetch(`/api/pipeline/${encodeURIComponent(profileName)}`);
     if (!res.ok) throw new Error(`server returned ${res.status}`);
     const data = await res.json() as InspectData;
-    inspectCache[profileName] = data;
-    if (active === profileName && view === 'inspect') renderInspect();
+    pipelineCache[profileName] = data;
+    if (active === profileName && view === 'pipeline') renderPipeline();
     if (active === profileName && view === 'recipes') renderRecipes();
   } catch (err) {
-    contentEl.innerHTML = `<p class="empty">Could not load inspect data: ${err instanceof Error ? err.message : String(err)}</p>`;
+    contentEl.innerHTML = `<p class="empty">Could not load pipeline data: ${err instanceof Error ? err.message : String(err)}</p>`;
   }
 }
 
@@ -1151,7 +1152,7 @@ function bindDocActions() {
       renderControls();
 
       if (action === 'inspect') {
-        setView('inspect');
+        setView('pipeline');
         return;
       }
 
@@ -1453,8 +1454,8 @@ function render() {
     renderOverview();
   } else if (view === 'bloom') {
     renderBloom();
-  } else if (view === 'inspect') {
-    renderInspect();
+  } else if (view === 'pipeline') {
+    renderPipeline();
   } else if (view === 'recipes') {
     renderRecipes();
   } else {
@@ -1465,7 +1466,7 @@ function render() {
 function applyBlooms(data: Blooms, pulse = true) {
   blooms = data;
   bloomPreviewCache = {};
-  inspectCache = {}; // blooms changed → inspect data stale
+  pipelineCache = {}; // blooms changed → inspect data stale
   if (!active) active = pickInitialProfile();
   activeTarget = '';
   resetRecipeSelection();
