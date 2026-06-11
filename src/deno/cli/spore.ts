@@ -1825,6 +1825,14 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     this.printHuman(this.display.fields([
       { label: "plant hook", value: hasHook ? hookPath : "none", dim: !hasHook },
     ]));
+
+    if (recipes.length > 0) {
+      this.printHuman("");
+      this.printHuman(this.display.dim("To see a recipe:"));
+      for (const r of recipes) {
+        this.printHuman(this.display.dim(`  spore recipe show ${target}/${r.name}`));
+      }
+    }
   }
 
   private async replantTarget(args: string[]): Promise<void> {
