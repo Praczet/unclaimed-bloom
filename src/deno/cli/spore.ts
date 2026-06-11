@@ -133,6 +133,11 @@ class SporeCli {
       return;
     }
 
+    if (command === "prune") {
+      await this.runPruneCommand(commandArgs.slice(1));
+      return;
+    }
+
     this.printUnknownCommand(command);
     Deno.exit(1);
   }
@@ -201,6 +206,9 @@ Config (source definitions in ~/.config/unclaimed-bloom/):
   profile  [list | show <name>    | validate <name>]
   recipe   [list [target] | show <target/name> | validate <target>]
   mood     [list | show <name>    | validate <name>]
+
+Maintenance:
+  prune   [--keep <n>] [--rendered] [--all] [--dry-run]          Trim accumulated cache files.
 
 Targets:
   targets [<target>]    List all targets, or show one in detail.
@@ -2310,6 +2318,112 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       this.printHuman("");
       this.printHuman(this.display.dim(result.stdout));
     }
+  }
+
+  private async runPruneCommand(args: string[]): Promise<void> {
+    const dryRun = args.includes("--dry-run");
+    const includeRendered = args.includes("--rendered") || args.includes("--all");
+    const includeWorkingCache = args.includes("--all");
+
+    const keepIdx = args.indexOf("--keep");
+    const keep = keepIdx !== -1 ? parseInt(args[keepIdx + 1] ?? "0", 10) : 0;
+
+    const paths = BloomPaths.fromDeno();
+
+    type PruneResult = { label: string; deleted: number; bytes: number; skipped: number };
+    const results: PruneResult[] = [];
+
+    // --- reports ---
+    const reportFiles = await this.listSortedFiles(paths.reportsDir());
+    const toDelete = keep > 0 ? reportFiles.slice(0, Math.max(0, reportFiles.length - keep)) : reportFiles;
+    let reportBytes = 0;
+    for (const f of toDelete) {
+      reportBytes += f.size;
+      if (!dryRun) await Deno.remove(f.path);
+    }
+    results.push({ label: "reports", deleted: toDelete.length, bytes: reportBytes, skipped: reportFiles.length - toDelete.length });
+
+    // --- events.jsonl ---
+    let eventsBytes = 0;
+    try {
+      eventsBytes = (await Deno.stat(paths.eventsFile())).size;
+      if (!dryRun) await Deno.writeTextFile(paths.eventsFile(), "");
+    } catch { /* file may not exist */ }
+    results.push({ label: "events", deleted: eventsBytes > 0 ? 1 : 0, bytes: eventsBytes, skipped: 0 });
+
+    // --- rendered/ ---
+    if (includeRendered) {
+      const renderedRoot = `${paths.cacheDir}/rendered`;
+      const renderedFiles = await this.listSortedFiles(renderedRoot, true);
+      let renderedBytes = 0;
+      for (const f of renderedFiles) renderedBytes += f.size;
+      if (!dryRun && renderedFiles.length > 0) await Deno.remove(renderedRoot, { recursive: true });
+      results.push({ label: "rendered", deleted: renderedFiles.length, bytes: renderedBytes, skipped: 0 });
+    }
+
+    // --- blooms/ + spores/ ---
+    if (includeWorkingCache) {
+      for (const [label, dir] of [["blooms", paths.bloomsDir()], ["spores", paths.sporesDir()]] as const) {
+        const files = await this.listSortedFiles(dir, true);
+        let bytes = 0;
+        for (const f of files) bytes += f.size;
+        if (!dryRun && files.length > 0) await Deno.remove(dir, { recursive: true });
+        results.push({ label, deleted: files.length, bytes, skipped: 0 });
+      }
+    }
+
+    if (this.outputMode === "json") {
+      this.printJson({ ok: true, command: "prune", dryRun, keep, results });
+      return;
+    }
+
+    const fmtBytes = (b: number) => b < 1024 * 1024
+      ? `${(b / 1024).toFixed(0)} KB`
+      : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+
+    const verb = dryRun ? "would remove" : "removed";
+    for (const r of results) {
+      if (r.label === "events") {
+        if (r.bytes === 0) {
+          this.printHuman(`  ${r.label}  ${this.display.dim("empty")}`);
+        } else {
+          this.printHuman(`  ${r.label}  ${dryRun ? "would truncate" : "truncated"}  ${this.display.dim(fmtBytes(r.bytes))}`);
+        }
+      } else if (r.deleted === 0) {
+        this.printHuman(`  ${r.label}  ${this.display.dim("nothing to prune")}`);
+      } else {
+        const kept = r.skipped > 0 ? `  ${this.display.dim(`kept ${r.skipped}`)}` : "";
+        this.printHuman(`  ${r.label}  ${verb} ${r.deleted} files  ${this.display.dim(fmtBytes(r.bytes))}${kept}`);
+      }
+    }
+
+    if (includeRendered && !dryRun) {
+      this.printHuman(this.display.dim("\n  rendered cache cleared — run grow before next plant"));
+    }
+    if (includeWorkingCache && !dryRun) {
+      this.printHuman(this.display.dim("  working cache cleared — run sow + grow before next plant"));
+    }
+  }
+
+  private async listSortedFiles(
+    dir: string,
+    recursive = false,
+  ): Promise<Array<{ path: string; name: string; size: number }>> {
+    const files: Array<{ path: string; name: string; size: number }> = [];
+    try {
+      for await (const entry of Deno.readDir(dir)) {
+        const full = `${dir}/${entry.name}`;
+        if (entry.isFile) {
+          const stat = await Deno.stat(full);
+          files.push({ path: full, name: entry.name, size: stat.size });
+        } else if (recursive && entry.isDirectory) {
+          files.push(...await this.listSortedFiles(full, true));
+        }
+      }
+    } catch (err) {
+      if (!(err instanceof Deno.errors.NotFound)) throw err;
+    }
+    return files.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   private printUnknownCommand(command: string): void {
