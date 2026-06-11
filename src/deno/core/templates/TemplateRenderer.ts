@@ -1,6 +1,7 @@
 import type { Report } from "../reports/ReportWriter.ts";
 import { ReportWriter } from "../reports/ReportWriter.ts";
 import { BloomPaths } from "../paths/BloomPaths.ts";
+import { localISOString, localTimestampForFilename } from "../time/localIso.ts";
 
 export class TemplateRenderer {
   public render(template: string, colors: Record<string, string>): string {
@@ -99,9 +100,9 @@ export class TemplateRenderer {
     const outputFileName = templatePath.split("/").pop() ?? `${target}.rendered`;
     const outputPath = `${outputDir}/${outputFileName}`;
 
-    const startedAt = new Date().toISOString();
-    const safeTimestamp = startedAt.replace(/[:.]/g, "-");
-    const reportPath = `${paths.reportsDir()}/${safeTimestamp}-grow-${profile}-${target}.json`;
+    const now = new Date();
+    const startedAt = localISOString(now);
+    const reportPath = `${paths.reportsDir()}/${localTimestampForFilename(now)}-grow-${profile}-${target}.json`;
 
     if (!dryRun) {
       await Deno.mkdir(outputDir, { recursive: true });
@@ -123,7 +124,7 @@ export class TemplateRenderer {
         warnings: [],
         errors: [],
         startedAt,
-        finishedAt: new Date().toISOString(),
+        finishedAt: localISOString(),
       };
       await writer.write(reportPath, report);
     }

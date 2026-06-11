@@ -62,6 +62,7 @@ export type UBEvent =
     stage: string;
     target: string;
     duration_ms: number;
+    steps?: Array<{ type: string; ok: boolean; detail: string }>;
     ts: string;
   }
   | {
@@ -174,7 +175,10 @@ export class EventEmitter {
     await this.writeState();
   }
 
-  public async doneTarget(target: string): Promise<void> {
+  public async doneTarget(
+    target: string,
+    steps?: Array<{ type: string; ok: boolean; detail: string }>,
+  ): Promise<void> {
     const duration_ms = Date.now() - (this.targetStartMs.get(target) ?? Date.now());
     const ts = new Date().toISOString();
     this.state = this.withTarget(target, { status: "done", duration_ms }, ts);
@@ -184,6 +188,7 @@ export class EventEmitter {
       stage: this.state.stage,
       target,
       duration_ms,
+      ...(steps && steps.length > 0 ? { steps } : {}),
       ts,
     });
     await this.writeState();

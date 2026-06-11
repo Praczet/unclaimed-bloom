@@ -1,3 +1,5 @@
+import { localTimestampForFilename } from "../time/localIso.ts";
+
 export interface BloomPathEnvironment {
   readonly cwd: string;
   readonly home: string;
@@ -109,10 +111,9 @@ export class BloomPaths {
   }
 
   public timestampedSowReportFile(profile: string, timestamp: string): string {
-    const safeTimestamp = timestamp.replace(/[:.]/g, "-");
     return this.join(
       this.reportsDir(),
-      `${safeTimestamp}-sow-${profile}.json`,
+      `${localTimestampForFilename(new Date(timestamp))}-sow-${profile}.json`,
     );
   }
 
@@ -121,10 +122,9 @@ export class BloomPaths {
     target: string,
     timestamp: string,
   ): string {
-    const safeTimestamp = timestamp.replace(/[:.]/g, "-");
     return this.join(
       this.reportsDir(),
-      `${safeTimestamp}-target-sow-${profile}-${target}.json`,
+      `${localTimestampForFilename(new Date(timestamp))}-target-sow-${profile}-${target}.json`,
     );
   }
 

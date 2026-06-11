@@ -20,6 +20,7 @@ import { type Recipe, RecipeLoader } from "../core/recipes/RecipeLoader.ts";
 import { ReportWriter } from "../core/reports/ReportWriter.ts";
 import { type Spore, SporeGenerator } from "../core/spores/SporeGenerator.ts";
 import { TemplateRenderer } from "../core/templates/TemplateRenderer.ts";
+import { localISOString } from "../core/time/localIso.ts";
 import { WorkerRunner } from "../core/workers/WorkerRunner.ts";
 
 const VERSION = "0.1.0-deno-experiment";
@@ -1220,7 +1221,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     dryRun: boolean,
     emitter: EventEmitter | undefined,
   ): Promise<void> {
-    const startedAt = new Date().toISOString();
+    const startedAt = localISOString();
     const context = await this.createBloomContext(profileName);
     const paths = context.paths;
     const writer = new ReportWriter();
@@ -1319,7 +1320,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       warnings: [],
       errors: [],
       startedAt,
-      finishedAt: new Date().toISOString(),
+      finishedAt: localISOString(),
     });
 
     const sporeOutputs = await this.sowTargetSpores({
@@ -1406,7 +1407,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     await emitter.startRun(comp.name, "sow", allTargets);
     try {
       for (const { profile, targets } of runs) {
-        const startedAt = new Date().toISOString();
+        const startedAt = localISOString();
         const context = await this.buildBloomContextForProfile(profile, paths);
         await this.sowTargetSpores({ context, targets, startedAt, emitter });
       }
@@ -1500,7 +1501,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
               if (!result.hookPath) {
                 await emitter.skipTarget(target, "no plant hook");
               } else {
-                await emitter.doneTarget(target);
+                await emitter.doneTarget(target, result.steps);
               }
             } catch (err) {
               const msg = err instanceof Error ? err.message : String(err);
@@ -2122,7 +2123,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
           if (!result.hookPath) {
             await emitter?.skipTarget(target, "no plant hook");
           } else {
-            await emitter?.doneTarget(target);
+            await emitter?.doneTarget(target, result.steps);
           }
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
@@ -2424,7 +2425,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
           context.profile,
           recipe,
         );
-        const generatedAt = new Date().toISOString();
+        const generatedAt = localISOString();
         const spore = generator.generate(
           targetBasePalette,
           context.sourcePalette,
@@ -2460,7 +2461,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
           warnings: [],
           errors: [],
           startedAt,
-          finishedAt: new Date().toISOString(),
+          finishedAt: localISOString(),
         });
 
         results.push({
