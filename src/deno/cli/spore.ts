@@ -1668,6 +1668,21 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     }
     if (!target) {
       this.printUsageError("Missing target.", "inspect spore <profile> <target>");
+      if (this.outputMode === "human") {
+        try {
+          const profile = await new ProfileLoader().inspect(paths.profilesDir(), profileName);
+          if (!this.isCompositionProfile(profile)) {
+            const targets = Object.keys(profile.targets);
+            if (targets.length > 0) {
+              this.printHumanError("");
+              this.printHumanError(`Targets in ${profileName}:`);
+              for (const t of targets) {
+                this.printHumanError(`  ${t}`);
+              }
+            }
+          }
+        } catch { /* profile not found — skip hint */ }
+      }
       Deno.exit(1);
     }
 
