@@ -2,21 +2,80 @@
 
 > Unclaimed Bloom grows from ash, borrowed soil, and unclaimed hope.
 
-Unclaimed Bloom is my recipe-driven theming system for a Linux desktop that has already lived too many lives.
+**Unclaimed Bloom is my recipe-driven theming system for a Linux desktop that has already lived too many lives.**
+
+It blends wallpaper colors from Matugen with curated base palettes, moods, profiles, recipes, and target-specific outputs for tools such as Ghostty, GTK, icons, Neovim, AGS, swaync, Waybar, Rofi, Hyprland, SDDM, yazi, mycli, sqlit, and whatever else gets dragged into the garden later.
 
 It is not one more theme. It is the thing that tries to keep several half-wild theming projects from wandering into separate forests and pretending they never met.
 
-It takes:
+Matugen is a source, not the god.
+TokyoNight Moon is a palette, not a prison.
+GTK is invited under supervision.
+
+## What It Does
+
+Unclaimed Bloom takes:
 
 - a wallpaper-driven Matugen palette,
-- a base palette such as TokyoNight Moon,
+- a curated base palette such as TokyoNight Moon,
 - a mood,
 - a profile,
 - target-specific recipes,
 
-and grows one shared **bloom**. Then it scatters target-specific **spores** into Ghostty, GTK, icons, Neovim, AGS, swaync, waybar, Rofi, Hyprland, mycli, sqlit, SDDM, yazi, wlogout, and whatever else gets invited later.
+and grows one shared semantic palette called a **bloom**.
 
-Matugen is a source, not the god. TokyoNight Moon is a palette, not a prison. GTK is invited under supervision.
+From that bloom, it scatters **spores**: target-specific color/config outputs for applications that each speak their own little color dialect because apparently one format was too much to ask.
+
+```text
+wallpaper / Matugen / base palette
+        ↓
+source colors + mood + weights
+        ↓
+bloom
+        ↓
+target recipes
+        ↓
+spores
+        ↓
+template renderer  (sow + grow)
+        ↓
+plant hooks        (plant)
+        ↓
+Ghostty / GTK / icons / AGS / swaync / Waybar / Neovim / …
+```
+
+Final operating principle:
+
+```text
+one bloom,
+many spores,
+borrowed soil,
+old ash,
+and enough hope to make the desktop feel less accidental.
+```
+
+## Preview
+
+Screenshots should live here, because this project is visual and pretending otherwise would be suspicious.
+
+Suggested images:
+
+| Image | What to show |
+|---|---|
+| `docs/images/workbench-overview.png` | Workbench overview with profile, targets, bloom preview, and actions |
+| `docs/images/bloom-inspect.png` | Bloom/token derivation view: base → source/mood → result |
+| `docs/images/desktop-result.png` | Full desktop result: wallpaper, Waybar, Ghostty, AGS/swaync |
+| `docs/images/gtk-thunar.png` | GTK/Thunar result, because GTK needs witnesses |
+| `docs/images/icons-preview.png` | Icon recolor preview or before/after |
+
+Example block for later:
+
+```md
+![Workbench overview](docs/images/workbench-overview.png)
+![Desktop result](docs/images/desktop-result.png)
+```
+
+---
 
 ## Future Me Shortcut
 
@@ -92,33 +151,22 @@ That last one is for cases like “Ghostty background should be pure TokyoNight,
 
 The project has its own vocabulary. These are not metaphors for the sake of it — they map to real things in the code.
 
-**Bloom** — the shared semantic color palette generated for a profile. It is the result of mixing a base palette with Matugen source colors under a mood. All targets draw from it. Lives in `~/.cache/unclaimed-bloom/blooms/<profile>.json`.
-
-**Spore** — a target-specific interpretation of the bloom. Each tool gets its own spore because each tool speaks a different color dialect. A Ghostty spore has `background`, `foreground`, `palette_0`…; a waybar spore has `primary`, `surface`, `on_surface`…. Lives in `~/.cache/unclaimed-bloom/spores/<profile>/<target>.json`.
-
-**Recipe** — the rule that decides how a target reads the bloom. It maps target-specific token names to bloom tokens, optionally with extra Matugen pull via `mix`. Lives in `targets/<target>/recipes/<name>.json`.
-
-**Template** — the shape of the final config file, with `{{token}}` placeholders. The renderer fills them in from the spore. Lives in `targets/<target>/templates/`.
-
-**Profile** — a saved ecosystem: base palette + mood + Matugen source + which recipe each target uses. The everyday one is `daily`. Lives in `profiles/`.
-
-**Mood** — a set of mix weights that controls how strongly Matugen source colors pull on the base palette. Named as growth stages: `dormant`, `budding`, `blooming`, `overgrown`. Lives in `moods/`.
-
-**Target** — one app that Unclaimed Bloom themes. Each target has recipes, a template, and optionally a plant hook.
-
-**Plant hook** — a deployment descriptor (`targets/<target>/hooks/plant.json`) with `copy` and `exec` steps. Runs during `plant` to copy rendered files to real config paths and trigger reload signals.
-
-**sow** — generate the bloom and spores into cache. Safe. No config files touched.
-
-**grow** — render templates from cached spores into cache. Still safe. No config files touched.
-
-**plant** — deploy rendered files to real destinations via plant hooks. This is the step that actually changes things.
-
-**Worker** — a Python or Bash script that does heavy processing (icon recoloring, etc.). Called by plant hooks. Not rewritten in TypeScript. Workers are not shame.
-
-**Source** — the dynamic color input, usually Matugen output from the current wallpaper. Lives in `~/.cache/unclaimed-bloom/matugen-colors.json`.
-
-**Base palette** — the static taste layer. A named JSON file (`palettes/tokyonight-moon.json`, etc.) that defines what `background`, `foreground`, `blue`, and similar mean before the wallpaper starts influencing things.
+| Apparition | Meaning | Lives in |
+|---|---|---|
+| **Bloom** | The shared semantic color palette generated for a profile. It is the result of mixing a base palette with Matugen source colors under a mood. All targets draw from it. | `~/.cache/unclaimed-bloom/blooms/<profile>.json` |
+| **Spore** | A target-specific interpretation of the bloom. Each tool gets its own spore because each tool speaks a different color dialect (e.g. Ghostty: `background`, `foreground`, `palette_0`; waybar: `primary`, `surface`, `on_surface`). | `~/.cache/unclaimed-bloom/spores/<profile>/<target>.json` |
+| **Recipe** | The rule that decides how a target reads the bloom. Maps target-specific token names to bloom tokens, optionally with extra Matugen pull via `mix`. | `targets/<target>/recipes/<name>.json` |
+| **Template** | The shape of the final config file, with `{{token}}` placeholders. The renderer fills them in from the spore. | `targets/<target>/templates/` |
+| **Profile** | A saved ecosystem: base palette + mood + Matugen source + which recipe each target uses. The everyday one is `daily`. | `profiles/` |
+| **Mood** | A set of mix weights that controls how strongly Matugen source colors pull on the base palette. Named stages: `dormant`, `budding`, `blooming`, `overgrown`. | `moods/` |
+| **Target** | One app that Unclaimed Bloom themes. Each target has recipes, a template, and optionally a plant hook. | `targets/<target>/` |
+| **Plant hook** | A deployment descriptor (`targets/<target>/hooks/plant.json`) with `copy` and `exec` steps. Runs during `plant` to copy rendered files and trigger reloads. | `targets/<target>/hooks/plant.json` |
+| **sow** | Generate the bloom and spores into cache. Safe: no config files touched. | — |
+| **grow** | Render templates from cached spores into cache. Still safe: no config files touched. | — |
+| **plant** | Deploy rendered files to real destinations via plant hooks. This is the step that actually changes things. | — |
+| **Worker** | A Python or Bash script that does heavy processing (icon recoloring, etc.). Called by plant hooks. Workers are not shame. | `scripts/` (or `targets/<target>/workers/`) |
+| **Source** | The dynamic color input, usually Matugen output from the current wallpaper. | `~/.cache/unclaimed-bloom/matugen-colors.json` |
+| **Base palette** | The static taste layer. A named JSON file (e.g. `palettes/tokyonight-moon.json`) that defines tokens like `background`, `foreground`, `blue` before wallpaper influence. | `palettes/` |
 
 ---
 
@@ -259,6 +307,42 @@ Check what has been generated:
 spore status
 ```
 
+## Maintenance
+
+Reports and events accumulate with every cycle. After enough runs the `reports/`
+directory will have thousands of files and `events.jsonl` will be several MB.
+
+Trim them without touching the working cache:
+
+```bash
+spore prune
+```
+
+Keep the twenty most recent reports and truncate the event log:
+
+```bash
+spore prune --keep 20
+```
+
+Also clear the rendered output cache (requires `grow` before the next `plant`):
+
+```bash
+spore prune --rendered
+```
+
+Full reset — clears everything including blooms and spores (requires a full cycle after):
+
+```bash
+spore prune --all
+```
+
+Preview what would be removed without deleting anything:
+
+```bash
+spore prune --dry-run
+spore prune --keep 20 --dry-run
+```
+
 ## AGS Bloom OSD
 
 Unclaimed Bloom can show a live progress overlay in AGS while `sow` and `plant` are running.
@@ -319,17 +403,29 @@ then `daily` for the rest of the desktop, and leaves
 
 The broad `daily` and `daily-light` profiles do not include GTK.
 
-Important: Unclaimed Bloom has not fully swallowed the GTK sibling repo yet.
-For now, UB owns the generated GTK colors and recipes, but the structural GTK
-theme still comes from:
-
-```text
-https://github.com/Praczet/adart-matugener-gtk-theme
-```
-
-The GTK adapter writes generated color CSS into both the live theme install and
-the sibling repo's `themes/ADArt-Unclaimed-Bloom/` tree. Do not delete that repo
-until the GTK skeleton is moved into `targets/gtk/`.
+> [!WARNING]
+> GTK is not fully swallowed yet.
+>
+> Unclaimed Bloom owns the generated GTK colors and recipes. The structural GTK theme
+> (widget CSS, button shapes, scrollbars, Thunar-specific rules) still lives in the sibling repo:
+>
+> ```text
+> https://github.com/Praczet/adart-matugener-gtk-theme
+> ```
+>
+> The plant hook writes generated color CSS to the live theme install only:
+>
+> ```text
+> ~/.local/share/themes/ADArt-Unclaimed-Bloom/gtk-{3,4}.0/gtk-adart-unclaimed-bloom.css
+> ~/.config/gtk-4.0/gtk.css
+> ```
+>
+> The sibling repo is no longer written to by the plant hook, but it must still be installed
+> because its widget/app CSS files are what the theme skeleton imports.
+>
+> Do not delete that repo until the GTK skeleton is moved into `targets/gtk/`.
+>
+> Future Adam, yes, this warning is for you.
 
 ## Discovery Commands
 
@@ -426,9 +522,12 @@ Runtime cache:
 ├── matugen-colors.json
 ├── current-profile
 ├── current-wallpaper
-├── blooms/
-├── spores/
-├── reports/
+├── blooms/           ← generated by sow
+├── spores/           ← generated by sow
+├── rendered/         ← generated by grow; consumed by plant
+├── reports/          ← timestamped JSON per sow/grow target (accumulates — use prune)
+├── events.jsonl      ← append-only run log (accumulates — pruned by prune)
+├── state.json        ← current run snapshot; read by AGS bloom OSD
 ├── ini/
 └── icons-runtime.json
 ```
@@ -446,29 +545,27 @@ Installed data:
 
 ## Current Targets
 
-The useful ones:
+| Target | Role | Notes |
+|---|---|---|
+| `ghostty` | Terminal theme | One of the main visible targets. |
+| `gtk` | GTK colors | Uses UB colors, but still depends on sibling GTK skeleton. Supervised visitation. |
+| `icons` | Icon recoloring | Calls existing Papirus-based recolor pipeline. Icons still do icon things. |
+| `nvim` | Neovim colors | Generated Lua/colors for the editor. |
+| `ags` | Shell UI pieces | Includes bloom OSD integration. |
+| `swaync` | Notifications | First-class target, no longer hiding behind AGS. |
+| `waybar` | Status bar | Generated CSS/tokens. |
+| `hyprland` | Compositor config/colors | Desktop shell integration. |
+| `rofi` | Launcher | Generated launcher theme. |
+| `yazi` | Terminal file manager | Because previews deserve atmosphere too. |
+| `wlogout` | Logout menu | Dramatic exit, but themed. |
+| `iced` | App target | For Iced-based UI experiments. |
+| `sddm` | Display manager | Login screen theming. |
+| `mycli` | MySQL/MariaDB CLI | Terminal database comfort. |
+| `sqlit` | SQL TUI | More database color diplomacy. |
+| `broot` | Terminal tree navigator | File-tree theming. |
+| `potato` | Health/overthinking tracker | The name is ridiculous. This is not a bug. |
 
-```text
-ghostty
-gtk
-icons
-nvim
-ags
-swaync
-waybar
-hyprland
-rofi
-yazi
-wlogout
-iced
-sddm
-mycli
-sqlit
-potato
-broot
-```
-
-Each target has:
+Each target usually has:
 
 - recipes under `targets/<name>/recipes/`,
 - a template under `targets/<name>/templates/`,
@@ -591,3 +688,12 @@ borrowed soil,
 old ash,
 and enough hope to make the desktop feel less accidental.
 ```
+
+## Status
+
+Unclaimed Bloom is personal, active, and practical.
+
+It is not a framework for everyone.  
+It is a theming forge for one desktop that became organized enough to be dangerous.
+
+That is already more than most dotfiles achieve.
