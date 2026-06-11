@@ -6,7 +6,8 @@
       "args": [
         "--runtime",  "{{rendered}}",
         "--output",   "~/.local/share/icons/adart",
-        "--force"
+        "--force",
+        "--json-progress"
       ]
     },
     {
