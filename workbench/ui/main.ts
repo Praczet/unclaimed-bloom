@@ -16,6 +16,8 @@ let bloomPreviewCache: Record<string, BloomPreviewResponse> = {};
 let recipesData: RecipesResponse = { recipes: [] };
 let activeRecipeId = '';
 let useBloomUiPalette = window.localStorage.getItem('ub-use-bloom-ui-palette') === 'true';
+let runState: RunStateData | null = null;
+let toastDismissTimer: ReturnType<typeof setTimeout> | undefined;
 
 
 /**
@@ -39,6 +41,7 @@ const controlsEl = document.getElementById('controls')!;
 const contentEl = document.getElementById('content')!;
 const indicator = document.getElementById('indicator')!;
 const runOutputEl = document.getElementById('run-output')!;
+const toastEl = document.getElementById('run-toast')!;
 
 function esc(value: string): string {
   return value.replace(/[&<>"']/g, ch => ({
@@ -1509,6 +1512,53 @@ function pickInitialProfile(): string {
   return Object.keys(blooms)[0] ?? '';
 }
 
+// --- Run toast ---
+
+function renderToast(): void {
+  if (!runState) {
+    toastEl.hidden = true;
+    return;
+  }
+
+  const targets = Object.entries(runState.targets);
+  const dots = targets.map(([name, t]) =>
+    `<span class="run-dot ${esc(t.status)}" title="${esc(name)}"></span>`
+  ).join('');
+
+  const doneCount = targets.filter(([, t]) => t.status === 'done').length;
+  const errCount  = targets.filter(([, t]) => t.status === 'error').length;
+  const progress  = `${doneCount}${errCount > 0 ? `+${errCount}err` : ''}/${targets.length}`;
+
+  toastEl.classList.remove('exiting');
+  toastEl.hidden = false;
+  toastEl.innerHTML = `
+    <div class="run-toast-row">
+      <span class="run-toast-profile">${esc(runState.profile)}</span>
+      <span class="run-toast-stage">${esc(runState.stage)}</span>
+      <div class="run-toast-targets">${dots}</div>
+      <span class="run-toast-progress">${esc(progress)}</span>
+      <span class="run-toast-status ${esc(runState.status)}">${esc(runState.status)}</span>
+    </div>`;
+}
+
+function applyRunState(state: RunStateData): void {
+  const age = Date.now() - new Date(state.updated_at).getTime();
+  // Show if running (regardless of age), or if recently finished (< 10s)
+  if (state.status !== 'running' && age >= 10_000) return;
+
+  runState = state;
+  clearTimeout(toastDismissTimer);
+
+  if (state.status !== 'running') {
+    toastDismissTimer = setTimeout(() => {
+      toastEl.classList.add('exiting');
+      setTimeout(() => { runState = null; renderToast(); }, 280);
+    }, 3000);
+  }
+
+  renderToast();
+}
+
 // --- WebSocket ---
 
 let wsAttempt = 0;
@@ -1521,9 +1571,10 @@ function connect() {
   ws.onclose = () => { indicator.className = 'indicator disconnected'; wsAttempt = Math.min(wsAttempt + 1, 1); setTimeout(connect, 3000); };
   ws.onerror = () => ws.close();
   ws.onmessage = e => {
-    const msg = JSON.parse(e.data as string) as { type: string; blooms?: Blooms; profiles?: ProfilesResponse };
+    const msg = JSON.parse(e.data as string) as { type: string; blooms?: Blooms; profiles?: ProfilesResponse; state?: RunStateData };
     if (msg.type === 'blooms' && msg.blooms) applyBlooms(msg.blooms);
     if (msg.type === 'profiles' && msg.profiles) applyProfiles(msg.profiles);
+    if (msg.type === 'state' && msg.state) applyRunState(msg.state);
   };
 }
 
@@ -1532,8 +1583,9 @@ Promise.all([
   fetch('/api/blooms').then(r => r.json() as Promise<Blooms>),
   fetch('/api/docs').then(r => r.json() as Promise<DocsIndexResponse>),
   fetch('/api/recipes').then(r => r.json() as Promise<RecipesResponse>),
+  fetch('/api/state').then(r => r.json() as Promise<{ ok: boolean; state: RunStateData | null }>).catch(() => ({ ok: false, state: null })),
 ])
-  .then(([profileData, bloomData, docsData, recipeData]) => {
+  .then(([profileData, bloomData, docsData, recipeData, stateData]) => {
     docsIndex = docsData;
     activeDoc = docsIndex.defaultDoc;
     recipesData = recipeData;
@@ -1548,6 +1600,7 @@ Promise.all([
     renderTargetList();
     renderControls();
     render();
+    if (stateData.state) applyRunState(stateData.state);
   })
   .catch(() => { contentEl.innerHTML = '<p class="empty">Could not reach workbench server.</p>'; });
 

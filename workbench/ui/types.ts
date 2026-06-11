@@ -264,3 +264,20 @@ interface WorkbenchRecipeSummary {
 interface RecipesResponse {
   recipes: WorkbenchRecipeSummary[];
 }
+
+type StageStatus = 'pending' | 'running' | 'done' | 'error' | 'skipped';
+
+interface TargetRunState {
+  status: StageStatus;
+  duration_ms?: number;
+}
+
+interface RunStateData {
+  run_id: string;
+  profile: string;
+  stage: string;
+  status: 'running' | 'done' | 'error';
+  started_at: string;
+  updated_at: string;
+  targets: Record<string, TargetRunState>;
+}

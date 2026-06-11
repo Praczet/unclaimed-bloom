@@ -406,6 +406,12 @@ async function buildCompositionPipeline(
   return { ...sourceData, profile: profileName, targets };
 }
 
+async function handleState(): Promise<Response> {
+  const paths = BloomPaths.fromDeno();
+  const state = await readJsonFile(paths.stateFile());
+  return jsonResponse({ ok: true, state });
+}
+
 async function handleDocs(): Promise<Response> {
   return jsonResponse({ defaultDoc: null, docs: [] });
 }
@@ -436,10 +442,16 @@ function broadcast(data: unknown): void {
 async function broadcastUpdates(): Promise<void> {
   if (wsClients.size === 0) return;
   try {
-    const [bloomsRes, profilesRes] = await Promise.all([handleBlooms(), handleProfiles()]);
+    const paths = BloomPaths.fromDeno();
+    const [bloomsRes, profilesRes, stateRaw] = await Promise.all([
+      handleBlooms(),
+      handleProfiles(),
+      readJsonFile(paths.stateFile()),
+    ]);
     const [blooms, profiles] = await Promise.all([bloomsRes.json(), profilesRes.json()]);
     broadcast({ type: "blooms", blooms });
     broadcast({ type: "profiles", profiles });
+    if (stateRaw) broadcast({ type: "state", state: stateRaw });
   } catch { /* best-effort */ }
 }
 
@@ -528,6 +540,7 @@ async function router(req: Request): Promise<Response> {
     }
 
     if (url.pathname === "/api/status") return await handleStatus();
+    if (url.pathname === "/api/state") return await handleState();
     if (url.pathname === "/api/palettes") return await handlePalettes();
     if (url.pathname === "/api/profiles") return await handleProfiles();
     if (url.pathname === "/api/recipes") return await handleRecipes(url);
