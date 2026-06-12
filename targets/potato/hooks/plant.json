@@ -9,7 +9,17 @@
     {
       "type": "exec",
       "command": "potato-sync",
-      "args": []
+      "args": [
+        "--no-reload-ags"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "bash",
+      "args": [
+        "-c",
+        "~/.local/bin/ags-ensure.sh --reload || true"
+      ]
     }
   ]
 }
