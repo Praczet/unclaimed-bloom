@@ -16,10 +16,10 @@ find_keyword  = { fg = "{{error}}", bold = true, italic = true, underline = true
 find_position = { fg = "{{error}}", bold = true, italic = true }
 
 # Markers
-marker_copied   = { fg = "{{copy_marker}}", bg = "{{copy_marker}}" }
-marker_cut      = { fg = "{{copy_marker}}", bg = "{{copy_marker}}" }
-marker_marked   = { fg = "{{error}}",       bg = "{{error}}" }
-marker_selected = { fg = "{{tertiary}}",    bg = "{{tertiary}}" }
+marker_copied   = { fg = "{{on_primary}}",  bg = "{{copy_marker}}" }
+marker_cut      = { fg = "{{on_primary}}",  bg = "{{copy_marker}}" }
+marker_marked   = { fg = "{{on_primary}}",  bg = "{{error}}" }
+marker_selected = { fg = "{{on_tertiary}}", bg = "{{tertiary}}" }
 
 # Count badges
 count_copied   = { fg = "{{on_primary}}",  bg = "{{copy_marker}}" }

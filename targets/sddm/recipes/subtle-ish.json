@@ -18,6 +18,11 @@
       "source": "secondary",
       "mix": 0.15
     },
+    "on_secondary": {
+      "bloom": "surface.base",
+      "source": "on_secondary",
+      "mix": 1
+    },
     "error": {
       "bloom": "state.danger",
       "source": "error",

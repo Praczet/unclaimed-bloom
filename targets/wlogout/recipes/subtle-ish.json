@@ -2,6 +2,16 @@
   "name": "subtle-ish",
   "target": "wlogout",
   "tokens": {
+    "background": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "surface": {
+      "bloom": "surface.raised",
+      "source": "surface",
+      "mix": 0.15
+    },
     "primary": {
       "bloom": "accent.primary",
       "source": "primary",

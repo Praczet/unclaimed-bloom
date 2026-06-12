@@ -4,7 +4,11 @@ import {
   type BloomPreview,
 } from "../core/blooms/BloomGenerator.ts";
 import { EventEmitter, type RunState } from "../core/events/EventEmitter.ts";
-import { HookRunner, type WorkerEventSink } from "../core/hooks/HookRunner.ts";
+import {
+  HookRunner,
+  type PlantResult,
+  type WorkerEventSink,
+} from "../core/hooks/HookRunner.ts";
 import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
 import { BloomPaths } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
@@ -49,9 +53,21 @@ interface SownSporeResult {
   readonly spore: Spore;
 }
 
+interface CompositionSownSporeResult extends SownSporeResult {
+  readonly profile: string;
+}
+
+interface CompositionGrowResult {
+  readonly profile: string;
+  readonly target: string;
+  readonly outputPath: string;
+  readonly reportPath: string;
+}
+
 class SporeCli {
   private readonly display = new HumanDisplay();
   private outputMode: OutputMode = "human";
+  private readonly textEncoder = new TextEncoder();
 
   public async run(args: string[]): Promise<void> {
     const parsed = this.parseGlobalArgs(args);
@@ -1397,27 +1413,38 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
         });
         return;
       }
-      this.printHuman(this.display.fields([{
-        label: "Dry run",
-        value: `sow composition: ${comp.name}`,
-      }]));
+      this.printHuman(this.display.fields([
+        { label: "Dry run", value: `sow composition: ${comp.name}` },
+        { label: "targets", value: String(allTargets.length) },
+      ]));
       this.printHuman("");
-      for (const { profile, targets } of runs) {
-        this.printHuman(`  ${profile.name}`);
-        for (const [target, recipe] of targets) {
-          this.printHuman(`    ${target}  ${this.display.dim(recipe)}`);
-        }
-      }
+      this.printHuman(this.display.table(
+        runs.flatMap(({ profile, targets }) =>
+          targets.map(([target, recipe]) => ({ profile: profile.name, target, recipe }))
+        ),
+        [
+          { header: "profile", value: (row) => row.profile },
+          { header: "target", value: (row) => row.target },
+          { header: "recipe", value: (row) => row.recipe },
+        ],
+      ));
       return;
     }
 
     const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
+    const sporeOutputs: CompositionSownSporeResult[] = [];
     await emitter.startRun(comp.name, "sow", allTargets);
     try {
       for (const { profile, targets } of runs) {
         const startedAt = localISOString();
         const context = await this.buildBloomContextForProfile(profile, paths);
-        await this.sowTargetSpores({ context, targets, startedAt, emitter });
+        const results = await this.sowTargetSpores({ context, targets, startedAt, emitter });
+        sporeOutputs.push(
+          ...results.map((result) => ({
+            ...result,
+            profile: profile.name,
+          })),
+        );
       }
       await emitter.finishRun();
     } catch (err) {
@@ -1426,11 +1453,31 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       throw err;
     }
 
-    if (this.outputMode === "human") {
-      this.printHuman(
-        this.display.dim(`  next: spore grow ${comp.name}`),
-      );
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "sow",
+        profile: comp.name,
+        dryRun: false,
+        spores: sporeOutputs,
+        outputs: sporeOutputs.flatMap((spore) => [spore.sporePath, spore.reportPath]),
+      });
+      return;
     }
+
+    this.printHuman(`Composition sown: ${comp.name}`);
+    if (sporeOutputs.length > 0) {
+      this.printHuman("");
+      this.printHuman(this.display.table(sporeOutputs, [
+        { header: "profile", value: (spore) => spore.profile },
+        { header: "target", value: (spore) => spore.target },
+        { header: "recipe", value: (spore) => spore.recipe },
+        { header: "spore", value: (spore) => spore.sporePath, dim: true },
+        { header: "report", value: (spore) => spore.reportPath, dim: true },
+      ]));
+    }
+    this.printHuman("");
+    this.printHuman(this.display.dim(`  next: spore grow ${comp.name}`));
   }
 
   private async growCompositionProfile(
@@ -1442,6 +1489,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     const runs = await this.expandCompositionRuns(comp, paths);
     const allTargets = runs.flatMap((r) => r.targets.map(([t]) => t));
     const renderer = new TemplateRenderer();
+    const results: CompositionGrowResult[] = [];
 
     if (!dryRun) {
       const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
@@ -1451,7 +1499,8 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
           for (const [target] of targets) {
             await emitter.startTarget(target);
             try {
-              await renderer.renderToCache(paths, profile.name, target, false);
+              const result = await renderer.renderToCache(paths, profile.name, target, false);
+              results.push({ profile: profile.name, target, ...result });
               await emitter.doneTarget(target);
             } catch (err) {
               const msg = err instanceof Error ? err.message : String(err);
@@ -1469,16 +1518,49 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     } else {
       for (const { profile, targets } of runs) {
         for (const [target] of targets) {
-          await renderer.renderToCache(paths, profile.name, target, true);
+          const result = await renderer.renderToCache(paths, profile.name, target, true);
+          results.push({ profile: profile.name, target, ...result });
         }
       }
     }
 
-    if (this.outputMode === "human" && !dryRun) {
-      this.printHuman(
-        this.display.dim(`  next: spore plant ${comp.name}`),
-      );
+    if (this.outputMode === "json") {
+      this.printJson({
+        ok: true,
+        command: "grow",
+        profile: comp.name,
+        dryRun,
+        results,
+      });
+      return;
     }
+
+    if (dryRun) {
+      this.printHuman(this.display.fields([
+        { label: "Dry run", value: `grow composition: ${comp.name}` },
+        { label: "targets", value: String(allTargets.length) },
+      ]));
+      this.printHuman("");
+      this.printHuman(this.display.table(results, [
+        { header: "profile", value: (row) => row.profile },
+        { header: "target", value: (row) => row.target },
+        { header: "would write", value: (row) => row.outputPath, dim: true },
+      ]));
+      return;
+    }
+
+    this.printHuman(`Composition grown: ${comp.name}`);
+    if (results.length > 0) {
+      this.printHuman("");
+      this.printHuman(this.display.table(results, [
+        { header: "profile", value: (row) => row.profile },
+        { header: "target", value: (row) => row.target },
+        { header: "output", value: (row) => row.outputPath, dim: true },
+        { header: "report", value: (row) => row.reportPath, dim: true },
+      ]));
+    }
+    this.printHuman("");
+    this.printHuman(this.display.dim(`  next: spore plant ${comp.name}`));
   }
 
   private async plantCompositionProfile(
@@ -1490,30 +1572,35 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     const runs = await this.expandCompositionRuns(comp, paths);
     const allTargets = runs.flatMap((r) => r.targets.map(([t]) => t));
     const runner = new HookRunner();
+    const results: PlantResult[] = [];
 
     if (!dryRun) {
       const emitter = new EventEmitter(paths.eventsFile(), paths.stateFile());
-      const workerSink: WorkerEventSink = {
-        start: (t, w) => emitter.startWorker(t, w),
-        progress: (t, w, p) => emitter.progressWorker(t, w, p.current, p.total, p.msg),
-        done: (t, w, current, total) => emitter.doneWorker(t, w, current, total),
-        error: (t, w, error) => emitter.errorWorker(t, w, error),
-      };
+      const workerSink = this.createPlantWorkerSink(emitter);
       await emitter.startRun(comp.name, "plant", allTargets);
+      this.printPlantHeader(comp.name, allTargets.length);
       try {
         for (const { profile, targets } of runs) {
+          if (this.outputMode === "human") {
+            this.printHuman(`  profile ${profile.name}`);
+          }
           for (const [target] of targets) {
             await emitter.startTarget(target);
+            this.printPlantTargetStart(target);
             try {
               const result = await runner.run(paths, profile.name, target, false, workerSink);
+              results.push(result);
               if (!result.hookPath) {
                 await emitter.skipTarget(target, "no plant hook");
+                this.printPlantTargetSkipped(target, "no plant hook");
               } else {
                 await emitter.doneTarget(target, result.steps);
+                this.printPlantTargetDone(result);
               }
             } catch (err) {
               const msg = err instanceof Error ? err.message : String(err);
               await emitter.errorTarget(target, msg);
+              this.printPlantTargetError(target, msg);
               throw err;
             }
           }
@@ -1525,11 +1612,26 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
         throw err;
       }
     } else {
+      this.printPlantHeader(comp.name, allTargets.length, true);
       for (const { profile, targets } of runs) {
+        if (this.outputMode === "human") {
+          this.printHuman(`  profile ${profile.name}`);
+        }
         for (const [target] of targets) {
-          await runner.run(paths, profile.name, target, true);
+          this.printPlantTargetStart(target);
+          const result = await runner.run(paths, profile.name, target, true);
+          results.push(result);
+          if (!result.hookPath) {
+            this.printPlantTargetSkipped(target, "no plant hook");
+          } else {
+            this.printPlantTargetDone(result);
+          }
         }
       }
+    }
+
+    if (this.outputMode === "json") {
+      this.printJson({ ok: true, command: "plant", profile: comp.name, dryRun, results });
     }
   }
 
@@ -2109,33 +2211,32 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       ? undefined
       : new EventEmitter(paths.eventsFile(), paths.stateFile());
 
-    const workerSink: WorkerEventSink | undefined = emitter
-      ? {
-        start: (t, w) => emitter.startWorker(t, w),
-        progress: (t, w, p) => emitter.progressWorker(t, w, p.current, p.total, p.msg),
-        done: (t, w, current, total) => emitter.doneWorker(t, w, current, total),
-        error: (t, w, error) => emitter.errorWorker(t, w, error),
-      }
-      : undefined;
+    const workerSink = emitter ? this.createPlantWorkerSink(emitter) : undefined;
 
     if (emitter) {
       await emitter.startRun(profileName, "plant", targets.map(([t]) => t));
     }
 
+    this.printPlantHeader(profileName, targets.length, dryRun);
+
     try {
       for (const [target] of targets) {
         await emitter?.startTarget(target);
+        this.printPlantTargetStart(target);
         try {
           const result = await runner.run(paths, profileName, target, dryRun, workerSink);
           results.push(result);
           if (!result.hookPath) {
             await emitter?.skipTarget(target, "no plant hook");
+            this.printPlantTargetSkipped(target, "no plant hook");
           } else {
             await emitter?.doneTarget(target, result.steps);
+            this.printPlantTargetDone(result);
           }
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
           await emitter?.errorTarget(target, msg);
+          this.printPlantTargetError(target, msg);
           throw err;
         }
       }
@@ -2154,31 +2255,84 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       this.printJson({ ok: true, command: "plant", profile: profileName, dryRun, results });
       return;
     }
+  }
 
-    if (dryRun) {
-      this.printHuman(this.display.fields([{
-        label: "Dry run",
-        value: targetFilter
-          ? `plant ${targetFilter} for ${profileName}`
-          : `plant all targets for ${profileName}`,
-      }]));
-      this.printHuman("");
-    }
+  private createPlantWorkerSink(emitter: EventEmitter): WorkerEventSink {
+    const lastProgressByWorker = new Map<string, number>();
 
-    for (const result of results) {
-      if (!result.hookPath) {
-        this.printHuman(
-          `  ${result.target}  ${this.display.dim("no plant hook — skipped")}`,
+    return {
+      start: async (target, worker) => {
+        await emitter.startWorker(target, worker);
+        if (this.outputMode === "human") {
+          this.printHuman(`    worker ${worker}`);
+        }
+      },
+      progress: async (target, worker, progress) => {
+        await emitter.progressWorker(
+          target,
+          worker,
+          progress.current,
+          progress.total,
+          progress.msg,
         );
-        continue;
-      }
-      this.printHuman(`  ${result.target}`);
-      for (const step of result.steps) {
-        this.printHuman(
-          `    ${step.type}  ${this.display.dim(step.detail)}`,
+        if (this.outputMode !== "human" || progress.total <= 0) return;
+
+        const pct = Math.floor((progress.current / progress.total) * 100);
+        const key = `${target}/${worker}`;
+        if (lastProgressByWorker.get(key) === pct) return;
+
+        lastProgressByWorker.set(key, pct);
+        const msg = progress.msg ? `  ${progress.msg}` : "";
+        await Deno.stdout.write(
+          this.textEncoder.encode(
+            `\r      ${pct}%  ${progress.current}/${progress.total}${msg}   `,
+          ),
         );
-      }
+      },
+      done: async (target, worker, current, total) => {
+        await emitter.doneWorker(target, worker, current, total);
+        if (this.outputMode === "human") {
+          const count = total > 0 ? ` ${current}/${total}` : "";
+          await Deno.stdout.write(this.textEncoder.encode(`\r      done${count}        \n`));
+        }
+      },
+      error: async (target, worker, error) => {
+        await emitter.errorWorker(target, worker, error);
+        if (this.outputMode === "human") {
+          await Deno.stdout.write(this.textEncoder.encode("\n"));
+          this.printHuman(`      failed ${this.display.dim(error)}`);
+        }
+      },
+    };
+  }
+
+  private printPlantHeader(profile: string, targetCount: number, dryRun = false): void {
+    if (this.outputMode !== "human") return;
+    const mode = dryRun ? "Dry run: plant" : "Plant";
+    this.printHuman(`${mode} ${profile} ${this.display.dim(`(${targetCount} targets)`)}`);
+  }
+
+  private printPlantTargetStart(target: string): void {
+    if (this.outputMode !== "human") return;
+    this.printHuman(`  ${target}`);
+  }
+
+  private printPlantTargetSkipped(target: string, reason: string): void {
+    if (this.outputMode !== "human") return;
+    this.printHuman(`    skip ${this.display.dim(reason)}`);
+  }
+
+  private printPlantTargetDone(result: PlantResult): void {
+    if (this.outputMode !== "human") return;
+    for (const step of result.steps) {
+      this.printHuman(`    ${step.type} ${this.display.dim(step.detail)}`);
     }
+    this.printHuman("    done");
+  }
+
+  private printPlantTargetError(target: string, message: string): void {
+    if (this.outputMode !== "human") return;
+    this.printHuman(`    failed ${target} ${this.display.dim(message)}`);
   }
 
   private async runWorkerCommand(args: string[]): Promise<void> {

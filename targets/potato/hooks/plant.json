@@ -1,0 +1,15 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": [
+        "~/.config/potato/theme.json"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "potato-sync",
+      "args": []
+    }
+  ]
+}

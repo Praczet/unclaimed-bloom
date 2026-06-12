@@ -17,10 +17,50 @@
       "bloom": "surface.raised",
       "mix": 0.15
     },
+    "surface_container": {
+      "bloom": "surface.raised",
+      "source": "surface_container",
+      "mix": 0.1
+    },
+    "surface_container_low": {
+      "bloom": "surface.dim",
+      "source": "surface_container_low",
+      "mix": 0.1
+    },
+    "surface_container_lowest": {
+      "bloom": "surface.dim",
+      "source": "surface_container_lowest",
+      "mix": 0.1
+    },
+    "surface_container_high": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
+    "surface_container_highest": {
+      "bloom": "surface.highest",
+      "source": "surface_container_highest",
+      "mix": 0.1
+    },
     "primary": {
       "bloom": "accent.primary",
       "source": "primary",
       "mix": 0.15
+    },
+    "primary_container": {
+      "bloom": "accent.primary",
+      "source": "primary_container",
+      "mix": 1
+    },
+    "primary_fixed": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed",
+      "mix": 1
+    },
+    "primary_fixed_dim": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed_dim",
+      "mix": 1
     },
     "secondary": {
       "bloom": "accent.secondary",
@@ -32,6 +72,16 @@
       "source": "tertiary",
       "mix": 0.15
     },
+    "tertiary_container": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary_container",
+      "mix": 1
+    },
+    "tertiary_fixed_dim": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary_fixed_dim",
+      "mix": 1
+    },
     "on_background": {
       "source": "on_background",
       "bloom": "text.primary",
@@ -40,15 +90,60 @@
     "on_surface": {
       "bloom": "text.primary"
     },
+    "on_surface_variant": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "on_primary": {
+      "bloom": "surface.base",
+      "source": "on_primary",
+      "mix": 1
+    },
+    "on_primary_container": {
+      "bloom": "text.primary",
+      "source": "on_primary_container",
+      "mix": 1
+    },
+    "on_primary_fixed_variant": {
+      "bloom": "text.secondary",
+      "source": "on_primary_fixed_variant",
+      "mix": 1
+    },
+    "on_secondary": {
+      "bloom": "surface.base",
+      "source": "on_secondary",
+      "mix": 1
+    },
+    "on_tertiary": {
+      "bloom": "surface.base",
+      "source": "on_tertiary",
+      "mix": 1
+    },
+    "on_tertiary_container": {
+      "bloom": "text.primary",
+      "source": "on_tertiary_container",
+      "mix": 1
+    },
     "outline": {
       "bloom": "border.subtle",
       "source": "outline",
+      "mix": 0.1
+    },
+    "outline_variant": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
       "mix": 0.1
     },
     "error": {
       "bloom": "state.danger",
       "source": "error",
       "mix": 0.1
+    },
+    "shadow": {
+      "bloom": "border.subtle",
+      "source": "shadow",
+      "mix": 1
     }
   }
 }

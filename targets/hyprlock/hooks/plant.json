@@ -1,0 +1,17 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": [
+        "~/.config/hypr/hyprlock.conf"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "bash",
+      "args": [
+        "{{data_dir}}/scripts/hyprlock-prepare-bg"
+      ]
+    }
+  ]
+}

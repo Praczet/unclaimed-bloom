@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# %name: hyprlock-prepare-bg
+# %desc: Prepare the generated gap/blur background used by Hyprlock.
+# %icon: preferences-desktop-wallpaper
+# %terminal: true
+# %categories: Utility;Graphics;Hyprland;
+
+set -euo pipefail
+
+CACHE_DIR="${UB_CACHE_DIR:-$HOME/.cache/unclaimed-bloom}"
+CURRENT_WALLPAPER_FILE="${UB_CURRENT_WALLPAPER_FILE:-$CACHE_DIR/current-wallpaper}"
+LEGACY_CURRENT_WALLPAPER_FILE="$HOME/.cache/current-wallpaper.txt"
+OUTPUT="${HYPRLOCK_BG:-$HOME/.cache/hyprlock-current.png}"
+GENERATOR="${HYPRLOCK_GAP_BG:-$HOME/.local/bin/hyprlock-gap-bg}"
+
+read_wallpaper() {
+  if [[ -f "$CURRENT_WALLPAPER_FILE" ]]; then
+    sed -n '1p' "$CURRENT_WALLPAPER_FILE"
+    return 0
+  fi
+
+  if [[ -f "$LEGACY_CURRENT_WALLPAPER_FILE" ]]; then
+    sed -n '1p' "$LEGACY_CURRENT_WALLPAPER_FILE"
+    return 0
+  fi
+
+  return 1
+}
+
+wallpaper="$(read_wallpaper || true)"
+
+if [[ -z "$wallpaper" || ! -f "$wallpaper" ]]; then
+  if [[ -f "$OUTPUT" ]]; then
+    echo "hyprlock background: no current wallpaper found; keeping existing $OUTPUT"
+    exit 0
+  fi
+
+  echo "hyprlock background: no current wallpaper found; skipping"
+  exit 0
+fi
+
+if [[ ! -x "$GENERATOR" ]]; then
+  echo "hyprlock background generator is not executable: $GENERATOR" >&2
+  exit 1
+fi
+
+if ! command -v magick >/dev/null 2>&1; then
+  echo "ImageMagick 'magick' command not found" >&2
+  exit 1
+fi
+
+monitor_info="$(
+  hyprctl monitors -j 2>/dev/null \
+    | jq -r '(first(.[] | select(.focused == true)) // .[0]) | "\(.width) \(.height)"' 2>/dev/null \
+    || true
+)"
+
+monitor_w="$(awk '{print $1}' <<<"$monitor_info")"
+monitor_h="$(awk '{print $2}' <<<"$monitor_info")"
+
+monitor_w="${monitor_w:-5120}"
+monitor_h="${monitor_h:-1440}"
+
+case "${monitor_w}x${monitor_h}" in
+5120x1440)
+  gap=1000
+  radius=180
+  blur=28
+  edge=1
+  ;;
+3840x1200)
+  gap=1000
+  radius=150
+  blur=24
+  edge=1
+  ;;
+*)
+  gap=$((monitor_w / 3))
+  radius=$((monitor_h / 8))
+  blur=24
+  edge=1
+  ;;
+esac
+
+side_width=$(((monitor_w - gap) / 2))
+
+"$GENERATOR" \
+  "$wallpaper" \
+  "$OUTPUT" \
+  "$monitor_w" \
+  "$monitor_h" \
+  "$side_width" \
+  "$side_width" \
+  "$radius" \
+  "$blur" \
+  "$edge"
+
+echo "hyprlock background: $OUTPUT"

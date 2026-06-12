@@ -42,6 +42,21 @@
       "source": "on_surface",
       "mix": 0.15
     },
+    "on_surface_variant": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.15
+    },
+    "on_primary": {
+      "bloom": "surface.base",
+      "source": "on_primary",
+      "mix": 1
+    },
+    "on_error": {
+      "bloom": "surface.base",
+      "source": "on_error",
+      "mix": 1
+    },
     "surface_container_high": {
       "bloom": "surface.highest",
       "source": "surface_container_high",

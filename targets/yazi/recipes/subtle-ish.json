@@ -32,8 +32,8 @@
       "mix": 0.1
     },
     "surface_variant": {
-      "bloom": "border.strong",
-      "source": "surface_variant",
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
       "mix": 0.1
     },
     "on_surface_variant": {

@@ -1,0 +1,41 @@
+{
+  "name": "subtle-ish",
+  "target": "hyprlock",
+  "tokens": {
+    "background": {
+      "source": "background",
+      "bloom": "surface.dim",
+      "mix": 0.18
+    },
+    "input_background": {
+      "source": "surface_container",
+      "bloom": "surface.base",
+      "mix": 0.12
+    },
+    "text": {
+      "source": "on_surface",
+      "bloom": "text.primary",
+      "mix": 0.1
+    },
+    "text_muted": {
+      "source": "on_surface_variant",
+      "bloom": "text.secondary",
+      "mix": 0.12
+    },
+    "accent": {
+      "source": "primary",
+      "bloom": "accent.primary",
+      "mix": 0.2
+    },
+    "warning": {
+      "source": "tertiary",
+      "bloom": "state.warning",
+      "mix": 0.18
+    },
+    "danger": {
+      "source": "error",
+      "bloom": "state.danger",
+      "mix": 0.18
+    }
+  }
+}

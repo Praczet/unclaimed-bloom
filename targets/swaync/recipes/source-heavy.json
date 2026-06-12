@@ -48,9 +48,9 @@
       "mix": 0.15
     },
     "on_primary": {
-      "bloom": "text.primary",
+      "bloom": "surface.base",
       "source": "on_primary",
-      "mix": 0.1
+      "mix": 1
     },
     "surface_container": {
       "bloom": "surface.raised",
