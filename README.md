@@ -4,7 +4,7 @@
 
 **Unclaimed Bloom is my recipe-driven theming system for a Linux desktop that has already lived too many lives.**
 
-It blends wallpaper colors from Matugen with curated base palettes, moods, profiles, recipes, and target-specific outputs for tools such as Ghostty, GTK, icons, Neovim, AGS, swaync, Waybar, Rofi, Hyprland, SDDM, yazi, mycli, sqlit, and whatever else gets dragged into the garden later.
+It blends wallpaper colors from Matugen with curated base palettes, moods, profiles, recipes, and target-specific outputs for tools such as Ghostty, GTK, icons, Neovim, AGS, swaync, Waybar, Rofi, Hyprland, Hyprlock, SDDM, yazi, mycli, sqlit, potato, and whatever else gets dragged into the garden later.
 
 It is not one more theme. It is the thing that tries to keep several half-wild theming projects from wandering into separate forests and pretending they never met.
 
@@ -182,7 +182,7 @@ Unclaimed Bloom grew out of existing theming work:
 - **Neovim**: generated Lua colors for my Matugen/TokyoNight setup.
 - **AGS**: visual shell pieces using generated CSS.
 - **swaync and waybar**: now first-class targets, no longer hiding behind AGS like suspicious cousins.
-- **mycli / sqlit / yazi / rofi / wlogout / SDDM / Hyprland / potato / iced**: smaller but real target spores.
+- **mycli / sqlit / yazi / rofi / wlogout / SDDM / Hyprland / Hyprlock / potato / iced / broot**: smaller but real target spores.
 
 Old Bash and Python scripts are not shame. They are workers. If they already know how to do the dirty work, `spore` can call them and collect reports. Purity is how projects become beautiful and dead.
 
@@ -190,6 +190,7 @@ Old Bash and Python scripts are not shame. They are workers. If they already kno
 
 - Deno 2+
 - Matugen, for wallpaper-based palettes
+- ImageMagick, `hyprctl`, and `jq` for the Hyprlock prepared background hook
 - zsh, if you want the completions
 
 ## Install
@@ -232,7 +233,7 @@ Make sure this is on your `PATH`:
 The normal desktop flow goes through:
 
 ```text
-wallset → wallset-backend → spore sow desktop --wallpaper → spore grow desktop
+wallset → wallset-backend → spore sow desktop --wallpaper → spore grow desktop → spore plant desktop
 ```
 
 `wallset` and `wallset-backend` are owned by this repository and installed by
@@ -247,7 +248,7 @@ So the simple version is:
 wallset
 ```
 
-Pick a wallpaper. Matugen runs. Bloom grows. Spores scatter. Config files change. Some programs reload. The desktop pretends this was always planned.
+Pick a wallpaper. Matugen runs. Bloom grows. Spores scatter. Config files change. Hyprlock gets its prepared background. Some programs reload. The desktop pretends this was always planned.
 
 Pass a wallpaper directly:
 
@@ -293,6 +294,19 @@ Deploy rendered files to their config destinations:
 ```bash
 spore plant daily
 ```
+
+For composition profiles like `desktop`, the human output includes the underlying profile for each target:
+
+```text
+profile    target    recipe
+---------  --------  -------------
+daily-gtk  gtk       graphite-dark
+daily      hyprland  subtle-ish
+daily      hyprlock  subtle-ish
+...
+```
+
+`plant` prints each target as it deploys. Worker-backed targets such as icons stream progress instead of quietly taking the scenic route through your patience.
 
 Apply or plant one target only:
 
@@ -427,6 +441,49 @@ The broad `daily` and `daily-light` profiles do not include GTK.
 >
 > Future Adam, yes, this warning is for you.
 
+## Hyprlock
+
+Hyprlock is a first-class target:
+
+```text
+targets/hyprlock/
+├── recipes/subtle-ish.json
+├── templates/hyprlock.conf
+└── hooks/plant.json
+```
+
+It plants:
+
+```text
+~/.config/hypr/hyprlock.conf
+```
+
+The lock-screen background is prepared separately by:
+
+```text
+scripts/hyprlock-prepare-bg
+```
+
+That script reads the current wallpaper from:
+
+```text
+~/.cache/unclaimed-bloom/current-wallpaper
+```
+
+then calls the existing helper:
+
+```text
+~/.local/bin/hyprlock-gap-bg
+```
+
+and writes:
+
+```text
+~/.cache/hyprlock-current.png
+```
+
+So Hyprlock gets the same gap/blur background behavior as the old bin-script flow, but now it happens during `spore plant`.
+
 ## Discovery Commands
 
 ```bash
@@ -555,15 +612,16 @@ Installed data:
 | `swaync` | Notifications | First-class target, no longer hiding behind AGS. |
 | `waybar` | Status bar | Generated CSS/tokens. |
 | `hyprland` | Compositor config/colors | Desktop shell integration. |
+| `hyprlock` | Lock screen | Full config target plus prepared gap/blur background hook. |
 | `rofi` | Launcher | Generated launcher theme. |
 | `yazi` | Terminal file manager | Because previews deserve atmosphere too. |
 | `wlogout` | Logout menu | Dramatic exit, but themed. |
 | `iced` | App target | For Iced-based UI experiments. |
-| `sddm` | Display manager | Login screen theming. |
+| `sddm` | Display manager | Login screen theming; plant hook deploys `theme.conf`. |
 | `mycli` | MySQL/MariaDB CLI | Terminal database comfort. |
 | `sqlit` | SQL TUI | More database color diplomacy. |
 | `broot` | Terminal tree navigator | File-tree theming. |
-| `potato` | Health/overthinking tracker | The name is ridiculous. This is not a bug. |
+| `potato` | Health/overthinking tracker | Plants theme JSON and runs `potato-sync`. The name is ridiculous. This is not a bug. |
 
 Each target usually has:
 
