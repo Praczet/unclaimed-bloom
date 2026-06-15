@@ -10,7 +10,7 @@
   "targets": {
     "hyprland": "subtle-ish",
     "hyprlock": "subtle-ish",
-    "ghostty": "subtle-ish",
+    "ghostty": "nvim-ish",
     "rofi": "subtle-ish",
     "yazi": "subtle-ish",
     "wlogout": "subtle-ish",

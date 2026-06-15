@@ -1,0 +1,116 @@
+{
+  "name": "nvim-ish",
+  "target": "ghostty",
+  "tokens": {
+    "background": {
+      "source": "surface",
+      "bloom": "surface.raised",
+      "mix": 0.18
+    },
+    "foreground": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "cursor_color": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "cursor_text": {
+      "bloom": "surface.dim",
+      "source": "on_primary",
+      "mix": 0.1
+    },
+    "selection_background": {
+      "bloom": "selection.background",
+      "source": "secondary_container",
+      "mix": 0.15
+    },
+    "selection_foreground": {
+      "bloom": "selection.foreground",
+      "source": "on_secondary_container",
+      "mix": 0.1
+    },
+    "palette_0": {
+      "bloom": "surface.dim",
+      "source": "surface_container_highest",
+      "mix": 0.1
+    },
+    "palette_1": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.15
+    },
+    "palette_2": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.1
+    },
+    "palette_3": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "palette_4": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "palette_5": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "palette_6": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "palette_7": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "palette_8": {
+      "bloom": "border.subtle",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "palette_9": {
+      "bloom": "state.danger",
+      "source": "error_container",
+      "mix": 0.1
+    },
+    "palette_10": {
+      "bloom": "state.success",
+      "source": "primary_container",
+      "mix": 0.1
+    },
+    "palette_11": {
+      "bloom": "state.warning",
+      "source": "tertiary_container",
+      "mix": 0.1
+    },
+    "palette_12": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed_dim",
+      "mix": 0.1
+    },
+    "palette_13": {
+      "bloom": "accent.secondary",
+      "source": "secondary_fixed_dim",
+      "mix": 0.1
+    },
+    "palette_14": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary_fixed_dim",
+      "mix": 0.1
+    },
+    "palette_15": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    }
+  }
+}

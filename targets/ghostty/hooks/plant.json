@@ -1,5 +1,6 @@
 {
   "steps": [
-    { "type": "copy", "dest": ["~/.config/ghostty/themes/Unclaimed-Bloom"] }
+    { "type": "copy", "dest": ["~/.config/ghostty/themes/Unclaimed-Bloom"] },
+    { "type": "exec", "command": "bash", "args": ["-c", "pkill -SIGUSR2 ghostty || true"] }
   ]
 }
