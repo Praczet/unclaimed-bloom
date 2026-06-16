@@ -1,0 +1,82 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "yazi",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "on_primary": {
+      "base": "background_dark"
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "on_secondary": {
+      "base": "background_dark"
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "on_tertiary": {
+      "base": "background_dark"
+    },
+    "copy_marker": {
+      "base": "blue",
+      "source": "primary_fixed_dim",
+      "mix": 0.08
+    },
+    "surface_variant": {
+      "base": "background_highlight"
+    },
+    "on_surface_variant": {
+      "base": "foreground_dark"
+    },
+    "surface_hi": {
+      "base": "selection_background"
+    },
+    "on_surface": {
+      "base": "foreground"
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "surface_tint",
+      "mix": 0.12
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "on_error": {
+      "base": "selection_foreground"
+    },
+    "perm_r": {
+      "base": "green"
+    },
+    "perm_w": {
+      "base": "yellow"
+    },
+    "perm_x": {
+      "base": "red"
+    },
+    "file_image": {
+      "base": "teal"
+    },
+    "file_media": {
+      "base": "purple"
+    },
+    "file_archive": {
+      "base": "blue"
+    },
+    "file_doc": {
+      "base": "cyan"
+    }
+  }
+}

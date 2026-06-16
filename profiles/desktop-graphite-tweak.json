@@ -1,0 +1,14 @@
+{
+  "name": "desktop-graphite-tweak",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-gtk",
+      "targets": ["gtk"]
+    },
+    {
+      "profile": "daily-graphite-tweak"
+    }
+  ],
+  "currentProfile": "daily-graphite-tweak"
+}

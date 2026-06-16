@@ -1,0 +1,91 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "ghostty",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "foreground": {
+      "base": "foreground"
+    },
+    "cursor_color": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed_dim",
+      "mix": 0.12
+    },
+    "cursor_text": {
+      "base": "background_dark"
+    },
+    "selection_background": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.14
+    },
+    "selection_foreground": {
+      "base": "selection_foreground"
+    },
+    "palette_0": {
+      "base": "background_dark"
+    },
+    "palette_1": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "palette_2": {
+      "base": "green"
+    },
+    "palette_3": {
+      "base": "yellow"
+    },
+    "palette_4": {
+      "base": "blue",
+      "source": "primary",
+      "mix": 0.1
+    },
+    "palette_5": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "palette_6": {
+      "base": "teal"
+    },
+    "palette_7": {
+      "base": "foreground_dark"
+    },
+    "palette_8": {
+      "base": "border"
+    },
+    "palette_9": {
+      "base": "orange"
+    },
+    "palette_10": {
+      "base": "green",
+      "source": "primary",
+      "mix": 0.06
+    },
+    "palette_11": {
+      "base": "yellow",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "palette_12": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed_dim",
+      "mix": 0.1
+    },
+    "palette_13": {
+      "base": "magenta",
+      "source": "secondary_fixed_dim",
+      "mix": 0.08
+    },
+    "palette_14": {
+      "base": "cyan"
+    },
+    "palette_15": {
+      "base": "selection_foreground"
+    }
+  }
+}

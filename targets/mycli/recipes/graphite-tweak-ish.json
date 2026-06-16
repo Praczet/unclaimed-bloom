@@ -1,0 +1,81 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "mycli",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "bg": {
+      "base": "background"
+    },
+    "bg_dark": {
+      "base": "background_dark"
+    },
+    "bg_high": {
+      "base": "background_highlight"
+    },
+    "bg_selected": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.14
+    },
+    "bg_meta": {
+      "base": "selection_background"
+    },
+    "bg_tertiary": {
+      "base": "background_highlight"
+    },
+    "fg": {
+      "base": "foreground"
+    },
+    "fg_muted": {
+      "base": "foreground_dark"
+    },
+    "comment": {
+      "base": "comment"
+    },
+    "blue": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "cyan": {
+      "base": "cyan"
+    },
+    "green": {
+      "base": "green"
+    },
+    "yellow": {
+      "base": "yellow"
+    },
+    "red": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "magenta": {
+      "base": "magenta"
+    },
+    "purple": {
+      "base": "purple"
+    },
+    "orange": {
+      "base": "orange"
+    },
+    "on_primary": {
+      "base": "background_dark"
+    },
+    "on_secondary": {
+      "base": "selection_foreground"
+    },
+    "on_tertiary": {
+      "base": "selection_foreground"
+    },
+    "error_bg": {
+      "base": "red",
+      "source": "error_container",
+      "mix": 0.12
+    },
+    "error_fg": {
+      "base": "selection_foreground"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "sqlit",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "panel": {
+      "base": "background_dark"
+    },
+    "foreground": {
+      "base": "foreground"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "accent": {
+      "base": "blue",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "success": {
+      "base": "green"
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "border": {
+      "base": "border"
+    },
+    "border_blurred": {
+      "base": "background_highlight"
+    },
+    "footer_key": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "button_fg": {
+      "base": "background_dark"
+    },
+    "selection_bg": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.12
+    },
+    "insert_mode": {
+      "base": "teal"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "nvim",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "surface_variant": {
+      "base": "border"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.12
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.1
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.08
+    },
+    "on_background": {
+      "base": "foreground"
+    },
+    "on_surface": {
+      "base": "foreground"
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.1
+    }
+  }
+}
