@@ -1,6 +1,6 @@
 {
   "name": "daily-gtk",
-  "basePalette": "graphite-dark",
+  "basePalette": "nord-tweak-dark",
   "mood": "dormant",
   "source": {
     "type": "matugen",
@@ -8,6 +8,6 @@
     "variant": "dark"
   },
   "targets": {
-    "gtk": "graphite-dark"
+    "gtk": "nord-tweak-dark"
   }
 }

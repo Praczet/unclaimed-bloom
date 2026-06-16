@@ -104,3 +104,36 @@
 @define-color thunar_sidebar_hover_bg_color    mix(@window_bg_color, @accent_backdrop_bg_color, 0.18);
 @define-color thunar_sidebar_fg_color          @sidebar_fg_color;
 @define-color thunar_sidebar_border_color      mix(@borders, @window_bg_color, 0.45);
+
+/* ---- Soft transparency ----------------------------------------------------- */
+
+window.background,
+window.csd,
+dialog.background,
+messagedialog.background {
+  background-color: alpha(@window_bg_color, 0.96);
+}
+
+headerbar,
+.titlebar {
+  background-color: alpha(@headerbar_bg_color, 0.94);
+}
+
+popover,
+popover > contents {
+  background-color: alpha(@popover_bg_color, 0.97);
+}
+
+placessidebar,
+placessidebar > viewport,
+placessidebar list,
+.sidebar {
+  background-color: alpha(@sidebar_bg_color, 0.94);
+}
+
+treeview.view:selected,
+list row:selected,
+flowboxchild:selected {
+  background-color: alpha(@theme_selected_bg_color, 0.72);
+  color: @theme_selected_fg_color;
+}

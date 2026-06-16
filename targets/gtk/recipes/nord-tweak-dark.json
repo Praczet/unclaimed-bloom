@@ -1,0 +1,110 @@
+{
+  "name": "nord-tweak-dark",
+  "target": "gtk",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "accent_color": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed_dim",
+      "mix": 0.12
+    },
+    "accent_fg_color": {
+      "base": "selection_foreground"
+    },
+    "link_color": {
+      "base": "blue",
+      "source": "primary",
+      "mix": 0.18
+    },
+    "link_visited_color": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.12
+    },
+    "window_bg_color": {
+      "base": "background"
+    },
+    "window_fg_color": {
+      "base": "foreground"
+    },
+    "headerbar_bg_color": {
+      "base": "background_dark"
+    },
+    "popover_bg_color": {
+      "base": "background_highlight"
+    },
+    "view_bg_color": {
+      "base": "background"
+    },
+    "card_bg_color": {
+      "base": "background_highlight"
+    },
+    "sidebar_bg_color": {
+      "base": "background_dark"
+    },
+    "borders": {
+      "base": "border"
+    },
+    "unfocused_borders": {
+      "base": "background_highlight"
+    },
+    "insensitive_bg_color": {
+      "base": "background_highlight"
+    },
+    "insensitive_fg_color": {
+      "base": "comment"
+    },
+    "success_color": {
+      "base": "green"
+    },
+    "success_fg_color": {
+      "base": "background_dark"
+    },
+    "warning_color": {
+      "base": "yellow"
+    },
+    "warning_fg_color": {
+      "base": "background_dark"
+    },
+    "error_color": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.1
+    },
+    "error_fg_color": {
+      "base": "selection_foreground"
+    },
+    "surface_bright_color": {
+      "base": "selection_foreground"
+    },
+    "surface_container_lowest_color": {
+      "base": "background_dark"
+    },
+    "surface_container_low_color": {
+      "base": "background"
+    },
+    "surface_container_color": {
+      "base": "background"
+    },
+    "surface_container_high_color": {
+      "base": "background_highlight"
+    },
+    "surface_container_highest_color": {
+      "base": "selection_background"
+    },
+    "selection_bg": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.16
+    },
+    "selection_fg": {
+      "base": "selection_foreground"
+    },
+    "sidebar_border_color": {
+      "base": "border"
+    },
+    "outline_color": {
+      "base": "border"
+    }
+  }
+}

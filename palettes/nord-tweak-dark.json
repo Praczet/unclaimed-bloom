@@ -1,0 +1,27 @@
+{
+  "name": "Nord Tweak Dark",
+  "slug": "nord-tweak-dark",
+  "kind": "dark",
+  "source": "Nord-inspired dark palette adjusted for GTK surfaces in Unclaimed Bloom. Calm blue-gray surfaces, readable pale text, small room for bloom accents.",
+  "colors": {
+    "background": "#2e3440",
+    "background_dark": "#242933",
+    "background_highlight": "#3b4252",
+    "foreground": "#d8dee9",
+    "foreground_dark": "#aeb8c8",
+    "comment": "#6d7890",
+    "black": "#1f242d",
+    "red": "#bf616a",
+    "orange": "#d08770",
+    "yellow": "#ebcb8b",
+    "green": "#a3be8c",
+    "cyan": "#88c0d0",
+    "blue": "#81a1c1",
+    "purple": "#b48ead",
+    "magenta": "#c895bf",
+    "teal": "#8fbcbb",
+    "border": "#4c566a",
+    "selection_background": "#434c5e",
+    "selection_foreground": "#eceff4"
+  }
+}
