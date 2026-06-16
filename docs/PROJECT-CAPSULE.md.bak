@@ -618,7 +618,7 @@ These scripts have been superseded by TypeScript adapters + recipes and are kept
 for reference only. Do not use them directly — they hardcode TokyoNight Moon colors
 and produce output incompatible with the new spore contract.
 
-- `matugen-ghostty-moonmix` — replaced by `GhosttyAdapter` + `targets/ghostty/recipes/subtle-ish.json`
+- `matugen-ghostty-moonmix.py` — replaced by `GhosttyAdapter` + `targets/ghostty/recipes/subtle-ish.json`
 - `matugen-mycli-moonmix` — replaced by `MycliAdapter` + `targets/mycli/recipes/subtle-ish.json`
 - `matugen-sqlit-moonmix` — replaced by `SqlitAdapter` + `targets/sqlit/recipes/subtle-ish.json`
 
@@ -701,7 +701,7 @@ This means: `TOKYO_MOON` is the first concrete `palettes/tokyonight-moon.json` w
 ### Ghostty
 
 - Current role:
-  - Has a moonish Matugen/TokyoNight mood via `scripts/matugen-ghostty-moonmix`.
+  - Has a moonish Matugen/TokyoNight mood via `scripts/matugen-ghostty-moonmix.py`.
 - Future role:
   - First or early simple adapter.
   - The worker already exists. The first proof is wrapping it in the recipe/bloom/spore system.
@@ -749,7 +749,7 @@ This means: `TOKYO_MOON` is the first concrete `palettes/tokyonight-moon.json` w
 ### Recommended first targets
 
 - Ghostty:
-  - Worker exists: `scripts/matugen-ghostty-moonmix`.
+  - Worker exists: `scripts/matugen-ghostty-moonmix.py`.
   - Small output. Easy to verify visually.
   - Prove the recipe → bloom → spore → worker → output chain.
 - mycli or sqlit:
