@@ -83,4 +83,6 @@ Deno.test("BloomPaths exposes cache directories", () => {
   assertEquals(paths.sporesDir("daily"), "/cache/ub/spores/daily");
   assertEquals(paths.reportsDir(), "/cache/ub/reports");
   assertEquals(paths.reportsDir("daily"), "/cache/ub/reports/daily");
+  assertEquals(paths.currentWallpaperFile(), "/cache/ub/current-wallpaper");
+  assertEquals(paths.currentProfileFile(), "/cache/ub/current-profile");
 });

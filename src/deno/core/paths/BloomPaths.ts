@@ -110,6 +110,10 @@ export class BloomPaths {
     return this.join(this.cacheDir, "current-wallpaper");
   }
 
+  public currentProfileFile(): string {
+    return this.join(this.cacheDir, "current-profile");
+  }
+
   public timestampedSowReportFile(profile: string, timestamp: string): string {
     return this.join(
       this.reportsDir(),

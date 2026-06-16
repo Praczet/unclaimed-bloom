@@ -7,8 +7,33 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PROFILE="${UB_WALLSET_PROFILE:-${UB_WALSET_PROFILE:-desktop}}"
 SPORE="${UB_WALLSET_SPORE:-${UB_WALSET_SPORE:-$REPO_DIR/scripts/spore}}"
+CACHE_DIR="${UB_CACHE_DIR:-$HOME/.cache/unclaimed-bloom}"
+CURRENT_PROFILE_FILE="$CACHE_DIR/current-profile"
+
+resolve_profile() {
+    if [[ -n "${UB_WALLSET_PROFILE:-${UB_WALSET_PROFILE:-}}" ]]; then
+        printf '%s\n' "${UB_WALLSET_PROFILE:-${UB_WALSET_PROFILE:-}}"
+        return
+    fi
+
+    if profile="$("$SPORE" profile current 2>/dev/null)" && [[ -n "$profile" ]]; then
+        printf '%s\n' "$profile"
+        return
+    fi
+
+    if [[ -f "$CURRENT_PROFILE_FILE" ]]; then
+        profile="$(tr -d '[:space:]' < "$CURRENT_PROFILE_FILE")"
+        if [[ -n "$profile" ]]; then
+            printf '%s\n' "$profile"
+            return
+        fi
+    fi
+
+    printf '%s\n' "desktop"
+}
+
+PROFILE="$(resolve_profile)"
 
 usage() {
     cat <<EOF
@@ -23,8 +48,12 @@ Default profile:
   $PROFILE
 
 Environment:
-  UB_WALLSET_PROFILE  Profile/composition to sow/grow (default: desktop)
+  UB_WALLSET_PROFILE  Profile/composition override
   UB_WALLSET_SPORE    spore command/script
+
+Saved profile:
+  spore profile use <name>
+  current file: $CURRENT_PROFILE_FILE
 EOF
 }
 
@@ -45,7 +74,6 @@ if [[ ! -f "$wallpaper" ]]; then
     exit 1
 fi
 
-CACHE_DIR="${UB_CACHE_DIR:-$HOME/.cache/unclaimed-bloom}"
 CURRENT_WALLPAPER_FILE="$CACHE_DIR/current-wallpaper"
 LOCK_FILE="$CACHE_DIR/wallset.lock"
 mkdir -p "$CACHE_DIR"

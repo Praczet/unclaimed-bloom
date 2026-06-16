@@ -24,8 +24,11 @@ If wallpaper is omitted, wallset tries to pick one from:
 Environment:
   UB_WALLPAPER_DIR       Wallpaper picker directory
   UB_WALLSET_BACKEND     Backend command/script
-  UB_WALLSET_PROFILE     Profile/composition passed to spore (default: desktop)
+  UB_WALLSET_PROFILE     Profile/composition override
   UB_WALLSET_ROFI_THEME  Rofi theme path for wallpaper picker
+
+Saved profile:
+  spore profile use <name>
 EOF
 }
 
