@@ -13,9 +13,14 @@
       "mix": 0.1
     },
     "bg_selected": {
-      "bloom": "surface.raised",
-      "source": "surface_container",
-      "mix": 0.1
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.25
+    },
+    "bg_selected_focused": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.45
     },
     "fg": {
       "bloom": "text.primary",

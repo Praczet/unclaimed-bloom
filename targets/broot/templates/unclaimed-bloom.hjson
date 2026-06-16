@@ -41,7 +41,7 @@ skin: {
     git_status_other: {{danger|rgb}} none
 
     # highlighting
-    selected_line: none {{bg_selected|rgb}}
+    selected_line: none {{bg_selected|rgb}} / none {{bg_selected_focused|rgb}}
     char_match: {{warning|rgb}} none
     file_error: {{danger|rgb}} none
 

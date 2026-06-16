@@ -23,6 +23,7 @@
     "ags": "source-heavy",
     "swaync": "source-heavy",
     "waybar": "source-heavy",
-    "potato": "subtle-ish"
+    "potato": "subtle-ish",
+    "broot": "subtle-ish"
   }
 }
