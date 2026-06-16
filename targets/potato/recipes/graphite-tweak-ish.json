@@ -1,0 +1,43 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "potato",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "text": {
+      "base": "foreground"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "grid": {
+      "base": "border"
+    },
+    "axis": {
+      "base": "foreground_dark"
+    },
+    "weightLine": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "stepsBar": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "success": {
+      "base": "green"
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}

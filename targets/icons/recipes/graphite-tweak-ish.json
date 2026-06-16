@@ -1,0 +1,97 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "icons",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "__ADART_ICON_SURFACE__": {
+      "base": "background_highlight"
+    },
+    "__ADART_ICON_SURFACE_DIM__": {
+      "base": "background"
+    },
+    "__ADART_ICON_SURFACE_CONTAINER__": {
+      "base": "background_highlight"
+    },
+    "__ADART_ICON_SURFACE_HIGH__": {
+      "base": "selection_background"
+    },
+    "__ADART_ICON_SURFACE_LOWEST__": {
+      "base": "background_dark"
+    },
+    "__ADART_ICON_ON_SURFACE__": {
+      "base": "foreground"
+    },
+    "__ADART_ICON_ON_SURFACE_MUTED__": {
+      "base": "comment"
+    },
+    "__ADART_ICON_OUTLINE__": {
+      "base": "border"
+    },
+    "__ADART_ICON_SHADOW__": {
+      "base": "black"
+    },
+    "__ADART_ICON_ACCENT_1__": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "__ADART_ICON_ACCENT_1_DIM__": {
+      "base": "blue"
+    },
+    "__ADART_ICON_ACCENT_1_BRIGHT__": {
+      "bloom": "accent.primary",
+      "source": "primary_fixed_dim",
+      "mix": 0.08
+    },
+    "__ADART_ICON_ACCENT_2__": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "__ADART_ICON_ACCENT_2_DIM__": {
+      "base": "magenta"
+    },
+    "__ADART_ICON_ACCENT_2_BRIGHT__": {
+      "base": "purple",
+      "source": "secondary_fixed_dim",
+      "mix": 0.08
+    },
+    "__ADART_ICON_ACCENT_3__": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "__ADART_ICON_ACCENT_3_DIM__": {
+      "base": "cyan"
+    },
+    "__ADART_ICON_ACCENT_3_BRIGHT__": {
+      "base": "teal",
+      "source": "tertiary_fixed_dim",
+      "mix": 0.06
+    },
+    "__ADART_ICON_SUCCESS__": {
+      "base": "green"
+    },
+    "__ADART_ICON_SUCCESS_DIM__": {
+      "base": "green",
+      "source": "secondary_container",
+      "mix": 0.06
+    },
+    "__ADART_ICON_WARNING__": {
+      "base": "yellow"
+    },
+    "__ADART_ICON_WARNING_DIM__": {
+      "base": "orange"
+    },
+    "__ADART_ICON_ERROR__": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "__ADART_ICON_ERROR_DIM__": {
+      "base": "red",
+      "source": "error_container",
+      "mix": 0.08
+    }
+  }
+}

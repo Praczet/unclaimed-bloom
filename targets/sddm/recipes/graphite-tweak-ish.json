@@ -1,0 +1,29 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "sddm",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "on_primary": {
+      "base": "background_dark"
+    },
+    "on_surface": {
+      "base": "foreground"
+    },
+    "secondary": {
+      "base": "background_highlight"
+    },
+    "on_secondary": {
+      "base": "foreground"
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}

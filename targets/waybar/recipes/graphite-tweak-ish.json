@@ -1,0 +1,60 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "waybar",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "surface_variant": {
+      "base": "border"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "on_background": {
+      "base": "foreground"
+    },
+    "on_surface": {
+      "base": "foreground"
+    },
+    "on_surface_variant": {
+      "base": "foreground_dark"
+    },
+    "on_primary": {
+      "base": "background_dark"
+    },
+    "on_error": {
+      "base": "selection_foreground"
+    },
+    "surface_container_high": {
+      "base": "selection_background"
+    },
+    "surface_container_lowest": {
+      "base": "background_dark"
+    },
+    "outline": {
+      "base": "border"
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}

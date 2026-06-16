@@ -8,22 +8,22 @@
     "variant": "dark"
   },
   "targets": {
-    "hyprland": "subtle-ish",
-    "hyprlock": "subtle-ish",
+    "hyprland": "graphite-tweak-ish",
+    "hyprlock": "graphite-tweak-ish",
     "ghostty": "graphite-tweak-ish",
-    "rofi": "subtle-ish",
+    "rofi": "graphite-tweak-ish",
     "yazi": "graphite-tweak-ish",
-    "wlogout": "subtle-ish",
-    "iced": "subtle-ish",
-    "sddm": "subtle-ish",
+    "wlogout": "graphite-tweak-ish",
+    "iced": "graphite-tweak-ish",
+    "sddm": "graphite-tweak-ish",
     "mycli": "graphite-tweak-ish",
     "sqlit": "graphite-tweak-ish",
-    "icons": "subtle-ish",
+    "icons": "graphite-tweak-ish",
     "nvim": "graphite-tweak-ish",
-    "ags": "source-heavy",
-    "swaync": "source-heavy",
-    "waybar": "source-heavy",
-    "potato": "subtle-ish",
+    "ags": "graphite-tweak-ish",
+    "swaync": "graphite-tweak-ish",
+    "waybar": "graphite-tweak-ish",
+    "potato": "graphite-tweak-ish",
     "broot": "graphite-tweak-ish"
   }
 }

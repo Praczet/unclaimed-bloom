@@ -1,0 +1,34 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "rofi",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "background_alt": {
+      "base": "background_highlight"
+    },
+    "foreground": {
+      "base": "foreground"
+    },
+    "accent1": {
+      "base": "foreground_dark"
+    },
+    "selected": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "active": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "urgent": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}

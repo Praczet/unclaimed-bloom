@@ -1,0 +1,108 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "ags",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "surface_variant": {
+      "base": "border"
+    },
+    "surface_container": {
+      "base": "background_highlight"
+    },
+    "surface_container_low": {
+      "base": "background"
+    },
+    "surface_container_lowest": {
+      "base": "background_dark"
+    },
+    "surface_container_high": {
+      "base": "selection_background"
+    },
+    "surface_container_highest": {
+      "base": "border"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "primary_container": {
+      "base": "selection_background"
+    },
+    "primary_fixed": {
+      "base": "blue",
+      "source": "primary_fixed",
+      "mix": 0.08
+    },
+    "primary_fixed_dim": {
+      "base": "blue",
+      "source": "primary_fixed_dim",
+      "mix": 0.08
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "tertiary_container": {
+      "base": "background_highlight"
+    },
+    "tertiary_fixed_dim": {
+      "base": "teal",
+      "source": "tertiary_fixed_dim",
+      "mix": 0.06
+    },
+    "on_background": {
+      "base": "foreground"
+    },
+    "on_surface": {
+      "base": "foreground"
+    },
+    "on_surface_variant": {
+      "base": "foreground_dark"
+    },
+    "on_primary": {
+      "base": "background_dark"
+    },
+    "on_primary_container": {
+      "base": "selection_foreground"
+    },
+    "on_primary_fixed_variant": {
+      "base": "foreground_dark"
+    },
+    "on_secondary": {
+      "base": "background_dark"
+    },
+    "on_tertiary": {
+      "base": "background_dark"
+    },
+    "on_tertiary_container": {
+      "base": "selection_foreground"
+    },
+    "outline": {
+      "base": "border"
+    },
+    "outline_variant": {
+      "base": "background_highlight"
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "shadow": {
+      "base": "black"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "hyprland",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "background": {
+      "base": "background"
+    },
+    "on_surface": {
+      "base": "foreground"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "wlogout",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "foreground": {
+      "base": "foreground"
+    }
+  }
+}

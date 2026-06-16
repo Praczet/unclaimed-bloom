@@ -1,0 +1,32 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "hyprlock",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background_dark"
+    },
+    "input_background": {
+      "base": "background_highlight"
+    },
+    "text": {
+      "base": "foreground"
+    },
+    "text_muted": {
+      "base": "foreground_dark"
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}
