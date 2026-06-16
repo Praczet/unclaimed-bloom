@@ -840,14 +840,22 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
   }
 
   private async useProfile(name: string | undefined): Promise<void> {
+    const paths = BloomPaths.fromDeno();
+
     if (!name) {
       this.printUsageError("Missing profile name.", "profile use <name>");
+      await this.printAvailableProfiles(paths);
       Deno.exit(1);
     }
 
-    const paths = BloomPaths.fromDeno();
     const loader = new ProfileLoader();
-    await loader.inspect(paths.profilesDir(), name);
+    try {
+      await loader.inspect(paths.profilesDir(), name);
+    } catch (error) {
+      this.printFatalError(error);
+      await this.printAvailableProfiles(paths);
+      Deno.exit(1);
+    }
 
     await Deno.mkdir(paths.cacheDir, { recursive: true });
     await Deno.writeTextFile(paths.currentProfileFile(), `${name}\n`);
@@ -872,6 +880,26 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       return profile.length > 0 ? profile : null;
     } catch {
       return null;
+    }
+  }
+
+  private async printAvailableProfiles(paths: BloomPaths): Promise<void> {
+    if (this.outputMode !== "human") {
+      return;
+    }
+
+    const profiles = await new ProfileLoader().list(paths.profilesDir()).catch(
+      () => [],
+    );
+
+    if (profiles.length === 0) {
+      return;
+    }
+
+    this.printHumanError("");
+    this.printHumanError("Available profiles:");
+    for (const profile of profiles) {
+      this.printHumanError(`  ${profile.name}`);
     }
   }
 
