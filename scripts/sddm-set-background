@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# %name: sddm-set-background
+# %desc: Set the background for SDDM using the current wallpaper.
+# %icon: preferences-desktop-wallpaper
+# %terminal: true
+# %categories: Utility;Graphics;Hyprland;
+
+set -euo pipefail
+
+CACHE_DIR="${UB_CACHE_DIR:-$HOME/.cache/unclaimed-bloom}"
+CURRENT_WALLPAPER_FILE="${UB_CURRENT_WALLPAPER_FILE:-$CACHE_DIR/current-wallpaper}"
+OUTPUT="${SDDM_WALLPAPER:-/usr/local/share/sddm-adart-matugener/background.png}"
+
+read_wallpaper() {
+  if [[ -f "$CURRENT_WALLPAPER_FILE" ]]; then
+    sed -n '1p' "$CURRENT_WALLPAPER_FILE"
+    return 0
+  fi
+
+  return 1
+}
+
+wallpaper="$(read_wallpaper || true)"
+
+## if file exists copy tio output, otherwise keep existing output if it exists, otherwise skip and write error and exit
+if [[ -n "$wallpaper" && -f "$wallpaper" ]]; then
+  cp "$wallpaper" "$OUTPUT"
+fi
+## else if output file doesn't exist, skip
+if [[ ! -f "$OUTPUT" ]]; then
+  echo "sddm:: no current wallpaper found; skipping"
+  exit 0
+fi
+
+echo "sddm:: background: $OUTPUT"

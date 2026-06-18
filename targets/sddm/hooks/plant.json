@@ -2,7 +2,16 @@
   "steps": [
     {
       "type": "copy",
-      "dest": ["/usr/local/share/sddm-adart-matugener/theme.conf"]
+      "dest": [
+        "/usr/local/share/sddm-adart-matugener/theme.conf"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "bash",
+      "args": [
+        "{{data_dir}}/scripts/sddm-set-background"
+      ]
     }
   ]
 }
