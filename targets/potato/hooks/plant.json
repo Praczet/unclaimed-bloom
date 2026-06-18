@@ -18,7 +18,7 @@
       "command": "bash",
       "args": [
         "-c",
-        "~/.local/bin/ags-ensure --reload || true"
+        "ags-ensure --reload || true"
       ]
     }
   ]
