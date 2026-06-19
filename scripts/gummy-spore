@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# %name: Gummy Spore
+# %desc: Interactive Gum wrapper around spore
+# %icon: applications-graphics-symbolic
+# %terminal: true
+# %categories: Utility;Development;Theme;
+# %mode: noargs
+# %default_args:
+# %prompt:
+# %tags: unclaimed-bloom spore gum theme cli
+#
+# @name gummy-spore
+# @description Interactive Gum wrapper around spore.
+# @usage gummy-spore
+# @requires gum jq
+# @optional spore
+
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DEFAULT_VOICE="${UB_DATA_DIR:-$REPO_DIR}/config/gummy-spore/voice.json"
+PERSONAL_VOICE="${XDG_CONFIG_HOME:-$HOME/.config}/unclaimed-bloom/gummy-spore/voice.json"
+GUM_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/gum/themes/unclaimed-bloom.sh"
+
+check_dependencies() {
+  local command_name
+
+  for command_name in gum jq; do
+    if ! command -v "$command_name" >/dev/null 2>&1; then
+      printf 'Gummy Spore needs %s, but it is not available on PATH.\n' "$command_name" >&2
+      exit 1
+    fi
+  done
+}
+
+load_theme() {
+  if [[ -f "$GUM_THEME" ]]; then
+    # shellcheck source=/dev/null
+    source "$GUM_THEME"
+  fi
+}
+
+load_voice() {
+  if [[ ! -f "$DEFAULT_VOICE" ]]; then
+    printf 'Gummy Spore could not find its default voice:\n  %s\n' "$DEFAULT_VOICE" >&2
+    exit 1
+  fi
+
+  if [[ -f "$PERSONAL_VOICE" ]]; then
+    jq -s '.[0] * .[1]' "$DEFAULT_VOICE" "$PERSONAL_VOICE"
+  else
+    jq '.' "$DEFAULT_VOICE"
+  fi
+}
+
+random_message() {
+  local voice="$1"
+  local group="$2"
+  local count
+  local index
+
+  count="$(jq --arg group "$group" '.[$group] | length' <<<"$voice")"
+  if [[ "$count" -eq 0 ]]; then
+    printf 'Gummy Spore voice group "%s" is empty.\n' "$group" >&2
+    exit 1
+  fi
+
+  index=$((RANDOM % count))
+  jq -r --arg group "$group" --argjson index "$index" '.[$group][$index]' <<<"$voice"
+}
+
+show_welcome() {
+  local voice="$1"
+  local greeting
+  local subtitle
+  local title_line
+  local greeting_line
+  local subtitle_line
+  local content
+  local terminal_width
+  local panel_width
+
+  greeting="$(random_message "$voice" "greetings")"
+  subtitle="$(random_message "$voice" "subtitles")"
+
+  terminal_width="$(tput cols 2>/dev/null || printf '80')"
+  panel_width=$((terminal_width - 4))
+  if ((panel_width > 68)); then
+    panel_width=68
+  elif ((panel_width < 32)); then
+    panel_width=32
+  fi
+
+  title_line="$(gum style \
+    --bold \
+    --foreground "${GUM_UB_PRIMARY:-}" \
+    "Gummy Spore")"
+  greeting_line="$(gum style \
+    --foreground "${GUM_UB_ON_SURFACE:-}" \
+    "$greeting")"
+  subtitle_line="$(gum style \
+    --faint \
+    --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
+    "$subtitle")"
+
+  content="$(gum join --vertical \
+    "$title_line" \
+    "" \
+    "$greeting_line" \
+    "$subtitle_line")"
+
+  gum style \
+    --no-strip-ansi \
+    --border rounded \
+    --border-foreground "${GUM_UB_SURFACE_VARIANT:-}" \
+    --foreground "${GUM_UB_ON_SURFACE:-}" \
+    --padding "1 2" \
+    --margin "1 0" \
+    --width "$panel_width" \
+    "$content"
+}
+
+main() {
+  local voice
+
+  check_dependencies
+  load_theme
+  voice="$(load_voice)"
+  show_welcome "$voice"
+}
+
+main "$@"
