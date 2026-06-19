@@ -1,0 +1,10 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": [
+        "~/.config/gum/themes/unclaimed-bloom.sh"
+      ]
+    }
+  ]
+}

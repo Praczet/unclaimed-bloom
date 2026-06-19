@@ -1,0 +1,107 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "gum",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "surface_variant": {
+      "base": "background_highlight"
+    },
+    "surface_container_high": {
+      "base": "background_highlight"
+    },
+    "on_background": {
+      "base": "foreground"
+    },
+    "on_surface": {
+      "base": "foreground"
+    },
+    "on_surface_variant": {
+      "base": "comment"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "on_primary": {
+      "base": "background_dark"
+    },
+    "error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "on_error": {
+      "base": "foreground"
+    },
+    "outline": {
+      "base": "border"
+    },
+    "gum_cursor": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "gum_prompt": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "gum_header": {
+      "base": "comment"
+    },
+    "gum_item": {
+      "base": "comment"
+    },
+    "gum_selected": {
+      "base": "foreground"
+    },
+    "gum_match": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "gum_placeholder": {
+      "base": "comment"
+    },
+    "gum_border": {
+      "base": "border"
+    },
+    "gum_box_fg": {
+      "base": "foreground"
+    },
+    "gum_box_bg": {
+      "base": "background_highlight"
+    },
+    "gum_success": {
+      "base": "green"
+    },
+    "gum_warning": {
+      "base": "yellow"
+    },
+    "gum_error": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "gum_muted": {
+      "base": "comment"
+    }
+  }
+}

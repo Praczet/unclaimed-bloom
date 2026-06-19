@@ -1,0 +1,45 @@
+{
+  "name": "gummy",
+  "description": "Gum shell UI theme generated from the active Unclaimed Bloom palette.",
+  "tokens": {
+    "background": {
+      "bloom": "surface.base"
+    },
+    "surface": {
+      "bloom": "surface.raised"
+    },
+    "surface_variant": {
+      "bloom": "surface.variant"
+    },
+    "primary": {
+      "bloom": "accent.primary"
+    },
+    "secondary": {
+      "bloom": "accent.secondary"
+    },
+    "tertiary": {
+      "bloom": "accent.tertiary"
+    },
+    "on_background": {
+      "bloom": "text.primary"
+    },
+    "on_surface": {
+      "bloom": "text.primary"
+    },
+    "on_surface_variant": {
+      "bloom": "text.muted"
+    },
+    "on_primary": {
+      "bloom": "surface.base"
+    },
+    "error": {
+      "bloom": "state.danger"
+    },
+    "on_error": {
+      "bloom": "text.primary"
+    },
+    "outline": {
+      "bloom": "border.muted"
+    }
+  }
+}
