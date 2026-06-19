@@ -16,5 +16,16 @@
     "What are we doing with the desktop today?",
     "What needs your attention?",
     "Where shall we wander next?"
+  ],
+  "showQuestions": [
+    "What would you like me to show you?",
+    "Which part of the garden have we forgotten?",
+    "What needs a closer look?"
+  ],
+  "showAcknowledgements": [
+    "A solid choice.",
+    "Let us inspect the evidence.",
+    "Looking is still free.",
+    "No changes. Just answers."
   ]
 }

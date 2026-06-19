@@ -21,6 +21,9 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEFAULT_VOICE="${UB_DATA_DIR:-$REPO_DIR}/config/gummy-spore/voice.json"
 PERSONAL_VOICE="${XDG_CONFIG_HOME:-$HOME/.config}/unclaimed-bloom/gummy-spore/voice.json"
 GUM_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/gum/themes/unclaimed-bloom.sh"
+SPORE=()
+WELCOME_GREETING=""
+WELCOME_SUBTITLE=""
 
 check_dependencies() {
   local command_name
@@ -31,6 +34,21 @@ check_dependencies() {
       exit 1
     fi
   done
+}
+
+find_spore() {
+  if command -v spore >/dev/null 2>&1; then
+    SPORE=("$(command -v spore)")
+    return
+  fi
+
+  if [[ -x "$REPO_DIR/scripts/spore" ]]; then
+    SPORE=("$REPO_DIR/scripts/spore")
+    return
+  fi
+
+  printf 'Gummy Spore could not find spore on PATH or in the repository.\n' >&2
+  exit 1
 }
 
 load_theme() {
@@ -71,8 +89,6 @@ random_message() {
 
 show_welcome() {
   local voice="$1"
-  local greeting
-  local subtitle
   local title_line
   local greeting_line
   local subtitle_line
@@ -80,8 +96,12 @@ show_welcome() {
   local terminal_width
   local panel_width
 
-  greeting="$(random_message "$voice" "greetings")"
-  subtitle="$(random_message "$voice" "subtitles")"
+  if [[ -z "$WELCOME_GREETING" ]]; then
+    WELCOME_GREETING="$(random_message "$voice" "greetings")"
+  fi
+  if [[ -z "$WELCOME_SUBTITLE" ]]; then
+    WELCOME_SUBTITLE="$(random_message "$voice" "subtitles")"
+  fi
 
   terminal_width="$(tput cols 2>/dev/null || printf '80')"
   panel_width=$((terminal_width - 4))
@@ -97,11 +117,11 @@ show_welcome() {
     "Gummy Spore")"
   greeting_line="$(gum style \
     --foreground "${GUM_UB_ON_SURFACE:-}" \
-    "$greeting")"
+    "$WELCOME_GREETING")"
   subtitle_line="$(gum style \
     --faint \
     --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
-    "$subtitle")"
+    "$WELCOME_SUBTITLE")"
 
   content="$(gum join --vertical \
     "$title_line" \
@@ -120,40 +140,188 @@ show_welcome() {
     "$content"
 }
 
+show_main_question() {
+  local question="$1"
+
+  printf '\n'
+  gum style \
+    --bold \
+    --foreground "${GUM_UB_ON_SURFACE:-}" \
+    "$question"
+}
+
+show_current_setup() {
+  local status_json
+  local profile_name
+  local profile_json
+  local profile_type
+  local context_profile
+  local context_json
+  local base_palette
+  local mood
+  local target_count
+  local runs
+  local content
+  local terminal_width
+  local panel_width
+
+  status_json="$("${SPORE[@]}" status --json)"
+  profile_name="$(jq -r '.status.currentProfile // "desktop"' <<<"$status_json")"
+  profile_json="$("${SPORE[@]}" profile show "$profile_name" --json)"
+  profile_type="$(jq -r '.profile.type // "profile"' <<<"$profile_json")"
+
+  if [[ "$profile_type" == "composition" ]]; then
+    context_profile="$(jq -r '.profile.currentProfile // .profile.runs[-1].profile' <<<"$profile_json")"
+    context_json="$("${SPORE[@]}" profile show "$context_profile" --json)"
+    runs="$(jq -r '.profile.runs | map(.profile) | join(" + ")' <<<"$profile_json")"
+  else
+    context_profile="$profile_name"
+    context_json="$profile_json"
+    runs=""
+  fi
+
+  base_palette="$(jq -r '.profile.basePalette' <<<"$context_json")"
+  mood="$(jq -r '.profile.mood' <<<"$context_json")"
+  target_count="$(jq -r '.profile.targets | length' <<<"$context_json")"
+  terminal_width="$(tput cols 2>/dev/null || printf '80')"
+  panel_width=$((terminal_width - 4))
+  if ((panel_width > 76)); then
+    panel_width=76
+  elif ((panel_width < 32)); then
+    panel_width=32
+  fi
+
+  content="$(gum format <<EOF
+# Current setup
+
+**Profile:** $profile_name
+$(if [[ "$profile_type" == "composition" ]]; then
+  printf '\nA composition profile combining `%s`.\n' "$runs"
+else
+  printf '\nA profile is the saved ecosystem deciding which recipes each target uses.\n'
+fi)
+**Base palette:** $base_palette
+
+The stable color foundation. Wallpaper colors may influence it, but they do not run the household.
+
+**Mood:** $mood
+
+The mood controls how strongly source colors enter the bloom.
+
+**Targets in $context_profile:** $target_count
+
+Applications and tools currently invited to receive spores.
+EOF
+)"
+
+  gum style \
+    --no-strip-ansi \
+    --border rounded \
+    --border-foreground "${GUM_UB_SURFACE_VARIANT:-}" \
+    --padding "1 2" \
+    --margin "1 0" \
+    --width "$panel_width" \
+    "$content"
+}
+
+show_menu() {
+  local voice="$1"
+  local question
+  local choice
+
+  question="$(random_message "$voice" "showQuestions")"
+  printf '\n'
+  gum style --bold --foreground "${GUM_UB_ON_SURFACE:-}" "$question"
+  printf '\n'
+
+  choice="$(gum choose \
+    --height=5 \
+    --no-show-help \
+    --label-delimiter="::" \
+    "Current setup             -- Profile, palette, mood::current-setup" \
+    "Where the spores landed   -- Themed tools and targets::spore-targets" \
+    "Current colors            -- Palette, source, bloom::current-colors" \
+    "What happened last time   -- Latest lifecycle activity::last-activity" \
+    "Back                      -- Main menu::back")" || return 0
+
+  case "$choice" in
+  "current-setup")
+    printf '\n'
+    show_current_setup
+    ;;
+  "back")
+    return 0
+    ;;
+  *)
+    printf '\n'
+    gum style \
+      --faint \
+      --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
+      "This view is still gathering its thoughts."
+    ;;
+  esac
+}
+
+show_action_acknowledgement() {
+  local voice="$1"
+  local action="$2"
+  local acknowledgement="$3"
+  local action_text
+  local comment_text
+
+  action_text="$(gum style \
+    --bold \
+    --foreground "${GUM_UB_PRIMARY:-${GUM_UB_ON_SURFACE:-}}" \
+    "$action")"
+  comment_text="$(gum style \
+    --faint \
+    --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
+    "→  $(random_message "$voice" "$acknowledgement")")"
+
+  gum join --horizontal "$action_text" "  " "$comment_text"
+}
+
 choose_action() {
   local voice="$1"
   local question
   local action
 
   question="$(random_message "$voice" "questions")"
-  printf '\n'
-  gum style \
-    --bold \
-    --foreground "${GUM_UB_ON_SURFACE:-}" \
-    "$question"
+  show_main_question "$question"
   printf '\n'
 
   action="$(gum choose \
+    --height=4 \
+    --no-show-help \
     "Change something" \
     "Show me" \
     "Remind me" \
     "Leave quietly")" || return 0
 
-  if [[ "$action" == "Leave quietly" ]]; then
+  case "$action" in
+  "Show me")
+    show_action_acknowledgement "$voice" "Show me" "showAcknowledgements"
+    show_menu "$voice"
+    ;;
+  "Leave quietly")
     return 0
-  fi
-
-  printf '\n'
-  gum style \
-    --faint \
-    --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
-    "You chose: $action. This path is still growing."
+    ;;
+  *)
+    printf '\n'
+    gum style \
+      --faint \
+      --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
+      "You chose: $action. This path is still growing."
+    ;;
+  esac
 }
 
 main() {
   local voice
 
+  printf '\033[2J\033[H'
   check_dependencies
+  find_spore
   load_theme
   voice="$(load_voice)"
   show_welcome "$voice"
