@@ -24,6 +24,9 @@ GUM_THEME="${XDG_CONFIG_HOME:-$HOME/.config}/gum/themes/unclaimed-bloom.sh"
 SPORE=()
 WELCOME_GREETING=""
 WELCOME_SUBTITLE=""
+START_OVER=0
+
+trap 'exit 130' INT TERM
 
 check_dependencies() {
   local command_name
@@ -161,7 +164,25 @@ show_current_setup() {
   local mood
   local target_count
   local runs
+  local source_type
+  local source_value
+  local source_description
+  local target_names
+  local run_json
+  local run_profile
+  local run_profile_json
+  local active_targets
+  local run_lines
   local content
+  local profile_block
+  local profile_explanation
+  local profile_runs
+  local palette_block
+  local source_block
+  local mood_block
+  local targets_block
+  local explanation_color
+  local inner_width
   local terminal_width
   local panel_width
 
@@ -173,16 +194,49 @@ show_current_setup() {
   if [[ "$profile_type" == "composition" ]]; then
     context_profile="$(jq -r '.profile.currentProfile // .profile.runs[-1].profile' <<<"$profile_json")"
     context_json="$("${SPORE[@]}" profile show "$context_profile" --json)"
-    runs="$(jq -r '.profile.runs | map(.profile) | join(" + ")' <<<"$profile_json")"
+    target_names=""
+    run_lines=""
+
+    while IFS= read -r run_json; do
+      run_profile="$(jq -r '.profile' <<<"$run_json")"
+      run_profile_json="$("${SPORE[@]}" profile show "$run_profile" --json)"
+      active_targets="$(jq -nr \
+        --argjson run "$run_json" \
+        --argjson profile "$(jq '.profile' <<<"$run_profile_json")" \
+        '$profile.targets | keys
+          | if $run.targets then
+              map(select(. as $target | $run.targets | index($target)))
+            elif $run.exclude then
+              map(select(. as $target | ($run.exclude | index($target)) == null))
+            else
+              .
+            end
+          | .[]')"
+      target_names+="${active_targets}"$'\n'
+      run_lines+=$'\n'
+      run_lines+="- \`$run_profile\` — $(wc -l <<<"$active_targets" | tr -d ' ') target(s)"
+    done < <(jq -c '.profile.runs[]' <<<"$profile_json")
+
+    target_count="$(sed '/^$/d' <<<"$target_names" | sort -u | wc -l | tr -d ' ')"
+    runs="$run_lines"
   else
     context_profile="$profile_name"
     context_json="$profile_json"
     runs=""
+    target_count="$(jq -r '.profile.targets | length' <<<"$context_json")"
   fi
 
   base_palette="$(jq -r '.profile.basePalette' <<<"$context_json")"
   mood="$(jq -r '.profile.mood' <<<"$context_json")"
-  target_count="$(jq -r '.profile.targets | length' <<<"$context_json")"
+  source_type="$(jq -r '.profile.source.type' <<<"$context_json")"
+  if [[ "$source_type" == "matugen" ]]; then
+    source_value="$(jq -r '.profile.source.colorsPath' <<<"$context_json")"
+    source_description="Wallpaper colors supplied through Matugen."
+  else
+    source_value="$(jq -r '.profile.source.color' <<<"$context_json")"
+    source_description="A fixed seed color used instead of wallpaper colors."
+  fi
+
   terminal_width="$(tput cols 2>/dev/null || printf '80')"
   panel_width=$((terminal_width - 4))
   if ((panel_width > 76)); then
@@ -190,29 +244,80 @@ show_current_setup() {
   elif ((panel_width < 32)); then
     panel_width=32
   fi
+  inner_width=$((panel_width - 6))
+  explanation_color="${GUM_UB_ON_SURFACE_VARIANT:-}"
 
-  content="$(gum format <<EOF
+  profile_block="$(gum format <<EOF
 # Current setup
 
-**Profile:** $profile_name
-$(if [[ "$profile_type" == "composition" ]]; then
-  printf '\nA composition profile combining `%s`.\n' "$runs"
-else
-  printf '\nA profile is the saved ecosystem deciding which recipes each target uses.\n'
-fi)
-**Base palette:** $base_palette
-
-The stable color foundation. Wallpaper colors may influence it, but they do not run the household.
-
-**Mood:** $mood
-
-The mood controls how strongly source colors enter the bloom.
-
-**Targets in $context_profile:** $target_count
-
-Applications and tools currently invited to receive spores.
+Profile: **$profile_name**
 EOF
 )"
+  if [[ "$profile_type" == "composition" ]]; then
+    profile_explanation="A composition profile. It combines several profiles so different parts of the desktop can disagree politely."
+    profile_runs="$(gum format "$runs")"
+  else
+    profile_explanation="A profile is the saved ecosystem deciding which recipes each target uses."
+    profile_runs=""
+  fi
+  profile_block+=$'\n'
+  profile_block+="$(gum style \
+    --faint \
+    --foreground "$explanation_color" \
+    --margin "0 0 0 4" \
+    --width "$inner_width" \
+    "$profile_explanation")"
+  if [[ -n "$profile_runs" ]]; then
+    profile_block+=$'\n'
+    profile_block+="$profile_runs"
+  fi
+
+  palette_block="$(gum format "Base palette: **$base_palette**")"
+  palette_block+=$'\n\n'
+  palette_block+="$(gum style \
+    --faint \
+    --foreground "$explanation_color" \
+    --margin "0 0 0 4" \
+    --width "$inner_width" \
+    "The stable color foundation. Wallpaper colors may influence it, but they do not run the household.")"
+
+  source_block="$(gum format "Color source: **$source_value**")"
+  source_block+=$'\n\n'
+  source_block+="$(gum style \
+    --faint \
+    --foreground "$explanation_color" \
+    --margin "0 0 0 4" \
+    --width "$inner_width" \
+    "$source_description")"
+
+  mood_block="$(gum format "Mood: **$mood**")"
+  mood_block+=$'\n\n'
+  mood_block+="$(gum style \
+    --faint \
+    --foreground "$explanation_color" \
+    --margin "0 0 0 4" \
+    --width "$inner_width" \
+    "The mood controls how strongly source colors enter the bloom.")"
+
+  targets_block="$(gum format "Targets receiving spores: **$target_count**")"
+  targets_block+=$'\n\n'
+  targets_block+="$(gum style \
+    --faint \
+    --foreground "$explanation_color" \
+    --margin "0 0 0 4" \
+    --width "$inner_width" \
+    "Applications, tools, and desktop creatures included by this setup.")"
+
+  content="$(gum join --vertical \
+    "$profile_block" \
+    "" \
+    "$palette_block" \
+    "" \
+    "$source_block" \
+    "" \
+    "$mood_block" \
+    "" \
+    "$targets_block")"
 
   gum style \
     --no-strip-ansi \
@@ -222,6 +327,23 @@ EOF
     --margin "1 0" \
     --width "$panel_width" \
     "$content"
+
+  finish_view
+}
+
+finish_view() {
+  local choice
+
+  printf '\n'
+  choice="$(gum choose \
+    --height=2 \
+    --no-show-help \
+    "Done for today" \
+    "Start over")" || return 0
+
+  if [[ "$choice" == "Start over" ]]; then
+    START_OVER=1
+  fi
 }
 
 show_menu() {
@@ -325,7 +447,17 @@ main() {
   load_theme
   voice="$(load_voice)"
   show_welcome "$voice"
-  choose_action "$voice"
+
+  while true; do
+    START_OVER=0
+    choose_action "$voice"
+    if ((START_OVER == 0)); then
+      break
+    fi
+
+    printf '\033[2J\033[H'
+    show_welcome "$voice"
+  done
 }
 
 main "$@"

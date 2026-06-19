@@ -1,0 +1,117 @@
+# Gummy Spore working memory
+
+Updated: 2026-06-19
+
+## Purpose
+
+`spore` remains the serious, scriptable backend.
+
+`gummy-spore` is the friendly memory layer for humans who forgot the commands,
+where they left their keys, or whether they already ate.
+
+It should ask about intentions in human language, explain project vocabulary,
+and keep the interaction playful without becoming a circus.
+
+## Voice
+
+- Default voice: `config/gummy-spore/voice.json`
+- Personal override:
+  `~/.config/unclaimed-bloom/gummy-spore/voice.json`
+- Personal groups replace matching default groups. Missing groups fall back.
+- Greetings, subtitles, questions, and acknowledgements are randomized.
+- Stable action labels remain in the script.
+
+## Current UI
+
+Run:
+
+```bash
+scripts/gummy-spore
+```
+
+The application:
+
+1. Clears the terminal once at startup.
+2. Loads the generated Gum theme when available.
+3. Shows a rounded welcome panel.
+4. Asks a randomized main question.
+5. Offers stable actions:
+   - Change something
+   - Show me
+   - Remind me
+   - Leave quietly
+6. Shows a strong selected action plus a dim randomized acknowledgement.
+7. Opens the `Show me` menu with short inline descriptions.
+
+## Show me
+
+Current choices:
+
+```text
+Current setup             -- Profile, palette, mood
+Where the spores landed   -- Themed tools and targets
+Current colors            -- Palette, source, bloom
+What happened last time   -- Latest lifecycle activity
+Back                      -- Main menu
+```
+
+Only `Current setup` is implemented.
+
+It reads JSON from `spore status` and `spore profile show`. It displays:
+
+- current profile
+- composition runs
+- base palette
+- Matugen or seed color source
+- mood
+- unique target count across the composition
+
+Formatting decisions:
+
+- labels are ordinary
+- values are bold
+- explanations are dimmed
+- explanations are indented beneath their fields
+- concrete profile names are accented
+- results appear in a constrained rounded panel
+
+The result screen offers:
+
+- Done for today
+- Start over
+
+`Start over` returns to the main menu and preserves the original randomized
+welcome voice.
+
+## Commits
+
+```text
+0329655 feat(gummy-spore): add welcome panel
+d73a2cf feat(gummy-spore): add action menu
+b20a2da feat(gummy-spore): add show menu
+```
+
+No co-author or AI attribution trailers in commits.
+
+## Current uncommitted work
+
+`scripts/gummy-spore` contains the expanded `Current setup` view and the final
+explanation indentation adjustment. It has passed:
+
+```bash
+bash -n scripts/gummy-spore
+git diff --check
+```
+
+The `.memory-gummy-spore` file itself is also uncommitted.
+
+## Next session
+
+1. Run `scripts/gummy-spore`.
+2. Choose `Show me` then `Current setup`.
+3. Review the final indentation and spacing.
+4. Commit the Current setup slice if accepted.
+5. Implement `Where the spores landed` next.
+
+Do not jump ahead into the full workflow. Continue in small visible slices and
+let Adam test each one in a second terminal before committing.
