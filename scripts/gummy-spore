@@ -120,6 +120,36 @@ show_welcome() {
     "$content"
 }
 
+choose_action() {
+  local voice="$1"
+  local question
+  local action
+
+  question="$(random_message "$voice" "questions")"
+  printf '\n'
+  gum style \
+    --bold \
+    --foreground "${GUM_UB_ON_SURFACE:-}" \
+    "$question"
+  printf '\n'
+
+  action="$(gum choose \
+    "Change something" \
+    "Show me" \
+    "Remind me" \
+    "Leave quietly")" || return 0
+
+  if [[ "$action" == "Leave quietly" ]]; then
+    return 0
+  fi
+
+  printf '\n'
+  gum style \
+    --faint \
+    --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
+    "You chose: $action. This path is still growing."
+}
+
 main() {
   local voice
 
@@ -127,6 +157,7 @@ main() {
   load_theme
   voice="$(load_voice)"
   show_welcome "$voice"
+  choose_action "$voice"
 }
 
 main "$@"

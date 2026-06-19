@@ -10,5 +10,11 @@
     "You choose the intention. I will remember the gardening vocabulary.",
     "No need to remember where you left the commands.",
     "A small memory layer for a desktop with opinions."
+  ],
+  "questions": [
+    "What can I do for you today?",
+    "What are we doing with the desktop today?",
+    "What needs your attention?",
+    "Where shall we wander next?"
   ]
 }
