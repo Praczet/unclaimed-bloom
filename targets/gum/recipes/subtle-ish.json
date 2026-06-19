@@ -1,5 +1,6 @@
 {
-  "name": "gummy",
+  "name": "subtle-ish",
+  "target": "gum",
   "description": "Gum shell UI theme generated from the active Unclaimed Bloom palette.",
   "tokens": {
     "background": {
@@ -9,7 +10,7 @@
       "bloom": "surface.raised"
     },
     "surface_variant": {
-      "bloom": "surface.variant"
+      "bloom": "surface.raised"
     },
     "primary": {
       "bloom": "accent.primary"
@@ -39,7 +40,7 @@
       "bloom": "text.primary"
     },
     "outline": {
-      "bloom": "border.muted"
+      "bloom": "border.subtle"
     }
   }
 }
