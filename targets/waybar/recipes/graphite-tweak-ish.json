@@ -55,6 +55,11 @@
       "base": "red",
       "source": "error",
       "mix": 0.08
+    },
+    "warning": {
+      "base": "yellow",
+      "source": "warning",
+      "mix": 0.08
     }
   }
 }
