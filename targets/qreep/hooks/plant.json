@@ -1,0 +1,16 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": [
+        "~/Development/Hyprland/quickshell/Qreep/theme/colors/UnclaimedBloomColors.qml",
+        "~/.config/quickshell/qreep/theme/colors/UnclaimedBloomColors.qml"
+      ]
+    },
+    {
+      "type": "exec",
+      "command": "bash",
+      "args": ["-c", "quickshell ipc -c qreep call qreep-dashboard refresh || true"]
+    }
+  ]
+}

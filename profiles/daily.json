@@ -25,6 +25,7 @@
     "gum": "subtle-ish",
     "waybar": "source-heavy",
     "potato": "subtle-ish",
-    "broot": "subtle-ish"
+    "broot": "subtle-ish",
+    "qreep": "source-heavy"
   }
 }
