@@ -88,7 +88,7 @@ spore recipe validate <name>
 
 `targets/<name>/templates/<output-filename>`
 
-The filename must match what the app expects (e.g. `theme.toml`, `colors.conf`, `unclaimed-bloom.hjson`).
+The filename must match what the app expects (e.g. `theme.toml`, `colors.conf`, `unclaimed-bloom.hjson`). A target can have more than one template file; `grow` renders all files in sorted filename order into the target's rendered cache.
 
 Use `{{token_name}}` for each color slot. The renderer replaces each placeholder with a `#rrggbb` hex value. For other formats, modifiers are available:
 
@@ -127,7 +127,16 @@ For apps that need a reload signal after the file is copied, chain an `exec` ste
 }
 ```
 
-The copy `dest` is an array because the same file can be deployed to multiple paths.
+The copy `dest` is an array because the same file can be deployed to multiple paths. For multi-template targets, add `source` to choose which rendered filename to deploy:
+
+```json
+{
+  "steps": [
+    { "type": "copy", "source": "colors.qml", "dest": ["~/.config/app/colors.qml"] },
+    { "type": "copy", "source": "theme.css", "dest": ["~/.config/app/theme.css"] }
+  ]
+}
+```
 
 Available step types:
 
@@ -200,7 +209,7 @@ If `grow` errors with `Missing template tokens`, the token name in the template 
 ## Checklist
 
 - [ ] `targets/<name>/recipes/subtle-ish.json` — token → bloom + source + mix
-- [ ] `targets/<name>/templates/<output-file>` — `{{token}}` placeholders
+- [ ] `targets/<name>/templates/<output-file>` — one or more files with `{{token}}` placeholders
 - [ ] `targets/<name>/hooks/plant.json` — copy + optional reload
 - [ ] Copied to `~/.config/unclaimed-bloom/targets/<name>/`
 - [ ] Added to `~/.config/unclaimed-bloom/profiles/daily.json`

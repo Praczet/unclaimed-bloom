@@ -1,4 +1,5 @@
 import { TemplateRenderer } from "./TemplateRenderer.ts";
+import { BloomPaths } from "../paths/BloomPaths.ts";
 
 function assertEquals(actual: unknown, expected: unknown): void {
   const actualJson = JSON.stringify(actual);
@@ -8,7 +9,10 @@ function assertEquals(actual: unknown, expected: unknown): void {
   }
 }
 
-function assertThrows(action: () => unknown, expectedMessagePart: string): void {
+function assertThrows(
+  action: () => unknown,
+  expectedMessagePart: string,
+): void {
   try {
     action();
   } catch (error) {
@@ -34,7 +38,9 @@ Deno.test("render substitutes simple tokens", () => {
 });
 
 Deno.test("render substitutes token with underscores", () => {
-  const result = renderer.render("{{surface_variant}}", { surface_variant: "#414868" });
+  const result = renderer.render("{{surface_variant}}", {
+    surface_variant: "#414868",
+  });
   assertEquals(result, "#414868");
 });
 
@@ -55,7 +61,9 @@ Deno.test("render substitutes same token used multiple times", () => {
 });
 
 Deno.test("render |rgba produces hyprland format (6-digit hex)", () => {
-  const result = renderer.render("$primary = {{primary|rgba}}", { primary: "#7aa2f7" });
+  const result = renderer.render("$primary = {{primary|rgba}}", {
+    primary: "#7aa2f7",
+  });
   assertEquals(result, "$primary = rgba(7aa2f7ff)");
 });
 
@@ -136,4 +144,47 @@ Deno.test("render leaves non-token text unchanged", () => {
   const template = "# comment\nkey = value\n{{token}}";
   const result = renderer.render(template, { token: "#ff0000" });
   assertEquals(result, "# comment\nkey = value\n#ff0000");
+});
+
+Deno.test("renderToCache renders every template file for a target", async () => {
+  const dir = await Deno.makeTempDir();
+  const paths = new BloomPaths({
+    cwd: dir,
+    home: dir,
+    dataDir: `${dir}/data`,
+    cacheDir: `${dir}/cache`,
+  });
+  await Deno.mkdir(`${paths.dataDir}/targets/fovia/templates`, {
+    recursive: true,
+  });
+  await Deno.mkdir(`${paths.cacheDir}/spores/daily`, { recursive: true });
+  await Deno.writeTextFile(
+    `${paths.dataDir}/targets/fovia/templates/colors.qml`,
+    "{{primary}}\n",
+  );
+  await Deno.writeTextFile(
+    `${paths.dataDir}/targets/fovia/templates/theme.css`,
+    ":root { --accent: {{primary}}; }\n",
+  );
+  await Deno.writeTextFile(
+    paths.sporeFile("daily", "fovia"),
+    JSON.stringify({
+      recipe: "graphite-tweak-ish",
+      colors: { primary: "#97a8d1" },
+    }),
+  );
+
+  const result = await renderer.renderToCache(paths, "daily", "fovia");
+
+  assertEquals(result.outputPaths.length, 2);
+  assertEquals(
+    await Deno.readTextFile(
+      `${paths.renderedDir("daily", "fovia")}/colors.qml`,
+    ),
+    "#97a8d1\n",
+  );
+  assertEquals(
+    await Deno.readTextFile(`${paths.renderedDir("daily", "fovia")}/theme.css`),
+    ":root { --accent: #97a8d1; }\n",
+  );
 });

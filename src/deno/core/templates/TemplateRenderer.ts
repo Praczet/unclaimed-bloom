@@ -15,7 +15,9 @@ export class TemplateRenderer {
           missingTokens.push(key);
           return "";
         }
-        return modifier !== undefined ? this.applyModifier(value, modifier, key) : value;
+        return modifier !== undefined
+          ? this.applyModifier(value, modifier, key)
+          : value;
       },
     );
 
@@ -31,32 +33,36 @@ export class TemplateRenderer {
     profile: string,
     target: string,
     dryRun = false,
-  ): Promise<{ outputPath: string; reportPath: string }> {
+  ): Promise<
+    { outputPath: string; outputPaths: string[]; reportPath: string }
+  > {
     const templatesDirs = [
       paths.targetTemplatesDir(target),
       paths.repoTargetTemplatesDir(target),
     ];
 
-    let templatePath = "";
+    const templatePaths: string[] = [];
     for (const dir of templatesDirs) {
       try {
+        const entries: string[] = [];
         for await (const entry of Deno.readDir(dir)) {
           if (entry.isFile) {
-            templatePath = `${dir}/${entry.name}`;
-            break;
+            entries.push(`${dir}/${entry.name}`);
           }
         }
+        entries.sort();
+        templatePaths.push(...entries);
       } catch { /* dir does not exist — try next */ }
-      if (templatePath) break;
+      if (templatePaths.length > 0) break;
     }
 
-    if (!templatePath) {
+    if (templatePaths.length === 0) {
       throw new Error(
-        `No template found for target "${target}". Add at least one file to:\n  ${templatesDirs[0]}`,
+        `No template found for target "${target}". Add at least one file to:\n  ${
+          templatesDirs[0]
+        }`,
       );
     }
-
-    const templateText = await Deno.readTextFile(templatePath);
 
     const sporePath = paths.sporeFile(profile, target);
     let sporeRaw: string;
@@ -84,29 +90,46 @@ export class TemplateRenderer {
         : {};
 
     try {
-      const wallpaper = (await Deno.readTextFile(paths.currentWallpaperFile())).trim();
+      const wallpaper = (await Deno.readTextFile(paths.currentWallpaperFile()))
+        .trim();
       if (wallpaper) colors["wallpaper"] = wallpaper;
     } catch { /* no wallpaper set yet — skip */ }
 
-    let outputText: string;
-    try {
-      outputText = this.render(templateText, colors);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      throw new Error(`${message}\n  Template: ${templatePath}\n  Spore: ${sporePath}`);
-    }
-
     const outputDir = paths.renderedDir(profile, target);
-    const outputFileName = templatePath.split("/").pop() ?? `${target}.rendered`;
-    const outputPath = `${outputDir}/${outputFileName}`;
+    const renderedFiles: Array<
+      { templatePath: string; outputPath: string; outputText: string }
+    > = [];
+    for (const templatePath of templatePaths) {
+      const templateText = await Deno.readTextFile(templatePath);
+      let outputText: string;
+      try {
+        outputText = this.render(templateText, colors);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        throw new Error(
+          `${message}\n  Template: ${templatePath}\n  Spore: ${sporePath}`,
+        );
+      }
+      const outputFileName = templatePath.split("/").pop() ??
+        `${target}.rendered`;
+      renderedFiles.push({
+        templatePath,
+        outputPath: `${outputDir}/${outputFileName}`,
+        outputText,
+      });
+    }
 
     const now = new Date();
     const startedAt = localISOString(now);
-    const reportPath = `${paths.reportsDir()}/${localTimestampForFilename(now)}-grow-${profile}-${target}.json`;
+    const reportPath = `${paths.reportsDir()}/${
+      localTimestampForFilename(now)
+    }-grow-${profile}-${target}.json`;
 
     if (!dryRun) {
       await Deno.mkdir(outputDir, { recursive: true });
-      await Deno.writeTextFile(outputPath, outputText);
+      for (const rendered of renderedFiles) {
+        await Deno.writeTextFile(rendered.outputPath, rendered.outputText);
+      }
 
       const recipeField =
         spore !== null && typeof spore === "object" && "recipe" in spore
@@ -119,8 +142,11 @@ export class TemplateRenderer {
         profile,
         recipe: recipeField,
         status: "ok",
-        inputs: { sporePath, templatePath },
-        outputs: [outputPath],
+        inputs: {
+          sporePath,
+          templatePaths: renderedFiles.map((file) => file.templatePath),
+        },
+        outputs: renderedFiles.map((file) => file.outputPath),
         warnings: [],
         errors: [],
         startedAt,
@@ -129,7 +155,11 @@ export class TemplateRenderer {
       await writer.write(reportPath, report);
     }
 
-    return { outputPath, reportPath };
+    return {
+      outputPath: renderedFiles[0].outputPath,
+      outputPaths: renderedFiles.map((file) => file.outputPath),
+      reportPath,
+    };
   }
 
   private applyModifier(hex: string, modifier: string, token: string): string {

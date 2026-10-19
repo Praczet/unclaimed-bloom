@@ -5,6 +5,7 @@ import type { WorkerProgress } from "../workers/WorkerRunner.ts";
 export interface CopyStep {
   readonly type: "copy";
   readonly dest: string[];
+  readonly source?: string;
 }
 
 export interface ExecStep {
@@ -24,7 +25,12 @@ export type HookStep = CopyStep | ExecStep | WorkerStep;
 export interface WorkerEventSink {
   start(target: string, worker: string): Promise<void>;
   progress(target: string, worker: string, p: WorkerProgress): Promise<void>;
-  done(target: string, worker: string, current: number, total: number): Promise<void>;
+  done(
+    target: string,
+    worker: string,
+    current: number,
+    total: number,
+  ): Promise<void>;
   error(target: string, worker: string, error: string): Promise<void>;
 }
 
@@ -34,6 +40,7 @@ export interface PlantHook {
 
 export interface PlantContext {
   readonly rendered: string;
+  readonly renderedDir: string;
   readonly profile: string;
   readonly target: string;
   readonly recipe: string;
@@ -61,8 +68,12 @@ export class HookRunner {
     dryRun = false,
     workerSink?: WorkerEventSink,
   ): Promise<PlantResult> {
-    const recipe = await this.readRecipeFromSpore(paths.sporeFile(profile, target), target);
-    const rendered = await this.findRenderedFile(paths.renderedDir(profile, target), target);
+    const recipe = await this.readRecipeFromSpore(
+      paths.sporeFile(profile, target),
+      target,
+    );
+    const renderedDir = paths.renderedDir(profile, target);
+    const rendered = await this.findRenderedFile(renderedDir, target);
     const hookPath = await this.findHookFile(paths, target);
 
     if (!hookPath) {
@@ -72,6 +83,7 @@ export class HookRunner {
     const hook = await this.loadHook(hookPath);
     const context: PlantContext = {
       rendered,
+      renderedDir,
       profile,
       target,
       recipe,
@@ -115,6 +127,7 @@ export class HookRunner {
   public substitute(template: string, context: PlantContext): string {
     return template
       .replace(/\{\{rendered\}\}/g, context.rendered)
+      .replace(/\{\{rendered_dir\}\}/g, context.renderedDir)
       .replace(/\{\{profile\}\}/g, context.profile)
       .replace(/\{\{target\}\}/g, context.target)
       .replace(/\{\{recipe\}\}/g, context.recipe)
@@ -122,7 +135,10 @@ export class HookRunner {
       .replace(/\{\{data_dir\}\}/g, context.dataDir);
   }
 
-  private async readRecipeFromSpore(sporePath: string, target: string): Promise<string> {
+  private async readRecipeFromSpore(
+    sporePath: string,
+    target: string,
+  ): Promise<string> {
     try {
       const raw = await Deno.readTextFile(sporePath);
       const spore = JSON.parse(raw) as Record<string, unknown>;
@@ -132,11 +148,17 @@ export class HookRunner {
     }
   }
 
-  private async findRenderedFile(renderedDir: string, target: string): Promise<string> {
+  private async findRenderedFile(
+    renderedDir: string,
+    target: string,
+  ): Promise<string> {
     try {
+      const files: string[] = [];
       for await (const entry of Deno.readDir(renderedDir)) {
-        if (entry.isFile) return `${renderedDir}/${entry.name}`;
+        if (entry.isFile) files.push(`${renderedDir}/${entry.name}`);
       }
+      files.sort();
+      if (files.length > 0) return files[0];
     } catch (err) {
       if (err instanceof Deno.errors.NotFound) {
         throw new Error(
@@ -150,7 +172,10 @@ export class HookRunner {
     );
   }
 
-  private async findHookFile(paths: BloomPaths, target: string): Promise<string | null> {
+  private async findHookFile(
+    paths: BloomPaths,
+    target: string,
+  ): Promise<string | null> {
     const candidates = [
       `${paths.dataDir}/targets/${target}/hooks/plant.json`,
       `${paths.cwd}/targets/${target}/hooks/plant.json`,
@@ -182,23 +207,52 @@ export class HookRunner {
       const type = step["type"];
 
       if (type === "copy") {
-        if (!Array.isArray(step["dest"]) || step["dest"].some((d) => typeof d !== "string")) {
-          throw new Error(`Step ${i} "copy" requires a "dest" string array:\n  ${path}`);
+        if (
+          !Array.isArray(step["dest"]) ||
+          step["dest"].some((d) => typeof d !== "string")
+        ) {
+          throw new Error(
+            `Step ${i} "copy" requires a "dest" string array:\n  ${path}`,
+          );
         }
-        return { type: "copy", dest: step["dest"] as string[] };
+        if (
+          step["source"] !== undefined && typeof step["source"] !== "string"
+        ) {
+          throw new Error(
+            `Step ${i} "copy" source must be a string when present:\n  ${path}`,
+          );
+        }
+        return {
+          type: "copy",
+          dest: step["dest"] as string[],
+          source: step["source"] as string | undefined,
+        };
       }
 
       if (type === "exec" || type === "worker") {
         if (typeof step["command"] !== "string") {
-          throw new Error(`Step ${i} "${type}" requires a "command" string:\n  ${path}`);
+          throw new Error(
+            `Step ${i} "${type}" requires a "command" string:\n  ${path}`,
+          );
         }
-        if (!Array.isArray(step["args"]) || step["args"].some((a) => typeof a !== "string")) {
-          throw new Error(`Step ${i} "${type}" requires an "args" string array:\n  ${path}`);
+        if (
+          !Array.isArray(step["args"]) ||
+          step["args"].some((a) => typeof a !== "string")
+        ) {
+          throw new Error(
+            `Step ${i} "${type}" requires an "args" string array:\n  ${path}`,
+          );
         }
-        return { type, command: step["command"], args: step["args"] as string[] };
+        return {
+          type,
+          command: step["command"],
+          args: step["args"] as string[],
+        };
       }
 
-      throw new Error(`Step ${i} has unknown type "${type}" in hook file:\n  ${path}`);
+      throw new Error(
+        `Step ${i} has unknown type "${type}" in hook file:\n  ${path}`,
+      );
     });
 
     return { steps };
@@ -212,28 +266,50 @@ export class HookRunner {
   ): Promise<StepResult> {
     if (step.type === "copy") return await this.executeCopy(step, context);
     if (step.type === "exec") return await this.executeExec(step, context);
-    if (step.type === "worker") return await this.executeWorker(step, context, target, workerSink);
-    throw new Error(`Unknown hook step type: ${(step as { type: string }).type}`);
+    if (step.type === "worker") {
+      return await this.executeWorker(step, context, target, workerSink);
+    }
+    throw new Error(
+      `Unknown hook step type: ${(step as { type: string }).type}`,
+    );
   }
 
-  private async executeCopy(step: CopyStep, context: PlantContext): Promise<StepResult> {
-    const dests = step.dest.map((d) => this.expandHome(this.substitute(d, context)));
+  private async executeCopy(
+    step: CopyStep,
+    context: PlantContext,
+  ): Promise<StepResult> {
+    const source = this.copySource(step, context);
+    const dests = step.dest.map((d) =>
+      this.expandHome(this.substitute(d, context))
+    );
     for (const dest of dests) {
       const dir = dest.slice(0, dest.lastIndexOf("/"));
       if (dir) await Deno.mkdir(dir, { recursive: true });
-      await Deno.copyFile(context.rendered, dest);
+      await Deno.copyFile(source, dest);
     }
     return { type: "copy", ok: true, detail: dests.join(", ") };
   }
 
-  private async executeExec(step: ExecStep, context: PlantContext): Promise<StepResult> {
+  private copySource(step: CopyStep, context: PlantContext): string {
+    if (!step.source) return context.rendered;
+    const source = this.expandHome(this.substitute(step.source, context));
+    return source.startsWith("/") ? source : `${context.renderedDir}/${source}`;
+  }
+
+  private async executeExec(
+    step: ExecStep,
+    context: PlantContext,
+  ): Promise<StepResult> {
     const command = this.expandHome(this.substitute(step.command, context));
     const args = step.args.map((a) => this.substitute(a, context));
-    const result = await new Deno.Command(command, { args, stderr: "piped" }).output();
+    const result = await new Deno.Command(command, { args, stderr: "piped" })
+      .output();
     if (!result.success) {
       const stderr = new TextDecoder().decode(result.stderr).trim();
       throw new Error(
-        `Command failed: ${command} ${args.join(" ")}${stderr ? `\n${stderr}` : ""}`,
+        `Command failed: ${command} ${args.join(" ")}${
+          stderr ? `\n${stderr}` : ""
+        }`,
       );
     }
     return { type: "exec", ok: true, detail: `${command} ${args.join(" ")}` };
@@ -262,7 +338,11 @@ export class HookRunner {
     if (result.ok) {
       const final = lastProgress ?? { current: 0, total: 0, msg: "" };
       await workerSink?.done(target, workerName, final.current, final.total);
-      return { type: "worker", ok: true, detail: `${command} ${args.join(" ")}` };
+      return {
+        type: "worker",
+        ok: true,
+        detail: `${command} ${args.join(" ")}`,
+      };
     } else {
       const error = result.stderr || `exit code ${result.exitCode}`;
       await workerSink?.error(target, workerName, error);
@@ -272,15 +352,30 @@ export class HookRunner {
 
   private dryRunStep(step: HookStep, context: PlantContext): StepResult {
     if (step.type === "copy") {
-      const dests = step.dest.map((d) => this.expandHome(this.substitute(d, context)));
-      return { type: "copy", ok: true, detail: `would copy to: ${dests.join(", ")}` };
+      const source = this.copySource(step, context);
+      const dests = step.dest.map((d) =>
+        this.expandHome(this.substitute(d, context))
+      );
+      return {
+        type: "copy",
+        ok: true,
+        detail: `would copy ${source} to: ${dests.join(", ")}`,
+      };
     }
     if (step.type === "exec" || step.type === "worker") {
       const command = this.expandHome(this.substitute(step.command, context));
       const args = step.args.map((a) => this.substitute(a, context));
-      return { type: step.type, ok: true, detail: `would run: ${command} ${args.join(" ")}` };
+      return {
+        type: step.type,
+        ok: true,
+        detail: `would run: ${command} ${args.join(" ")}`,
+      };
     }
-    return { type: (step as { type: string }).type, ok: false, detail: "unknown step type" };
+    return {
+      type: (step as { type: string }).type,
+      ok: false,
+      detail: "unknown step type",
+    };
   }
 
   private expandHome(path: string): string {

@@ -156,7 +156,7 @@ The project has its own vocabulary. These are not metaphors for the sake of it â
 | **Bloom** | The shared semantic color palette generated for a profile. It is the result of mixing a base palette with Matugen source colors under a mood. All targets draw from it. | `~/.cache/unclaimed-bloom/blooms/<profile>.json` |
 | **Spore** | A target-specific interpretation of the bloom. Each tool gets its own spore because each tool speaks a different color dialect (e.g. Ghostty: `background`, `foreground`, `palette_0`; waybar: `primary`, `surface`, `on_surface`). | `~/.cache/unclaimed-bloom/spores/<profile>/<target>.json` |
 | **Recipe** | The rule that decides how a target reads the bloom. Maps target-specific token names to bloom tokens, optionally with extra Matugen pull via `mix`. | `targets/<target>/recipes/<name>.json` |
-| **Template** | The shape of the final config file, with `{{token}}` placeholders. The renderer fills them in from the spore. | `targets/<target>/templates/` |
+| **Template** | The shape of the final config file, with `{{token}}` placeholders. The renderer fills all target template files from the spore. | `targets/<target>/templates/` |
 | **Profile** | A saved ecosystem: base palette + mood + Matugen source + which recipe each target uses. The everyday one is `daily`. | `profiles/` |
 | **Mood** | A set of mix weights that controls how strongly Matugen source colors pull on the base palette. Named stages: `dormant`, `budding`, `blooming`, `overgrown`. | `moods/` |
 | **Target** | One app that Unclaimed Bloom themes. Each target has recipes, a template, and optionally a plant hook. | `targets/<target>/` |

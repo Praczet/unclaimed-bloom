@@ -15,14 +15,20 @@ async function assertRejects(
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (!msg.includes(expectedPart)) {
-      throw new Error(`Expected error to include "${expectedPart}", got "${msg}"`);
+      throw new Error(
+        `Expected error to include "${expectedPart}", got "${msg}"`,
+      );
     }
     return;
   }
   throw new Error("Expected action to reject, but it resolved");
 }
 
-async function writeTempJson(dir: string, name: string, data: unknown): Promise<string> {
+async function writeTempJson(
+  dir: string,
+  name: string,
+  data: unknown,
+): Promise<string> {
   const path = `${dir}/${name}`;
   await Deno.writeTextFile(path, JSON.stringify(data, null, 2));
   return path;
@@ -30,6 +36,7 @@ async function writeTempJson(dir: string, name: string, data: unknown): Promise<
 
 const ctx: PlantContext = {
   rendered: "/cache/rendered/daily/ghostty/ghostty.theme",
+  renderedDir: "/cache/rendered/daily/ghostty",
   profile: "daily",
   target: "ghostty",
   recipe: "subtle-ish",
@@ -57,6 +64,12 @@ Deno.test("HookRunner substitutes repeated variables", () => {
   assertEquals(result, "ghostty/subtle-ish/ghostty");
 });
 
+Deno.test("HookRunner substitutes rendered directory", () => {
+  const runner = new HookRunner();
+  const result = runner.substitute("{{rendered_dir}}/theme.css", ctx);
+  assertEquals(result, "/cache/rendered/daily/ghostty/theme.css");
+});
+
 Deno.test("HookRunner leaves unknown placeholders unchanged", () => {
   const runner = new HookRunner();
   const result = runner.substitute("{{unknown}} {{profile}}", ctx);
@@ -78,8 +91,15 @@ Deno.test("HookRunner loads a valid hook file", async () => {
   const hook = await runner.loadHook(path);
 
   assertEquals(hook.steps.length, 2);
-  assertEquals(hook.steps[0], { type: "copy", dest: ["~/.config/ghostty/theme.toml"] });
-  assertEquals(hook.steps[1], { type: "exec", command: "echo", args: ["hello"] });
+  assertEquals(hook.steps[0], {
+    type: "copy",
+    dest: ["~/.config/ghostty/theme.toml"],
+  });
+  assertEquals(hook.steps[1], {
+    type: "exec",
+    command: "echo",
+    args: ["hello"],
+  });
 });
 
 Deno.test("HookRunner throws on missing hook file", async () => {
@@ -129,7 +149,10 @@ Deno.test("HookRunner throws when exec step has no command", async () => {
     steps: [{ type: "exec", args: ["hello"] }],
   });
   const runner = new HookRunner();
-  await assertRejects(() => runner.loadHook(path), '"exec" requires a "command"');
+  await assertRejects(
+    () => runner.loadHook(path),
+    '"exec" requires a "command"',
+  );
 });
 
 // --- copy step ---
@@ -176,6 +199,33 @@ Deno.test("HookRunner copy step substitutes variables in dest", async () => {
   assertEquals(await Deno.readTextFile(`${dir}/daily-ghostty.txt`), "content");
 });
 
+Deno.test("HookRunner copy step can choose a named rendered source", async () => {
+  const dir = await Deno.makeTempDir();
+  const renderedDir = `${dir}/rendered`;
+  await Deno.mkdir(renderedDir);
+  await Deno.writeTextFile(`${renderedDir}/theme.css`, "css");
+  await Deno.writeTextFile(`${renderedDir}/colors.qml`, "qml");
+  const destFile = `${dir}/out/theme.css`;
+
+  const hookPath = await writeTempJson(dir, "plant.json", {
+    steps: [{ type: "copy", source: "theme.css", dest: [destFile] }],
+  });
+
+  const runner = new HookRunner();
+  const hook = await runner.loadHook(hookPath);
+  const localCtx: PlantContext = {
+    ...ctx,
+    rendered: `${renderedDir}/colors.qml`,
+    renderedDir,
+  };
+
+  await (runner as unknown as {
+    executeStep: (step: unknown, ctx: PlantContext) => Promise<unknown>;
+  }).executeStep(hook.steps[0], localCtx);
+
+  assertEquals(await Deno.readTextFile(destFile), "css");
+});
+
 // --- exec step ---
 
 Deno.test("HookRunner exec step runs command and succeeds", async () => {
@@ -203,9 +253,10 @@ Deno.test("HookRunner exec step throws on non-zero exit", async () => {
   const hook = await runner.loadHook(hookPath);
 
   await assertRejects(
-    () => (runner as unknown as {
-      executeStep: (step: unknown, ctx: PlantContext) => Promise<unknown>;
-    }).executeStep(hook.steps[0], ctx),
+    () =>
+      (runner as unknown as {
+        executeStep: (step: unknown, ctx: PlantContext) => Promise<unknown>;
+      }).executeStep(hook.steps[0], ctx),
     "Command failed",
   );
 });
@@ -227,13 +278,19 @@ Deno.test("HookRunner dry run describes copy without writing", async () => {
   assertEquals((result as { type: string }).type, "copy");
   assertEquals((result as { ok: boolean }).ok, true);
   const detail = (result as { detail: string }).detail;
-  if (!detail.includes("would copy to")) throw new Error(`Expected dry-run detail, got: ${detail}`);
+  if (!detail.includes("would copy") || !detail.includes("to:")) {
+    throw new Error(`Expected dry-run detail, got: ${detail}`);
+  }
 });
 
 Deno.test("HookRunner dry run describes exec without running", async () => {
   const dir = await Deno.makeTempDir();
   const hookPath = await writeTempJson(dir, "plant.json", {
-    steps: [{ type: "exec", command: "gsettings", args: ["set", "key", "val"] }],
+    steps: [{
+      type: "exec",
+      command: "gsettings",
+      args: ["set", "key", "val"],
+    }],
   });
 
   const runner = new HookRunner();
