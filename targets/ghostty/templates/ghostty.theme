@@ -10,20 +10,20 @@ cursor-text  = {{cursor_text}}
 selection-background = {{selection_background}}
 selection-foreground = {{selection_foreground}}
 
-# palette entries
-{{palette_0}}
-{{palette_1}}
-{{palette_2}}
-{{palette_3}}
-{{palette_4}}
-{{palette_5}}
-{{palette_6}}
-{{palette_7}}
-{{palette_8}}
-{{palette_9}}
-{{palette_10}}
-{{palette_11}}
-{{palette_12}}
-{{palette_13}}
-{{palette_14}}
-{{palette_15}}
+# palette entries: Ghostty wants `palette = N=#rrggbb`; a bare #rrggbb is a comment
+palette = 0={{palette_0}}
+palette = 1={{palette_1}}
+palette = 2={{palette_2}}
+palette = 3={{palette_3}}
+palette = 4={{palette_4}}
+palette = 5={{palette_5}}
+palette = 6={{palette_6}}
+palette = 7={{palette_7}}
+palette = 8={{palette_8}}
+palette = 9={{palette_9}}
+palette = 10={{palette_10}}
+palette = 11={{palette_11}}
+palette = 12={{palette_12}}
+palette = 13={{palette_13}}
+palette = 14={{palette_14}}
+palette = 15={{palette_15}}
