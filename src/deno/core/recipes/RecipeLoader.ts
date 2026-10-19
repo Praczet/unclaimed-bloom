@@ -14,10 +14,17 @@ export interface BloomTokenRecipe {
   readonly mix?: number;
 }
 
+export interface DerivedTokenRecipe {
+  readonly token: string;
+  readonly tint: string;
+  readonly mix: number;
+}
+
 export type TokenRecipe =
   | DirectTokenRecipe
   | BaseTokenRecipe
-  | BloomTokenRecipe;
+  | BloomTokenRecipe
+  | DerivedTokenRecipe;
 
 export interface MoodWeights {
   readonly surface: number;
@@ -162,6 +169,15 @@ export class RecipeLoader {
     const base = token["base"];
     const source = token["source"];
     const mix = token["mix"];
+    const derivedFrom = token["token"];
+
+    if (derivedFrom !== undefined) {
+      return {
+        token: this.assertString(derivedFrom, `${field}.token`, path),
+        tint: this.assertString(token["tint"], `${field}.tint`, path),
+        mix: this.assertMix(mix, `${field}.mix`, path),
+      };
+    }
 
     if (bloom !== undefined) {
       return {
@@ -190,7 +206,7 @@ export class RecipeLoader {
     }
 
     throw new Error(
-      `Token "${field}" must define "bloom" or "base" in recipe file:\n  ${path}`,
+      `Token "${field}" must define "bloom", "base", or "token" in recipe file:\n  ${path}`,
     );
   }
 

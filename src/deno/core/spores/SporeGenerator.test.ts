@@ -123,3 +123,58 @@ Deno.test("SporeGenerator resolves bloom, base, and direct mix recipe tokens", (
     },
   });
 });
+
+Deno.test("SporeGenerator resolves derived tokens from earlier recipe tokens", () => {
+  const generator = new SporeGenerator();
+  const recipe: Recipe = {
+    name: "ssh-ish",
+    target: "kitty",
+    tokens: {
+      background: { bloom: "surface.base" },
+      danger: { bloom: "state.danger" },
+      ssh_background: { token: "background", tint: "danger", mix: 0.5 },
+    },
+  };
+  const spore = generator.generate(
+    makeBasePalette(),
+    makeSourcePalette(),
+    makeBloom(),
+    recipe,
+    "tiny",
+    "2026-06-09T00:00:00.000Z",
+  );
+
+  assertEquals(spore.colors["ssh_background"], "#880909");
+});
+
+Deno.test("SporeGenerator rejects derived tokens that reference later tokens", () => {
+  const generator = new SporeGenerator();
+  const recipe: Recipe = {
+    name: "ssh-ish",
+    target: "kitty",
+    tokens: {
+      ssh_background: { token: "background", tint: "danger", mix: 0.5 },
+      background: { bloom: "surface.base" },
+      danger: { bloom: "state.danger" },
+    },
+  };
+
+  let message = "";
+  try {
+    generator.generate(
+      makeBasePalette(),
+      makeSourcePalette(),
+      makeBloom(),
+      recipe,
+      "tiny",
+    );
+  } catch (error) {
+    message = error instanceof Error ? error.message : String(error);
+  }
+
+  if (!message.includes("must be declared earlier")) {
+    throw new Error(
+      `Expected ordering error, received ${JSON.stringify(message)}`,
+    );
+  }
+});

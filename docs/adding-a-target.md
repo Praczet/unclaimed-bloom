@@ -76,6 +76,14 @@ A token with only `bloom` uses no source blending:
 "fg_on_accent": { "bloom": "surface.base" }
 ```
 
+A derived token mixes two tokens already resolved earlier in the same recipe (`mix` weights toward `tint`). Kitty uses this for its red-tinted SSH background:
+
+```json
+"ssh_background": { "token": "background", "tint": "palette_1", "mix": 0.2 }
+```
+
+Both referenced tokens must be declared above the derived one.
+
 Validate the bloom token names used in the recipe:
 
 ```

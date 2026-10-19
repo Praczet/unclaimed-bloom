@@ -1121,6 +1121,9 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
         const src = token.source ? ` + ${token.source}` : "";
         return { name, kind: "bloom", ref: `${token.bloom}${src}`, mix };
       }
+      if ("token" in token) {
+        return { name, kind: "derived", ref: `${token.token} + ${token.tint}`, mix: String(token.mix) };
+      }
       if ("source" in token) {
         return { name, kind: "direct", ref: `${token.source} + ${token.base}`, mix: String(token.mix) };
       }

@@ -1,6 +1,7 @@
 import type { Bloom, BloomColors } from "../blooms/BloomGenerator.ts";
 import type { Palette } from "../palettes/PaletteLoader.ts";
 import type {
+  DerivedTokenRecipe,
   DirectTokenRecipe,
   Recipe,
   TokenRecipe,
@@ -20,6 +21,12 @@ function isBloomRecipe(
   return "bloom" in recipe;
 }
 
+function isDerivedRecipe(
+  recipe: TokenRecipe,
+): recipe is DerivedTokenRecipe {
+  return "token" in recipe;
+}
+
 function isDirectRecipe(recipe: TokenRecipe): recipe is DirectTokenRecipe {
   return "base" in recipe && "source" in recipe && "mix" in recipe;
 }
@@ -37,7 +44,9 @@ export class SporeGenerator {
     const colors: Record<string, string> = {};
 
     for (const [name, tokenRecipe] of Object.entries(recipe.tokens)) {
-      colors[name] = this.resolveToken(base, source, bloomColors, tokenRecipe);
+      colors[name] = isDerivedRecipe(tokenRecipe)
+        ? this.resolveDerived(name, colors, tokenRecipe)
+        : this.resolveToken(base, source, bloomColors, tokenRecipe);
     }
 
     return {
@@ -69,6 +78,12 @@ export class SporeGenerator {
       return this.mixColors(bloomColor, sourceColor, tokenRecipe.mix ?? 0);
     }
 
+    if (isDerivedRecipe(tokenRecipe)) {
+      throw new Error(
+        `Derived token "${tokenRecipe.token}" can only be resolved inside a recipe`,
+      );
+    }
+
     if (isDirectRecipe(tokenRecipe)) {
       return this.mixBaseSource(base, source, tokenRecipe);
     }
@@ -79,6 +94,27 @@ export class SporeGenerator {
     }
 
     return baseColor;
+  }
+
+  /** Mixes two tokens already resolved earlier in the same recipe. */
+  private resolveDerived(
+    name: string,
+    colors: Record<string, string>,
+    tokenRecipe: DerivedTokenRecipe,
+  ): string {
+    for (const ref of [tokenRecipe.token, tokenRecipe.tint]) {
+      if (colors[ref] === undefined) {
+        throw new Error(
+          `Derived token "${name}" references "${ref}", which must be declared earlier in the recipe`,
+        );
+      }
+    }
+
+    return this.mixColors(
+      colors[tokenRecipe.token],
+      colors[tokenRecipe.tint],
+      tokenRecipe.mix,
+    );
   }
 
   private mixBaseSource(
