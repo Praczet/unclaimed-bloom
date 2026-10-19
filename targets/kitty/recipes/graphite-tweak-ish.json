@@ -96,6 +96,16 @@
       "token": "selection_background",
       "tint": "palette_1",
       "mix": 0.2
+    },
+    "ssh_prod_background": {
+      "token": "background",
+      "tint": "palette_1",
+      "mix": 0.38
+    },
+    "ssh_prod_selection_background": {
+      "token": "selection_background",
+      "tint": "palette_1",
+      "mix": 0.38
     }
   }
 }
