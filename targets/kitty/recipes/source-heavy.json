@@ -111,6 +111,16 @@
       "bloom": "text.primary",
       "source": "on_surface",
       "mix": 0.25
+    },
+    "ssh_background": {
+      "token": "background",
+      "tint": "palette_1",
+      "mix": 0.2
+    },
+    "ssh_selection_background": {
+      "token": "selection_background",
+      "tint": "palette_1",
+      "mix": 0.2
     }
   }
 }

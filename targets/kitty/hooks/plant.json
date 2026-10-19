@@ -1,6 +1,7 @@
 {
   "steps": [
-    { "type": "copy", "dest": ["~/.config/kitty/themes/Unclaimed-Bloom.conf"] },
+    { "type": "copy", "source": "Unclaimed-Bloom.conf", "dest": ["~/.config/kitty/themes/Unclaimed-Bloom.conf"] },
+    { "type": "copy", "source": "Unclaimed-Bloom-SSH.conf", "dest": ["~/.config/kitty/themes/Unclaimed-Bloom-SSH.conf"] },
     { "type": "exec", "command": "bash", "args": ["-c", "pkill -USR1 -x kitty || true"] }
   ]
 }
