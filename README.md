@@ -605,6 +605,7 @@ Installed data:
 | Target | Role | Notes |
 |---|---|---|
 | `ghostty` | Terminal theme | One of the main visible targets. |
+| `kitty` | Terminal theme | Same recipes and tokens as Ghostty, plus split borders and tab bar; plants to `~/.config/kitty/themes/Unclaimed-Bloom.conf` and reloads with `SIGUSR1`. |
 | `gtk` | GTK colors | Uses UB colors, but still depends on sibling GTK skeleton. Supervised visitation. |
 | `icons` | Icon recoloring | Calls existing Papirus-based recolor pipeline. Icons still do icon things. |
 | `nvim` | Neovim colors | Generated Lua/colors for the editor. |
