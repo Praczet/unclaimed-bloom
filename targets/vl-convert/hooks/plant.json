@@ -1,0 +1,10 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": [
+        "~/.config/vl-convert/config.json"
+      ]
+    }
+  ]
+}

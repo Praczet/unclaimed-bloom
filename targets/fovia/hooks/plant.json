@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "source": "UnclaimedBloomFoviaColors.qml",
+      "dest": [
+        "~/Development/FoviaSprout/spirit/quickshell/fovian/theme/colors/UnclaimedBloomFoviaColors.qml"
+      ]
+    },
+    {
+      "type": "copy",
+      "source": "theme.css",
+      "dest": [
+        "~/Development/FoviaSprout/web/dev/app/public/theme.css",
+        "~/Development/FoviaSprout/web/build/theme.css"
+      ]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 **Unclaimed Bloom is my recipe-driven theming system for a Linux desktop that has already lived too many lives.**
 
-It blends wallpaper colors from Matugen with curated base palettes, moods, profiles, recipes, and target-specific outputs for tools such as Ghostty, GTK, icons, Neovim, AGS, swaync, Waybar, Rofi, Hyprland, Hyprlock, SDDM, yazi, mycli, sqlit, potato, and whatever else gets dragged into the garden later.
+It blends wallpaper colors from Matugen with curated base palettes, moods, profiles, recipes, and target-specific outputs for tools such as Ghostty, GTK, icons, Neovim, AGS, swaync, Waybar, Rofi, Hyprland, Hyprlock, SDDM, yazi, mycli, sqlit, potato, Fovia, vl-convert, and whatever else gets dragged into the garden later.
 
 It is not one more theme. It is the thing that tries to keep several half-wild theming projects from wandering into separate forests and pretending they never met.
 
@@ -182,7 +182,7 @@ Unclaimed Bloom grew out of existing theming work:
 - **Neovim**: generated Lua colors for my Matugen/TokyoNight setup.
 - **AGS**: visual shell pieces using generated CSS.
 - **swaync and waybar**: now first-class targets, no longer hiding behind AGS like suspicious cousins.
-- **mycli / sqlit / yazi / rofi / wlogout / SDDM / Hyprland / Hyprlock / potato / iced / broot**: smaller but real target spores.
+- **mycli / sqlit / yazi / rofi / wlogout / SDDM / Hyprland / Hyprlock / potato / iced / broot / vl-convert**: smaller but real target spores.
 
 Old Bash and Python scripts are not shame. They are workers. If they already know how to do the dirty work, `spore` can call them and collect reports. Purity is how projects become beautiful and dead.
 
@@ -622,6 +622,8 @@ Installed data:
 | `sqlit` | SQL TUI | More database color diplomacy. |
 | `broot` | Terminal tree navigator | File-tree theming. |
 | `potato` | Health/overthinking tracker | Plants theme JSON and runs `potato-sync`. The name is ridiculous. This is not a bug. |
+| `fovia` | FoviaSprout surfaces | Plants Fovian QML colors and Fovia Web CSS variables. |
+| `vl-convert` | Vega-Lite converter | Plants a default Vega-Lite chart config at `~/.config/vl-convert/config.json`. |
 
 Each target usually has:
 

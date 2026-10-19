@@ -1025,7 +1025,7 @@ Template modifier syntax:
 
 Targets (all working — sow, grow, plant):
   ags, broot, ghostty, gtk, hyprland, iced, icons (grow only; plant TBD),
-  mycli, nvim, potato, rofi, sddm, sqlit, swaync, waybar, wlogout, yazi
+  mycli, nvim, potato, rofi, sddm, sqlit, swaync, vl-convert, waybar, wlogout, yazi
 
 Plant hooks (targets/<name>/hooks/plant.json):
   copy  — copies rendered file to one or more dest paths
@@ -1131,7 +1131,7 @@ deno task dev:local -- sow daily ghostty
 - workers:: **Python workers via WorkerRunner**
 - architecture:: recipe-driven, template-rendered, hook-deployed, Deno-native.
 - core metaphor:: one bloom, many spores. sow seeds into cache, grow them to rendered files, plant deploys them.
-- status:: all 17 targets working. wallset/wallset-backend integrated. Deno migration complete.
+- status:: all 18 targets working. wallset/wallset-backend integrated. Deno migration complete.
 - pending:: icons plant hook (adart-worker progress streaming), workbench /api/run + WebSocket events.
 
 ## Suggested cache shape (current)
@@ -1178,8 +1178,8 @@ deno task dev:local -- sow daily ghostty
 
 ### ✅ All targets — DONE (2026-06-10)
 
-17 targets fully working: ags, broot, ghostty, gtk, hyprland, iced, icons (grow only),
-mycli, nvim, potato, rofi, sddm, sqlit, swaync, waybar, wlogout, yazi.
+18 targets fully working: ags, broot, ghostty, gtk, hyprland, iced, icons (grow only),
+mycli, nvim, potato, rofi, sddm, sqlit, swaync, vl-convert, waybar, wlogout, yazi.
 
 sow → grow → plant lifecycle complete for all targets with plant hooks.
 Deno migration complete — Node, npm, adapters removed.

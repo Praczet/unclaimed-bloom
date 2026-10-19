@@ -1,0 +1,40 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "fovia",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": { "base": "background" },
+    "surface": { "base": "background_highlight" },
+    "surface_bright": { "base": "selection_background" },
+    "surface_dim": { "base": "background_dark" },
+    "surface_variant": { "base": "border" },
+    "surface_container": { "base": "background" },
+    "surface_container_low": { "base": "background_dark" },
+    "surface_container_high": { "base": "selection_background" },
+    "surface_container_highest": { "base": "background_highlight" },
+
+    "primary": { "bloom": "accent.primary", "source": "primary", "mix": 0.08 },
+    "secondary": { "base": "purple", "source": "secondary", "mix": 0.08 },
+    "tertiary": { "base": "teal", "source": "tertiary", "mix": 0.06 },
+
+    "on_background": { "base": "foreground" },
+    "on_surface": { "base": "foreground" },
+    "on_surface_variant": { "base": "foreground_dark" },
+    "on_primary": { "base": "background_dark" },
+    "outline": { "base": "border" },
+
+    "warning": { "base": "yellow", "source": "warning", "mix": 0.08 },
+    "success": { "base": "green", "source": "success", "mix": 0.08 },
+    "danger": { "base": "red", "source": "error", "mix": 0.08 },
+
+    "fovian_trunk": { "base": "yellow", "source": "warning", "mix": 0.08 },
+    "fovian_leaf": { "base": "green", "source": "success", "mix": 0.08 },
+    "fovian_flower": { "base": "purple", "source": "secondary", "mix": 0.08 },
+    "fovian_rest": { "bloom": "accent.primary", "source": "primary", "mix": 0.08 },
+    "fovian_recovery": { "base": "yellow", "source": "warning", "mix": 0.08 },
+
+    "web_button_text": { "base": "background_dark" },
+    "web_danger_bg": { "base": "red", "source": "error_container", "mix": 0.18 },
+    "web_danger_text": { "base": "foreground" }
+  }
+}

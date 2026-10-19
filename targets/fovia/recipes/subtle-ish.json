@@ -1,0 +1,39 @@
+{
+  "name": "subtle-ish",
+  "target": "fovia",
+  "tokens": {
+    "background": { "bloom": "surface.base", "source": "background", "mix": 0.15 },
+    "surface": { "bloom": "surface.raised", "source": "surface", "mix": 0.15 },
+    "surface_bright": { "bloom": "surface.highest", "source": "surface_bright", "mix": 0.2 },
+    "surface_dim": { "bloom": "surface.dim", "source": "surface_dim", "mix": 0.15 },
+    "surface_variant": { "bloom": "surface.raised", "source": "surface_variant", "mix": 0.15 },
+    "surface_container": { "bloom": "surface.raised", "source": "surface_container", "mix": 0.15 },
+    "surface_container_low": { "bloom": "surface.dim", "source": "surface_container_low", "mix": 0.15 },
+    "surface_container_high": { "bloom": "surface.raised", "source": "surface_container_high", "mix": 0.2 },
+    "surface_container_highest": { "bloom": "surface.highest", "source": "surface_container_highest", "mix": 0.2 },
+
+    "primary": { "bloom": "accent.primary", "source": "primary", "mix": 0.15 },
+    "secondary": { "bloom": "accent.secondary", "source": "secondary", "mix": 0.15 },
+    "tertiary": { "bloom": "accent.tertiary", "source": "tertiary", "mix": 0.15 },
+
+    "on_background": { "bloom": "text.primary", "source": "on_background", "mix": 0.1 },
+    "on_surface": { "bloom": "text.primary", "source": "on_surface", "mix": 0.1 },
+    "on_surface_variant": { "bloom": "text.secondary", "source": "on_surface_variant", "mix": 0.1 },
+    "on_primary": { "bloom": "surface.base", "source": "on_primary", "mix": 0.5 },
+    "outline": { "bloom": "border.subtle", "source": "outline", "mix": 0.1 },
+
+    "warning": { "bloom": "state.warning" },
+    "success": { "bloom": "state.success" },
+    "danger": { "bloom": "state.danger", "source": "error", "mix": 0.15 },
+
+    "fovian_trunk": { "bloom": "state.warning" },
+    "fovian_leaf": { "bloom": "state.success" },
+    "fovian_flower": { "bloom": "accent.secondary", "source": "secondary", "mix": 0.15 },
+    "fovian_rest": { "bloom": "accent.primary", "source": "primary", "mix": 0.15 },
+    "fovian_recovery": { "bloom": "state.warning" },
+
+    "web_button_text": { "bloom": "surface.base" },
+    "web_danger_bg": { "bloom": "state.danger", "source": "error_container", "mix": 0.35 },
+    "web_danger_text": { "bloom": "text.primary" }
+  }
+}

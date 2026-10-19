@@ -1,0 +1,102 @@
+{
+  "background": "{{background}}",
+  "font": "sans-serif",
+  "padding": 8,
+  "view": {
+    "stroke": "{{grid}}",
+    "continuousWidth": 400,
+    "continuousHeight": 300
+  },
+  "title": {
+    "color": "{{foreground}}",
+    "subtitleColor": "{{foreground_muted}}",
+    "font": "sans-serif",
+    "fontWeight": 600,
+    "anchor": "start"
+  },
+  "axis": {
+    "domainColor": "{{axis}}",
+    "gridColor": "{{grid}}",
+    "labelColor": "{{foreground_muted}}",
+    "tickColor": "{{axis}}",
+    "titleColor": "{{foreground}}"
+  },
+  "legend": {
+    "labelColor": "{{foreground_muted}}",
+    "titleColor": "{{foreground}}",
+    "symbolStrokeColor": "{{grid}}"
+  },
+  "header": {
+    "labelColor": "{{foreground_muted}}",
+    "titleColor": "{{foreground}}"
+  },
+  "range": {
+    "category": [
+      "{{primary}}",
+      "{{secondary}}",
+      "{{tertiary}}",
+      "{{success}}",
+      "{{warning}}",
+      "{{danger}}"
+    ],
+    "diverging": [
+      "{{danger}}",
+      "{{surface}}",
+      "{{primary}}"
+    ],
+    "heatmap": [
+      "{{background}}",
+      "{{surface}}",
+      "{{primary}}"
+    ],
+    "ordinal": [
+      "{{surface}}",
+      "{{tertiary}}",
+      "{{primary}}"
+    ],
+    "ramp": [
+      "{{background}}",
+      "{{surface}}",
+      "{{primary}}"
+    ]
+  },
+  "mark": {
+    "color": "{{primary}}"
+  },
+  "area": {
+    "fill": "{{primary}}"
+  },
+  "bar": {
+    "fill": "{{primary}}"
+  },
+  "line": {
+    "stroke": "{{primary}}",
+    "strokeWidth": 2
+  },
+  "point": {
+    "filled": true,
+    "fill": "{{primary}}",
+    "stroke": "{{background}}",
+    "strokeWidth": 1
+  },
+  "text": {
+    "color": "{{foreground}}"
+  },
+  "style": {
+    "guide-label": {
+      "fill": "{{foreground_muted}}"
+    },
+    "guide-title": {
+      "fill": "{{foreground}}"
+    },
+    "group-title": {
+      "fill": "{{foreground}}"
+    },
+    "group-subtitle": {
+      "fill": "{{foreground_muted}}"
+    },
+    "cell": {
+      "stroke": "{{grid}}"
+    }
+  }
+}

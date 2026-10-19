@@ -1,0 +1,17 @@
+:root {
+  color-scheme: dark;
+  --bg: {{background}};
+  --panel: {{surface}};
+  --panel-strong: {{surface_container_high}};
+  --line: {{outline}};
+  --text: {{on_surface}};
+  --muted: {{on_surface_variant}};
+  --accent: {{primary}};
+  --good: {{success}};
+  --danger: {{danger}};
+  --input: {{surface_dim}};
+  --button-line: {{primary}};
+  --button-text: {{web_button_text}};
+  --danger-bg: {{web_danger_bg}};
+  --danger-text: {{web_danger_text}};
+}

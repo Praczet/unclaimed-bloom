@@ -22,7 +22,9 @@
     "nvim": "graphite-tweak-ish",
     "gum": "graphite-tweak-ish",
     "potato": "graphite-tweak-ish",
+    "fovia": "graphite-tweak-ish",
     "broot": "graphite-tweak-ish",
+    "vl-convert": "graphite-tweak-ish",
     "qreep": "graphite-tweak-ish"
   }
 }

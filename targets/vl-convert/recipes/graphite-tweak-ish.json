@@ -1,0 +1,55 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "vl-convert",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "surface": {
+      "base": "background_highlight"
+    },
+    "foreground": {
+      "base": "foreground"
+    },
+    "foreground_muted": {
+      "base": "foreground_dark"
+    },
+    "grid": {
+      "base": "border"
+    },
+    "axis": {
+      "base": "foreground_dark"
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "secondary": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "tertiary": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "success": {
+      "base": "green",
+      "source": "success",
+      "mix": 0.08
+    },
+    "warning": {
+      "base": "yellow",
+      "source": "warning",
+      "mix": 0.08
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}
