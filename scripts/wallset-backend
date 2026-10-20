@@ -35,11 +35,34 @@ resolve_profile() {
 
 PROFILE="$(resolve_profile)"
 
+# Matugen mode (dark|light) for the wallpaper: the source.variant of the
+# profile (for a composition, of its currentProfile). Defaults to dark.
+resolve_matugen_mode() {
+    if [[ -n "${UB_WALLSET_MATUGEN_MODE:-}" ]]; then
+        printf '%s\n' "$UB_WALLSET_MATUGEN_MODE"
+        return
+    fi
+    "$SPORE" profile show "$PROFILE" --json 2>/dev/null | python3 -I -c '
+import json, subprocess, sys
+spore, profile = sys.argv[1], sys.argv[2]
+try:
+    p = json.load(sys.stdin)["profile"]
+    if p.get("type") == "composition":
+        out = subprocess.run([spore, "profile", "show", p["currentProfile"], "--json"],
+                             capture_output=True, text=True, check=True).stdout
+        p = json.loads(out)["profile"]
+    print("light" if p["source"]["variant"] == "light" else "dark")
+except Exception:
+    print("dark")
+' "$SPORE" "$PROFILE" || printf '%s\n' "dark"
+}
+
 usage() {
     cat <<EOF
 Usage: wallset-backend <wallpaper>
 
 Runs:
+  matugen-cache <wallpaper> <dark|light>
   spore sow <profile> --wallpaper <wallpaper> --bloom-osd
   spore grow <profile>
   spore plant <profile> --bloom-osd
@@ -48,8 +71,9 @@ Default profile:
   $PROFILE
 
 Environment:
-  UB_WALLSET_PROFILE  Profile/composition override
-  UB_WALLSET_SPORE    spore command/script
+  UB_WALLSET_PROFILE       Profile/composition override
+  UB_WALLSET_SPORE         spore command/script
+  UB_WALLSET_MATUGEN_MODE  dark|light override (default: profile source.variant)
 
 Saved profile:
   spore profile use <name>
@@ -112,6 +136,14 @@ echo "  wallpaper: $wallpaper"
 
 # Write current-wallpaper before sow so grow can inject it into templates
 echo "$wallpaper" > "$CURRENT_WALLPAPER_FILE"
+
+# Regenerate the Matugen source colours from this wallpaper. `spore sow
+# --wallpaper` only passes the path to the bloom OSD; it does not run Matugen,
+# so without this step every bloom reuses the last cached wallpaper's colours.
+# A Matugen failure stops the run instead of planting stale colours.
+MATUGEN_MODE="$(resolve_matugen_mode)"
+echo "  matugen:   $MATUGEN_MODE"
+UB_CACHE_DIR="$CACHE_DIR" "$REPO_DIR/scripts/matugen-cache" "$wallpaper" "$MATUGEN_MODE"
 
 "$SPORE" sow "$PROFILE" --wallpaper "$wallpaper" --bloom-osd
 "$SPORE" grow "$PROFILE"

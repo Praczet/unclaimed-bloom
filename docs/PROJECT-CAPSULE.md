@@ -603,9 +603,11 @@ Creates a timestamped backup of the previous `~/.myclirc` before overwriting.
 
 #### scripts/matugen-cache
 
-Bash. Standalone helper for running Matugen and saving the full JSON output.
-Superseded by `spore sow --wallpaper` for the normal workflow, but useful for
-one-off palette generation or testing.
+Bash. Runs Matugen on a wallpaper and saves the full JSON output to
+`$UB_CACHE_DIR/matugen-colors.json`, which profiles read as their source.
+`wallset-backend` calls it before `spore sow` on every wallpaper change.
+`spore sow --wallpaper` does **not** run Matugen; it only passes the path to the
+bloom OSD.
 
 Contract:
 ```bash
