@@ -30,7 +30,7 @@
 @define-color card_fg_color           @window_fg_color;
 
 @define-color sidebar_bg_color        {{sidebar_bg_color}};
-@define-color sidebar_fg_color        mix(@window_fg_color, @surface_bright_color, 0.25); /* slightly brighter than window_fg */
+@define-color sidebar_fg_color        mix(@window_fg_color, {{selection_fg}}, 0.25); /* slightly brighter than window_fg */
 @define-color sidebar_border_color    {{sidebar_border_color}};
 @define-color sidebar_backdrop_color  @window_bg_color;
 
@@ -73,7 +73,7 @@
 @define-color theme_bg_color           @window_bg_color;
 @define-color theme_fg_color           @window_fg_color;
 @define-color theme_base_color         @view_bg_color;
-@define-color theme_text_color         mix(@view_fg_color, @surface_bright_color, 0.25); /* brighten text for readability */
+@define-color theme_text_color         mix(@view_fg_color, {{selection_fg}}, 0.25); /* brighten text for readability */
 @define-color theme_selected_bg_color  {{selection_bg}};
 @define-color theme_selected_fg_color  {{selection_fg}};
 @define-color selected_bg_color        {{selection_bg}};

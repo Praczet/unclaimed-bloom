@@ -4,12 +4,12 @@
   "basePalette": "nord-tweak-dark",
   "tokens": {
     "accent_color": {
-      "bloom": "accent.primary",
-      "source": "primary_fixed_dim",
-      "mix": 0.12
+      "base": "blue",
+      "source": "primary",
+      "mix": 0.75
     },
     "accent_fg_color": {
-      "base": "selection_foreground"
+      "base": "background_dark"
     },
     "link_color": {
       "base": "blue",
@@ -75,7 +75,7 @@
       "base": "selection_foreground"
     },
     "surface_bright_color": {
-      "base": "selection_foreground"
+      "base": "border"
     },
     "surface_container_lowest_color": {
       "base": "background_dark"
@@ -84,7 +84,9 @@
       "base": "background"
     },
     "surface_container_color": {
-      "base": "background"
+      "token": "window_bg_color",
+      "tint": "card_bg_color",
+      "mix": 0.5
     },
     "surface_container_high_color": {
       "base": "background_highlight"
@@ -93,9 +95,9 @@
       "base": "selection_background"
     },
     "selection_bg": {
-      "bloom": "selection.background",
+      "base": "selection_background",
       "source": "primary_container",
-      "mix": 0.16
+      "mix": 0.35
     },
     "selection_fg": {
       "base": "selection_foreground"
