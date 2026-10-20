@@ -4,7 +4,10 @@
   "runs": [
     {
       "profile": "daily-gtk",
-      "targets": ["gtk"]
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
     },
     {
       "profile": "daily-graphite-tweak"

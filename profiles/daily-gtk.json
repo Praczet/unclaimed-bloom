@@ -8,6 +8,7 @@
     "variant": "dark"
   },
   "targets": {
-    "gtk": "nord-tweak-dark"
+    "gtk": "nord-tweak-dark",
+    "gimp": "nord-tweak-dark"
   }
 }
