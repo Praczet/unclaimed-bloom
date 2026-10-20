@@ -1,0 +1,63 @@
+{
+  "name": "subtle-ish",
+  "target": "dbeaver",
+  "tokens": {
+    "surface_base": {
+      "bloom": "surface.base"
+    },
+    "surface_dim": {
+      "bloom": "surface.dim"
+    },
+    "surface_raised": {
+      "bloom": "surface.raised"
+    },
+    "surface_highest": {
+      "bloom": "surface.highest"
+    },
+    "text_primary": {
+      "bloom": "text.primary"
+    },
+    "text_secondary": {
+      "bloom": "text.secondary"
+    },
+    "text_muted": {
+      "bloom": "text.muted"
+    },
+    "text_disabled": {
+      "bloom": "text.disabled"
+    },
+    "accent_primary": {
+      "bloom": "accent.primary"
+    },
+    "accent_secondary": {
+      "bloom": "accent.secondary"
+    },
+    "accent_tertiary": {
+      "bloom": "accent.tertiary"
+    },
+    "state_success": {
+      "bloom": "state.success"
+    },
+    "state_warning": {
+      "bloom": "state.warning"
+    },
+    "state_danger": {
+      "bloom": "state.danger"
+    },
+    "state_info": {
+      "bloom": "state.info"
+    },
+    "border_subtle": {
+      "bloom": "border.subtle"
+    },
+    "border_strong": {
+      "bloom": "border.strong"
+    },
+    "selection_background": {
+      "bloom": "selection.background"
+    },
+    "selection_foreground": {
+      "bloom": "selection.foreground"
+    }
+  }
+}

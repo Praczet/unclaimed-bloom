@@ -1,0 +1,38 @@
+{
+  "name": "Unclaimed Bloom",
+  "variant": "dark",
+  "source": "unclaimed-bloom target 'dbeaver' (rendered by spore grow)",
+  "colors": {
+    "surface": {
+      "base": "{{surface_base}}",
+      "dim": "{{surface_dim}}",
+      "raised": "{{surface_raised}}",
+      "highest": "{{surface_highest}}"
+    },
+    "text": {
+      "primary": "{{text_primary}}",
+      "secondary": "{{text_secondary}}",
+      "muted": "{{text_muted}}",
+      "disabled": "{{text_disabled}}"
+    },
+    "accent": {
+      "primary": "{{accent_primary}}",
+      "secondary": "{{accent_secondary}}",
+      "tertiary": "{{accent_tertiary}}"
+    },
+    "state": {
+      "success": "{{state_success}}",
+      "warning": "{{state_warning}}",
+      "danger": "{{state_danger}}",
+      "info": "{{state_info}}"
+    },
+    "border": {
+      "subtle": "{{border_subtle}}",
+      "strong": "{{border_strong}}"
+    },
+    "selection": {
+      "background": "{{selection_background}}",
+      "foreground": "{{selection_foreground}}"
+    }
+  }
+}

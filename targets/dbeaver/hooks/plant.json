@@ -1,0 +1,9 @@
+{
+  "steps": [
+    {
+      "type": "exec",
+      "command": "~/Development/Hyprland/dbeaver-theme/scripts/apply-bloom.sh",
+      "args": ["{{rendered}}"]
+    }
+  ]
+}
