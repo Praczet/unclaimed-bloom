@@ -98,6 +98,26 @@
       "bloom": "accent.tertiary",
       "source": "tertiary_container",
       "mix": 0.1
+    },
+    "success": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "warning": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "info": {
+      "bloom": "state.info",
+      "source": "secondary",
+      "mix": 0.05
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
     }
   }
 }
