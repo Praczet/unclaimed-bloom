@@ -36,9 +36,15 @@ skin: {
     git_status_current: {{fg_muted|rgb}} none
     git_status_modified: {{warning|rgb}} none
     git_status_new: {{success|rgb}} none Bold
+    git_status_staged: {{accent|rgb}} none
     git_status_ignored: {{fg_dim|rgb}} none
     git_status_conflicted: {{danger|rgb}} none
     git_status_other: {{danger|rgb}} none
+
+    # device ids
+    device_id_major: {{fg_muted|rgb}} none
+    device_id_sep: {{fg_dim|rgb}} none
+    device_id_minor: {{fg_muted|rgb}} none
 
     # highlighting
     selected_line: none {{bg_selected|rgb}} / none {{bg_selected_focused|rgb}}
@@ -80,6 +86,11 @@ skin: {
     preview_title: {{fg|rgb}} {{bg_alt|rgb}}
     preview: {{fg|rgb}} {{bg_alt|rgb}}
     preview_line_number: {{fg_dim|rgb}} none
+
+    # diff preview
+    diff_line_number: {{fg_dim|rgb}} {{bg_alt|rgb}}
+    diff_added: {{fg|rgb}} {{diff_added_bg|rgb}}
+    diff_removed: {{fg|rgb}} {{diff_removed_bg|rgb}}
     preview_separator: {{border|rgb}} none
     preview_match: {{warning|rgb}} none Bold
 

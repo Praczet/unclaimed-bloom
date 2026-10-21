@@ -59,6 +59,16 @@
     },
     "border": {
       "base": "border"
+    },
+    "diff_added_bg": {
+      "token": "bg",
+      "tint": "success",
+      "mix": 0.2
+    },
+    "diff_removed_bg": {
+      "token": "bg",
+      "tint": "danger",
+      "mix": 0.2
     }
   }
 }
