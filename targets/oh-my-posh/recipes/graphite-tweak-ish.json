@@ -1,0 +1,13 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "oh-my-posh",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "repo": { "base": "cyan" },
+    "tag": { "bloom": "accent.primary", "source": "primary", "mix": 0.08 },
+    "python": { "base": "yellow" },
+    "time": { "base": "yellow" },
+    "danger": { "base": "red", "source": "error", "mix": 0.08 },
+    "muted": { "base": "comment" }
+  }
+}

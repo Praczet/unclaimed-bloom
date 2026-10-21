@@ -1,0 +1,36 @@
+{
+  "name": "subtle-ish",
+  "target": "oh-my-posh",
+  "tokens": {
+    "repo": {
+      "bloom": "state.info",
+      "source": "secondary",
+      "mix": 0.05
+    },
+    "tag": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "python": {
+      "base": "yellow",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "time": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "danger": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    }
+  }
+}
