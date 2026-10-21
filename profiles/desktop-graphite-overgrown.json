@@ -1,0 +1,17 @@
+{
+  "name": "desktop-graphite-overgrown",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-gtk-overgrown",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-graphite-overgrown"
+    }
+  ],
+  "currentProfile": "daily-graphite-overgrown"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "desktop-graphite-blooming",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-gtk-blooming",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-graphite-blooming"
+    }
+  ],
+  "currentProfile": "daily-graphite-blooming"
+}

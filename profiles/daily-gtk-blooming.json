@@ -1,0 +1,14 @@
+{
+  "name": "daily-gtk-blooming",
+  "basePalette": "nord-tweak-dark",
+  "mood": "blooming",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "dark"
+  },
+  "targets": {
+    "gtk": "nord-tweak-dark",
+    "gimp": "nord-tweak-dark"
+  }
+}

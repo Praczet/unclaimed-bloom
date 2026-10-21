@@ -1,0 +1,14 @@
+{
+  "name": "daily-gtk-budding",
+  "basePalette": "nord-tweak-dark",
+  "mood": "budding",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "dark"
+  },
+  "targets": {
+    "gtk": "nord-tweak-dark",
+    "gimp": "nord-tweak-dark"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "desktop-graphite-budding",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-gtk-budding",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-graphite-budding"
+    }
+  ],
+  "currentProfile": "daily-graphite-budding"
+}

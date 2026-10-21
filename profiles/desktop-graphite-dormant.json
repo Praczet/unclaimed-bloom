@@ -1,0 +1,17 @@
+{
+  "name": "desktop-graphite-dormant",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-gtk",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-graphite-dormant"
+    }
+  ],
+  "currentProfile": "daily-graphite-dormant"
+}
