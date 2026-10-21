@@ -20,6 +20,15 @@
     "sqlit": "subtle-ish",
     "nvim": "source-heavy",
     "icons": "subtle-ish",
-    "potato": "subtle-ish"
+    "potato": "subtle-ish",
+    "zsh": "subtle-ish",
+    "bat": "subtle-ish",
+    "oh-my-posh": "subtle-ish",
+    "atuin": "subtle-ish",
+    "eza": "subtle-ish",
+    "lazygit": "subtle-ish",
+    "btop": "subtle-ish",
+    "glow": "subtle-ish",
+    "qt6ct": "subtle-ish"
   }
 }

@@ -26,6 +26,16 @@
     "broot": "graphite-tweak-ish",
     "vl-convert": "graphite-tweak-ish",
     "qreep": "graphite-tweak-ish",
-    "dbeaver": "graphite-tweak-ish"
+    "dbeaver": "graphite-tweak-ish",
+    "zsh": "graphite-tweak-ish",
+    "bat": "graphite-tweak-ish",
+    "oh-my-posh": "graphite-tweak-ish",
+    "atuin": "graphite-tweak-ish",
+    "eza": "graphite-tweak-ish",
+    "lazygit": "graphite-tweak-ish",
+    "btop": "graphite-tweak-ish",
+    "glow": "graphite-tweak-ish",
+    "logseq": "graphite-tweak-ish",
+    "qt6ct": "graphite-tweak-ish"
   }
 }
