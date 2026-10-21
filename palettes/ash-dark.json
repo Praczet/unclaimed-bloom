@@ -1,0 +1,27 @@
+{
+  "name": "Ash Dark",
+  "slug": "ash-dark",
+  "kind": "dark",
+  "source": "Unclaimed Bloom neutral: cool charcoal surfaces and muted accents. Neither TokyoNight nor Nord, so the mood alone decides how much wallpaper gets in.",
+  "colors": {
+    "background": "#1d1e20",
+    "background_dark": "#161719",
+    "background_highlight": "#2a2c2f",
+    "foreground": "#e6e6e3",
+    "foreground_dark": "#b0b1ad",
+    "comment": "#7c7e80",
+    "black": "#0f1011",
+    "red": "#d4847f",
+    "orange": "#d6a07c",
+    "yellow": "#d9c48c",
+    "green": "#a3bf98",
+    "cyan": "#95bfc0",
+    "blue": "#93a9c4",
+    "purple": "#ae9fc2",
+    "magenta": "#c69db3",
+    "teal": "#8fb6ab",
+    "border": "#393b3e",
+    "selection_background": "#33363a",
+    "selection_foreground": "#f2f2ef"
+  }
+}
