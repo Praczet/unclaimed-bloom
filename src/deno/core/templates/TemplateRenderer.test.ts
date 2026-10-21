@@ -105,6 +105,15 @@ Deno.test("render |rgba:alpha expands 3-digit hex", () => {
   assertEquals(result, "rgba(255, 255, 255, 0.5)");
 });
 
+Deno.test("render |hsl produces a bare H S% L% triplet", () => {
+  assertEquals(renderer.render("{{c|hsl}}", { c: "#ff0000" }), "0 100.0% 50.0%");
+  assertEquals(renderer.render("{{c|hsl}}", { c: "#7aa2f7" }), "221 88.7% 72.4%");
+});
+
+Deno.test("render |hsl handles greys without hue", () => {
+  assertEquals(renderer.render("{{c|hsl}}", { c: "#808080" }), "0 0.0% 50.2%");
+});
+
 Deno.test("render throws on missing token and names it", () => {
   assertThrows(
     () => renderer.render("{{missing}}", {}),

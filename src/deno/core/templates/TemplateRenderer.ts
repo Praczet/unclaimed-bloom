@@ -173,6 +173,9 @@ export class TemplateRenderer {
       const alpha = modifier.slice(5);
       return this.toCssRgba(hex, alpha, token);
     }
+    if (modifier === "hsl") {
+      return this.toHslTriplet(hex, token);
+    }
     throw new Error(
       `Unknown modifier "${modifier}" in template token "{{${token}|${modifier}}}"`,
     );
@@ -198,6 +201,34 @@ export class TemplateRenderer {
       );
     }
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  // Bare "H S% L%" triplet, the form shadcn-style CSS reads via hsl(var(--x)).
+  private toHslTriplet(hex: string, token: string): string {
+    const clean = this.normalizeHex(hex, token);
+    const r = parseInt(clean.slice(0, 2), 16) / 255;
+    const g = parseInt(clean.slice(2, 4), 16) / 255;
+    const b = parseInt(clean.slice(4, 6), 16) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    const delta = max - min;
+
+    let h = 0;
+    let s = 0;
+    if (delta !== 0) {
+      s = delta / (1 - Math.abs(2 * l - 1));
+      if (max === r) {
+        h = 60 * (((g - b) / delta) % 6);
+      } else if (max === g) {
+        h = 60 * ((b - r) / delta + 2);
+      } else {
+        h = 60 * ((r - g) / delta + 4);
+      }
+    }
+    if (h < 0) h += 360;
+
+    return `${Math.round(h)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   }
 
   private normalizeHex(hex: string, token: string): string {
