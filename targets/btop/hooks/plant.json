@@ -1,0 +1,6 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/.config/btop/themes/unclaimed-bloom.theme"] },
+    { "type": "exec", "command": "bash", "args": ["-c", "pkill -USR2 -x btop || true"] }
+  ]
+}
