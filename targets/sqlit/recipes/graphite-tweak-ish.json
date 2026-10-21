@@ -7,10 +7,10 @@
       "base": "background"
     },
     "surface": {
-      "base": "background_highlight"
+      "base": "background"
     },
     "panel": {
-      "base": "background_dark"
+      "base": "background_highlight"
     },
     "foreground": {
       "base": "foreground"
@@ -62,6 +62,12 @@
     },
     "insert_mode": {
       "base": "teal"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "disabled": {
+      "base": "border"
     }
   }
 }

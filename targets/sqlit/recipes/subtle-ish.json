@@ -8,9 +8,9 @@
       "mix": 0.15
     },
     "surface": {
-      "bloom": "surface.raised",
-      "source": "surface_container",
-      "mix": 0.1
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
     },
     "panel": {
       "bloom": "surface.raised",
@@ -77,6 +77,14 @@
       "bloom": "accent.primary",
       "source": "primary",
       "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "disabled": {
+      "bloom": "text.disabled"
     }
   }
 }
