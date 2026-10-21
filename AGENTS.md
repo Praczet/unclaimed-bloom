@@ -178,7 +178,7 @@ Workers should prefer JSON input/output contracts and should write reports where
 
 All core targets are working. The `sow → grow → plant` lifecycle is complete.
 
-Active targets: ghostty, kitty, gtk, icons, nvim, ags, swaync, waybar, hyprland, rofi, yazi, wlogout, iced, sddm, mycli, sqlit, potato, fovia, broot, vl-convert.
+Active targets: ghostty, kitty, gtk, icons, nvim, ags, swaync, waybar, hyprland, rofi, yazi, wlogout, iced, sddm, mycli, sqlit, potato, fovia, broot, vl-convert, zsh, bat, oh-my-posh, atuin, eza, lazygit, btop, glow, logseq, qt6ct.
 
 Pending:
 
