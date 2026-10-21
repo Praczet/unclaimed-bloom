@@ -1,0 +1,17 @@
+{
+  "name": "desktop-ash-dark-dormant",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-ash-dark-gtk-dormant",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-ash-dark-dormant"
+    }
+  ],
+  "currentProfile": "daily-ash-dark-dormant"
+}

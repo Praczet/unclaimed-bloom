@@ -1,0 +1,14 @@
+{
+  "name": "daily-ash-dark-gtk-blooming",
+  "basePalette": "ash-dark",
+  "mood": "blooming",
+  "source": {
+    "type": "matugen",
+    "colorsPath": "~/.cache/unclaimed-bloom/matugen-colors.json",
+    "variant": "dark"
+  },
+  "targets": {
+    "gtk": "ash-dark",
+    "gimp": "ash-dark"
+  }
+}

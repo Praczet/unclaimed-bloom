@@ -1,0 +1,17 @@
+{
+  "name": "desktop-ash-dark-blooming",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-ash-dark-gtk-blooming",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-ash-dark-blooming"
+    }
+  ],
+  "currentProfile": "daily-ash-dark-blooming"
+}

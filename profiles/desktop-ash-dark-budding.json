@@ -1,0 +1,17 @@
+{
+  "name": "desktop-ash-dark-budding",
+  "type": "composition",
+  "runs": [
+    {
+      "profile": "daily-ash-dark-gtk-budding",
+      "targets": [
+        "gtk",
+        "gimp"
+      ]
+    },
+    {
+      "profile": "daily-ash-dark-budding"
+    }
+  ],
+  "currentProfile": "daily-ash-dark-budding"
+}
