@@ -29,6 +29,21 @@
     },
     "on_surface": {
       "bloom": "text.primary"
+    },
+    "inactive_border": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "shadow": {
+      "bloom": "surface.dim",
+      "source": "shadow",
+      "mix": 0.3
     }
   }
 }

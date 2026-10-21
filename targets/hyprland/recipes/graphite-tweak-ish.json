@@ -28,6 +28,15 @@
     },
     "on_surface": {
       "base": "foreground"
+    },
+    "inactive_border": {
+      "base": "border"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "shadow": {
+      "base": "black"
     }
   }
 }
