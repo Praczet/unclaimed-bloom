@@ -1,0 +1,95 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "bat",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "bg": {
+      "base": "background"
+    },
+    "fg": {
+      "base": "foreground"
+    },
+    "fg_dim": {
+      "base": "foreground_dark"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "selection_bg": {
+      "base": "selection_background"
+    },
+    "border": {
+      "base": "border"
+    },
+    "function": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "keyword": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "string": {
+      "base": "green"
+    },
+    "escape": {
+      "base": "orange"
+    },
+    "variable": {
+      "base": "yellow"
+    },
+    "number": {
+      "base": "orange"
+    },
+    "operator": {
+      "base": "foreground_dark"
+    },
+    "success": {
+      "base": "green"
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    },
+    "line_bg": {
+      "base": "background_highlight"
+    },
+    "type": {
+      "base": "cyan"
+    },
+    "property": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "tag": {
+      "base": "red"
+    },
+    "plus_bg": {
+      "token": "bg",
+      "tint": "success",
+      "mix": 0.15
+    },
+    "plus_emph_bg": {
+      "token": "bg",
+      "tint": "success",
+      "mix": 0.3
+    },
+    "minus_bg": {
+      "token": "bg",
+      "tint": "danger",
+      "mix": 0.15
+    },
+    "minus_emph_bg": {
+      "token": "bg",
+      "tint": "danger",
+      "mix": 0.3
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "steps": [
+    { "type": "copy", "source": "unclaimed-bloom.tmTheme", "dest": ["~/.config/bat/themes/unclaimed-bloom.tmTheme"] },
+    { "type": "copy", "source": "delta.gitconfig", "dest": ["~/.config/delta/unclaimed-bloom.gitconfig"] },
+    { "type": "exec", "command": "bat", "args": ["cache", "--build"] }
+  ]
+}
