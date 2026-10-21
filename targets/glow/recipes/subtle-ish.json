@@ -1,0 +1,101 @@
+{
+  "name": "subtle-ish",
+  "target": "glow",
+  "tokens": {
+    "bg": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "fg_dim": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "raised_bg": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
+    "border": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.1
+    },
+    "command": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "function": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "builtin": {
+      "base": "cyan",
+      "source": "secondary",
+      "mix": 0.1
+    },
+    "alias": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
+    "keyword": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "string": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "escape": {
+      "base": "orange",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "path": {
+      "base": "magenta",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "variable": {
+      "base": "yellow",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "number": {
+      "base": "orange",
+      "source": "tertiary",
+      "mix": 0.1
+    },
+    "operator": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "success": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "danger": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    }
+  }
+}
