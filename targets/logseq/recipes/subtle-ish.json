@@ -1,0 +1,179 @@
+{
+  "name": "subtle-ish",
+  "target": "logseq",
+  "tokens": {
+    "bg": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "fg_dim": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "accent2": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "on_accent": {
+      "bloom": "surface.base"
+    },
+    "selection_bg": {
+      "bloom": "selection.background",
+      "source": "primary_container",
+      "mix": 0.25
+    },
+    "string": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "success": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "warning": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "danger": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    },
+    "gray_01": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.0
+    },
+    "gray_02": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.035
+    },
+    "gray_03": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.07
+    },
+    "gray_04": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.1
+    },
+    "gray_05": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.13
+    },
+    "gray_06": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.17
+    },
+    "gray_07": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.23
+    },
+    "gray_08": {
+      "token": "bg",
+      "tint": "fg",
+      "mix": 0.32
+    },
+    "gray_09": {
+      "token": "muted",
+      "tint": "bg",
+      "mix": 0.1
+    },
+    "gray_10": {
+      "token": "muted",
+      "tint": "fg",
+      "mix": 0.15
+    },
+    "gray_11": {
+      "token": "fg_dim",
+      "tint": "fg",
+      "mix": 0.0
+    },
+    "gray_12": {
+      "token": "fg",
+      "tint": "fg",
+      "mix": 0.0
+    },
+    "accent_01": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.05
+    },
+    "accent_02": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.08
+    },
+    "accent_03": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.14
+    },
+    "accent_04": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.2
+    },
+    "accent_05": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.26
+    },
+    "accent_06": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.33
+    },
+    "accent_07": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.42
+    },
+    "accent_08": {
+      "token": "bg",
+      "tint": "accent",
+      "mix": 0.55
+    },
+    "accent_10": {
+      "token": "accent",
+      "tint": "fg",
+      "mix": 0.12
+    },
+    "accent_11": {
+      "token": "accent",
+      "tint": "fg",
+      "mix": 0.22
+    },
+    "accent_12": {
+      "token": "accent",
+      "tint": "fg",
+      "mix": 0.7
+    }
+  }
+}

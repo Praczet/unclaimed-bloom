@@ -1,0 +1,9 @@
+{
+  "steps": [
+    {
+      "type": "exec",
+      "command": "{{data_dir}}/scripts/ub-splice-block",
+      "args": ["~/Notes/Logseq/logseq/custom.css", "{{rendered}}", "unclaimed-bloom"]
+    }
+  ]
+}
