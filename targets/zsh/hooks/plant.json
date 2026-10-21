@@ -1,0 +1,14 @@
+{
+  "steps": [
+    { "type": "copy", "source": "unclaimed-bloom.ini", "dest": ["~/Data/Configs/zsh/fsh/unclaimed-bloom.ini"] },
+    { "type": "copy", "source": "unclaimed-bloom-colors.zsh", "dest": ["~/Data/Configs/zsh/unclaimed-bloom-colors.zsh"] },
+    {
+      "type": "exec",
+      "command": "zsh",
+      "args": [
+        "-c",
+        "source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh && fast-theme -q ~/Data/Configs/zsh/fsh/unclaimed-bloom.ini"
+      ]
+    }
+  ]
+}

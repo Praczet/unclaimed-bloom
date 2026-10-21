@@ -1,0 +1,31 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "zsh",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "bg": { "base": "background" },
+    "fg": { "base": "foreground" },
+    "fg_dim": { "base": "foreground_dark" },
+    "muted": { "base": "comment" },
+    "suggestion": { "token": "muted", "tint": "bg", "mix": 0.25 },
+    "selection_bg": { "base": "selection_background" },
+    "raised_bg": { "base": "background_highlight" },
+    "border": { "base": "border" },
+    "command": { "bloom": "accent.primary", "source": "primary", "mix": 0.08 },
+    "function": { "bloom": "accent.primary", "source": "primary", "mix": 0.08 },
+    "builtin": { "base": "cyan" },
+    "alias": { "base": "teal", "source": "tertiary", "mix": 0.06 },
+    "keyword": { "base": "purple", "source": "secondary", "mix": 0.08 },
+    "string": { "base": "green" },
+    "escape": { "base": "orange" },
+    "option": { "base": "cyan" },
+    "path": { "base": "magenta" },
+    "variable": { "base": "yellow" },
+    "number": { "base": "orange" },
+    "glob": { "base": "orange" },
+    "operator": { "base": "foreground_dark" },
+    "success": { "base": "green" },
+    "warning": { "base": "yellow" },
+    "danger": { "base": "red", "source": "error", "mix": 0.08 }
+  }
+}
