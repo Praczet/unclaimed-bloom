@@ -1,0 +1,32 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "lazygit",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "fg": {
+      "base": "foreground"
+    },
+    "selection_bg": {
+      "base": "selection_background"
+    },
+    "raised_bg": {
+      "base": "background_highlight"
+    },
+    "border": {
+      "base": "border"
+    },
+    "command": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}
