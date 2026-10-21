@@ -1,0 +1,6 @@
+{
+  "steps": [
+    { "type": "copy", "dest": ["~/.config/qt6ct/colors/unclaimed-bloom.conf"] },
+    { "type": "exec", "command": "bash", "args": ["-c", "touch ~/.config/qt6ct/qt6ct.conf"] }
+  ]
+}

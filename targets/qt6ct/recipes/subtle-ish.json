@@ -1,0 +1,99 @@
+{
+  "name": "subtle-ish",
+  "target": "qt6ct",
+  "tokens": {
+    "fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "disabled": {
+      "bloom": "text.disabled"
+    },
+    "window": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.15
+    },
+    "base": {
+      "bloom": "surface.dim",
+      "source": "surface_container_lowest",
+      "mix": 0.1
+    },
+    "alt_base": {
+      "bloom": "surface.raised",
+      "source": "surface_container",
+      "mix": 0.1
+    },
+    "button": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
+    "tooltip_bg": {
+      "bloom": "surface.highest",
+      "source": "surface_container_highest",
+      "mix": 0.1
+    },
+    "shadow": {
+      "bloom": "surface.dim",
+      "source": "shadow",
+      "mix": 0.3
+    },
+    "highlight": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "link": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "link_visited": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "light": {
+      "token": "window",
+      "tint": "fg",
+      "mix": 0.3
+    },
+    "midlight": {
+      "token": "window",
+      "tint": "fg",
+      "mix": 0.16
+    },
+    "mid": {
+      "token": "window",
+      "tint": "shadow",
+      "mix": 0.35
+    },
+    "dark": {
+      "token": "window",
+      "tint": "shadow",
+      "mix": 0.6
+    },
+    "on_highlight": {
+      "token": "base",
+      "tint": "base",
+      "mix": 0.0
+    },
+    "dim_highlight": {
+      "token": "window",
+      "tint": "highlight",
+      "mix": 0.35
+    },
+    "bright": {
+      "token": "fg",
+      "tint": "fg",
+      "mix": 0.0
+    }
+  }
+}

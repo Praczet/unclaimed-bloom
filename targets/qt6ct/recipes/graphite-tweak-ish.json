@@ -1,0 +1,84 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "qt6ct",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "fg": {
+      "base": "foreground"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "disabled": {
+      "base": "border"
+    },
+    "window": {
+      "base": "background"
+    },
+    "base": {
+      "base": "background_dark"
+    },
+    "alt_base": {
+      "base": "background_highlight"
+    },
+    "button": {
+      "base": "background_highlight"
+    },
+    "tooltip_bg": {
+      "base": "selection_background"
+    },
+    "shadow": {
+      "base": "black"
+    },
+    "highlight": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "link": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "link_visited": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "light": {
+      "token": "window",
+      "tint": "fg",
+      "mix": 0.3
+    },
+    "midlight": {
+      "token": "window",
+      "tint": "fg",
+      "mix": 0.16
+    },
+    "mid": {
+      "token": "window",
+      "tint": "shadow",
+      "mix": 0.35
+    },
+    "dark": {
+      "token": "window",
+      "tint": "shadow",
+      "mix": 0.6
+    },
+    "on_highlight": {
+      "token": "base",
+      "tint": "base",
+      "mix": 0.0
+    },
+    "dim_highlight": {
+      "token": "window",
+      "tint": "highlight",
+      "mix": 0.35
+    },
+    "bright": {
+      "token": "fg",
+      "tint": "fg",
+      "mix": 0.0
+    }
+  }
+}
