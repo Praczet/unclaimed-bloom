@@ -13,7 +13,7 @@
       "mix": 0.15
     },
     "surface_variant": {
-      "bloom": "border.strong",
+      "bloom": "surface.highest",
       "source": "surface_variant",
       "mix": 0.1
     },
