@@ -1,0 +1,57 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "eza",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "fg": {
+      "base": "foreground"
+    },
+    "fg_dim": {
+      "base": "foreground_dark"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "border": {
+      "base": "border"
+    },
+    "command": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "builtin": {
+      "base": "cyan"
+    },
+    "alias": {
+      "base": "teal",
+      "source": "tertiary",
+      "mix": 0.06
+    },
+    "keyword": {
+      "base": "purple",
+      "source": "secondary",
+      "mix": 0.08
+    },
+    "escape": {
+      "base": "orange"
+    },
+    "option": {
+      "base": "cyan"
+    },
+    "path": {
+      "base": "magenta"
+    },
+    "success": {
+      "base": "green"
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}
