@@ -1,0 +1,41 @@
+{
+  "name": "subtle-ish",
+  "target": "atuin",
+  "tokens": {
+    "fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "fg_dim": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "success": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "warning": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "danger": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    }
+  }
+}

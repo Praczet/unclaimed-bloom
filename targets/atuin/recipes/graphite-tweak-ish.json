@@ -1,0 +1,32 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "atuin",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "fg": {
+      "base": "foreground"
+    },
+    "fg_dim": {
+      "base": "foreground_dark"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.08
+    },
+    "success": {
+      "base": "green"
+    },
+    "warning": {
+      "base": "yellow"
+    },
+    "danger": {
+      "base": "red",
+      "source": "error",
+      "mix": 0.08
+    }
+  }
+}
