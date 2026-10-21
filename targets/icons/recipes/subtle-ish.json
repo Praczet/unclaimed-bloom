@@ -33,7 +33,7 @@
       "mix": 0.1
     },
     "__ADART_ICON_ON_SURFACE_MUTED__": {
-      "bloom": "text.muted",
+      "bloom": "text.secondary",
       "source": "on_surface_variant",
       "mix": 0.1
     },

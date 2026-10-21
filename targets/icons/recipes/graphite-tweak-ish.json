@@ -22,7 +22,7 @@
       "base": "foreground"
     },
     "__ADART_ICON_ON_SURFACE_MUTED__": {
-      "base": "comment"
+      "base": "foreground_dark"
     },
     "__ADART_ICON_OUTLINE__": {
       "base": "border"
