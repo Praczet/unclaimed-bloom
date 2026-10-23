@@ -3,12 +3,13 @@
 //
 //   bun run screenshots [name...]     all screens, or only the named ones
 //
-// Output: docs/images/claimed-bloom-<name>.svg at the repo root. The home
+// Output: docs/images/claimed-bloom-<name>.svg at the repo root, plus
+// docs/images/<name>.svg for terminal commands such as spore status. The home
 // directory path is left out of the files and drawn as a blurred smudge, so it
 // is not readable in the picture or in the SVG source.
 
 import { resolve } from "node:path";
-import { BoxRenderable, TextAttributes, type CapturedFrame } from "@opentui/core";
+import { BoxRenderable, RGBA, TextAttributes, type CapturedFrame, type CapturedLine } from "@opentui/core";
 import { createTestRenderer } from "@opentui/core/testing";
 
 import type { AppContext, View, ViewContext } from "../app/types.ts";
@@ -130,7 +131,74 @@ for (const shot of SHOTS.filter((s) => wanted.length === 0 || wanted.includes(s.
   view.destroy();
   await setup.dispose();
 }
+
+// Terminal commands, drawn from their own ANSI colour output.
+const COMMANDS = [{ name: "spore-status", command: ["spore", "status"] }];
+
+for (const shot of COMMANDS.filter((s) => wanted.length === 0 || wanted.includes(s.name))) {
+  const env: Record<string, string | undefined> = { ...Bun.env, TERM: "xterm-256color" };
+  delete env.NO_COLOR;
+  const result = Bun.spawnSync(shot.command, { env, stdout: "pipe", stderr: "pipe" });
+  if (result.exitCode !== 0) {
+    console.error(`${shot.command.join(" ")} failed:\n${result.stderr.toString()}`);
+    process.exit(1);
+  }
+  const [r, g, b] = hexToInts(theme.colors.accent);
+  const prompt = `\x1b[38;2;${r};${g};${b}m❯\x1b[0m ${shot.command.join(" ")}\n\n`;
+  const frame = ansiToFrame(prompt + result.stdout.toString(), theme.colors.foreground);
+
+  const path = resolve(outDir, `${shot.name}.svg`);
+  await Bun.write(path, toSvg(frame, theme.colors.background, Bun.env.HOME));
+  console.log(`wrote ${path}`);
+}
 process.exit(0);
+
+function hexToInts(hex: string): [number, number, number] {
+  return [1, 3, 5].map((index) => Number.parseInt(hex.slice(index, index + 2), 16)) as [number, number, number];
+}
+
+// Turns SGR-coloured text (reset, dim, 24-bit fg/bg) into a captured frame,
+// with a two-column margin so nothing touches the rounded corners.
+function ansiToFrame(text: string, foreground: string): CapturedFrame {
+  const defaultFg = RGBA.fromInts(...hexToInts(foreground), 255);
+  const none = RGBA.fromInts(0, 0, 0, 0);
+
+  const lines: CapturedLine[] = text.replace(/\n+$/, "").split("\n").map((raw) => {
+    const spans: CapturedLine["spans"] = [];
+    let fg = defaultFg;
+    let bg = none;
+    let dim = false;
+
+    for (const part of `  ${raw}`.split(/(\x1b\[[0-9;]*m)/)) {
+      const sgr = part.match(/^\x1b\[([0-9;]*)m$/);
+      if (!sgr) {
+        if (part) spans.push({ text: part, fg, bg, attributes: dim ? TextAttributes.DIM : 0, width: [...part].length });
+        continue;
+      }
+      const codes = sgr[1]!.split(";").map((code) => Number(code || 0));
+      for (let index = 0; index < codes.length; index++) {
+        const code = codes[index]!;
+        if (code === 0) [fg, bg, dim] = [defaultFg, none, false];
+        else if (code === 2) dim = true;
+        else if (code === 22) dim = false;
+        else if (code === 39) fg = defaultFg;
+        else if (code === 49) bg = none;
+        else if ((code === 38 || code === 48) && codes[index + 1] === 2) {
+          const color = RGBA.fromInts(codes[index + 2]!, codes[index + 3]!, codes[index + 4]!, 255);
+          if (code === 38) fg = color;
+          else bg = color;
+          index += 4;
+        }
+      }
+    }
+    return { spans };
+  });
+  lines.unshift({ spans: [] });
+  lines.push({ spans: [] });
+
+  const cols = Math.max(...lines.map((line) => line.spans.reduce((sum, span) => sum + span.width, 0))) + 2;
+  return { cols, rows: lines.length, cursor: [0, 0], lines };
+}
 
 function toSvg(frame: CapturedFrame, background: string, redact?: string): string {
   const hex = (rgba: { toInts(): [number, number, number, number] }) => {
