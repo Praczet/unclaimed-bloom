@@ -6,7 +6,8 @@
   "scripts": {
     "typecheck": "bun check",
     "dev": "bun --watch index.ts",
-    "import-pqf": "bun scripts/import-pqf.ts"
+    "import-pqf": "bun scripts/import-pqf.ts",
+    "screenshots": "bun scripts/screenshots.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
