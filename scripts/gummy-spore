@@ -247,12 +247,13 @@ show_current_setup() {
   inner_width=$((panel_width - 6))
   explanation_color="${GUM_UB_ON_SURFACE_VARIANT:-}"
 
-  profile_block="$(gum format <<EOF
+  profile_block="$(
+    gum format <<EOF
 # Current setup
 
 Profile: **$profile_name**
 EOF
-)"
+  )"
   if [[ "$profile_type" == "composition" ]]; then
     profile_explanation="A composition profile. It combines several profiles so different parts of the desktop can disagree politely."
     profile_runs="$(gum format "$runs")"
@@ -425,6 +426,14 @@ choose_action() {
     show_action_acknowledgement "$voice" "Show me" "showAcknowledgements"
     show_menu "$voice"
     ;;
+  "Change something")
+    show_action_acknowledgement "$voice" "Change something" "changeAcknowledgements"
+    printf '\n'
+    gum style \
+      --faint \
+      --foreground "${GUM_UB_ON_SURFACE_VARIANT:-}" \
+      "This path is still growing. You can change things in the spore CLI."
+    ;;
   "Leave quietly")
     return 0
     ;;
@@ -451,6 +460,7 @@ main() {
   while true; do
     START_OVER=0
     choose_action "$voice"
+
     if ((START_OVER == 0)); then
       break
     fi

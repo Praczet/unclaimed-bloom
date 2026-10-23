@@ -27,5 +27,11 @@
     "Let us inspect the evidence.",
     "Looking is still free.",
     "No changes. Just answers."
+  ],
+  "changeAcknowledgements": [
+    "The desktop has been updated.",
+    "Changes have been made.",
+    "The garden has been tended.",
+    "Your commands have been executed."
   ]
 }
