@@ -1,0 +1,408 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="765" height="936" viewBox="0 0 765 936">
+<defs><filter id="smudge" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="100%" height="100%" rx="8" fill="#24272b"/>
+<rect x="613.2" y="324" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="630.0" y="324" width="16.8" height="18" fill="#b9bec1"/>
+<rect x="646.8" y="324" width="16.8" height="18" fill="#7c828a"/>
+<rect x="663.6" y="324" width="16.8" height="18" fill="#b0b894"/>
+<rect x="680.4" y="324" width="16.8" height="18" fill="#b7c281"/>
+<rect x="697.2" y="324" width="16.8" height="18" fill="#cdcd9e"/>
+<rect x="714.0" y="324" width="16.8" height="18" fill="#dd8788"/>
+<rect x="613.2" y="342" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="342" width="16.8" height="18" fill="#7c828a"/>
+<rect x="646.8" y="342" width="16.8" height="18" fill="#b0b894"/>
+<rect x="663.6" y="342" width="16.8" height="18" fill="#cc8e77"/>
+<rect x="680.4" y="342" width="16.8" height="18" fill="#b9bec1"/>
+<rect x="697.2" y="342" width="16.8" height="18" fill="#dd8788"/>
+<rect x="714.0" y="342" width="16.8" height="18" fill="#acb4b4"/>
+<rect x="730.8" y="342" width="16.8" height="18" fill="#515646"/>
+<rect x="613.2" y="360" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="360" width="16.8" height="18" fill="#434537"/>
+<rect x="646.8" y="360" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="663.6" y="360" width="16.8" height="18" fill="#747a83"/>
+<rect x="680.4" y="360" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="697.2" y="360" width="16.8" height="18" fill="#b7c281"/>
+<rect x="714.0" y="360" width="16.8" height="18" fill="#dd8788"/>
+<rect x="730.8" y="360" width="16.8" height="18" fill="#616875"/>
+<rect x="613.2" y="378" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="378" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="646.8" y="378" width="16.8" height="18" fill="#b9bec1"/>
+<rect x="663.6" y="378" width="16.8" height="18" fill="#7c828a"/>
+<rect x="680.4" y="378" width="16.8" height="18" fill="#434537"/>
+<rect x="697.2" y="378" width="16.8" height="18" fill="#363a42"/>
+<rect x="714.0" y="378" width="16.8" height="18" fill="#616875"/>
+<rect x="730.8" y="378" width="16.8" height="18" fill="#b0b894"/>
+<rect x="630.0" y="396" width="16.8" height="18" fill="#363a42"/>
+<rect x="646.8" y="396" width="16.8" height="18" fill="#616875"/>
+<rect x="663.6" y="396" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="680.4" y="396" width="16.8" height="18" fill="#7c828a"/>
+<rect x="697.2" y="396" width="16.8" height="18" fill="#b0b894"/>
+<rect x="613.2" y="414" width="16.8" height="18" fill="#282c33"/>
+<rect x="630.0" y="414" width="16.8" height="18" fill="#373c46"/>
+<rect x="646.8" y="414" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="663.6" y="414" width="16.8" height="18" fill="#79808b"/>
+<rect x="680.4" y="414" width="16.8" height="18" fill="#aab59a"/>
+<rect x="697.2" y="414" width="16.8" height="18" fill="#adafb3"/>
+<rect x="714.0" y="414" width="16.8" height="18" fill="#cfcd9d"/>
+<rect x="730.8" y="414" width="16.8" height="18" fill="#94c6c7"/>
+<rect x="613.2" y="432" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="630.0" y="432" width="16.8" height="18" fill="#b9bec1"/>
+<rect x="646.8" y="432" width="16.8" height="18" fill="#7c828a"/>
+<rect x="663.6" y="432" width="16.8" height="18" fill="#616875"/>
+<rect x="680.4" y="432" width="16.8" height="18" fill="#b0b894"/>
+<rect x="697.2" y="432" width="16.8" height="18" fill="#8fc1cc"/>
+<rect x="714.0" y="432" width="16.8" height="18" fill="#acb4b4"/>
+<rect x="730.8" y="432" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="613.2" y="450" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="450" width="16.8" height="18" fill="#1e2225"/>
+<rect x="646.8" y="450" width="16.8" height="18" fill="#202326"/>
+<rect x="663.6" y="450" width="16.8" height="18" fill="#b0b894"/>
+<rect x="680.4" y="450" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="697.2" y="450" width="16.8" height="18" fill="#2f2f1a"/>
+<rect x="714.0" y="450" width="16.8" height="18" fill="#b6c282"/>
+<rect x="730.8" y="450" width="16.8" height="18" fill="#b6c282"/>
+<rect x="613.2" y="468" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="468" width="16.8" height="18" fill="#b0b894"/>
+<rect x="646.8" y="468" width="16.8" height="18" fill="#414545"/>
+<rect x="663.6" y="468" width="16.8" height="18" fill="#222629"/>
+<rect x="680.4" y="468" width="16.8" height="18" fill="#b9c380"/>
+<rect x="697.2" y="468" width="16.8" height="18" fill="#b0b894"/>
+<rect x="714.0" y="468" width="16.8" height="18" fill="#acb2b4"/>
+<rect x="730.8" y="468" width="16.8" height="18" fill="#69707c"/>
+<rect x="613.2" y="486" width="16.8" height="18" fill="#afb795"/>
+<rect x="630.0" y="486" width="16.8" height="18" fill="#b795ac"/>
+<rect x="646.8" y="486" width="16.8" height="18" fill="#242933"/>
+<rect x="663.6" y="486" width="16.8" height="18" fill="#3b4252"/>
+<rect x="680.4" y="486" width="16.8" height="18" fill="#3b4252"/>
+<rect x="697.2" y="486" width="16.8" height="18" fill="#a3be8c"/>
+<rect x="714.0" y="486" width="16.8" height="18" fill="#242933"/>
+<rect x="730.8" y="486" width="16.8" height="18" fill="#eceff4"/>
+<rect x="613.2" y="504" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="504" width="16.8" height="18" fill="#b9bec1"/>
+<rect x="646.8" y="504" width="16.8" height="18" fill="#363a42"/>
+<rect x="663.6" y="504" width="16.8" height="18" fill="#b0b894"/>
+<rect x="680.4" y="504" width="16.8" height="18" fill="#8fc1cc"/>
+<rect x="697.2" y="504" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="714.0" y="504" width="16.8" height="18" fill="#cc8e77"/>
+<rect x="730.8" y="504" width="16.8" height="18" fill="#e8cb8d"/>
+<rect x="613.2" y="522" width="16.8" height="18" fill="#bebf86"/>
+<rect x="630.0" y="522" width="16.8" height="18" fill="#b795ac"/>
+<rect x="646.8" y="522" width="16.8" height="18" fill="#242933"/>
+<rect x="663.6" y="522" width="16.8" height="18" fill="#3b4252"/>
+<rect x="680.4" y="522" width="16.8" height="18" fill="#3b4252"/>
+<rect x="697.2" y="522" width="16.8" height="18" fill="#a3be8c"/>
+<rect x="714.0" y="522" width="16.8" height="18" fill="#242933"/>
+<rect x="730.8" y="522" width="16.8" height="18" fill="#4c566a"/>
+<rect x="613.2" y="540" width="16.8" height="18" fill="#282c33"/>
+<rect x="630.0" y="540" width="16.8" height="18" fill="#373c46"/>
+<rect x="646.8" y="540" width="16.8" height="18" fill="#373c46"/>
+<rect x="663.6" y="540" width="16.8" height="18" fill="#aab59a"/>
+<rect x="680.4" y="540" width="16.8" height="18" fill="#cbaeb1"/>
+<rect x="697.2" y="540" width="16.8" height="18" fill="#adafb3"/>
+<rect x="714.0" y="540" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="730.8" y="540" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="613.2" y="558" width="16.8" height="18" fill="#b0b894"/>
+<rect x="630.0" y="558" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="646.8" y="558" width="16.8" height="18" fill="#acb4b4"/>
+<rect x="663.6" y="558" width="16.8" height="18" fill="#df8a8a"/>
+<rect x="680.4" y="558" width="16.8" height="18" fill="#25282d"/>
+<rect x="697.2" y="558" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="714.0" y="558" width="16.8" height="18" fill="#616875"/>
+<rect x="730.8" y="558" width="16.8" height="18" fill="#7c828a"/>
+<rect x="613.2" y="576" width="16.8" height="18" fill="#1e2124"/>
+<rect x="630.0" y="576" width="16.8" height="18" fill="#272b30"/>
+<rect x="646.8" y="576" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="663.6" y="576" width="16.8" height="18" fill="#b9bec0"/>
+<rect x="680.4" y="576" width="16.8" height="18" fill="#b2b992"/>
+<rect x="697.2" y="576" width="16.8" height="18" fill="#c8cea2"/>
+<rect x="714.0" y="576" width="16.8" height="18" fill="#e08b8b"/>
+<rect x="613.2" y="594" width="16.8" height="18" fill="#454a54"/>
+<rect x="630.0" y="594" width="16.8" height="18" fill="#454a54"/>
+<rect x="646.8" y="594" width="16.8" height="18" fill="#b9bec1"/>
+<rect x="663.6" y="594" width="16.8" height="18" fill="#b0b894"/>
+<rect x="680.4" y="594" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="697.2" y="594" width="16.8" height="18" fill="#acb4b4"/>
+<rect x="714.0" y="594" width="16.8" height="18" fill="#b8c385"/>
+<rect x="730.8" y="594" width="16.8" height="18" fill="#bec093"/>
+<rect x="613.2" y="612" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="612" width="16.8" height="18" fill="#222525"/>
+<rect x="646.8" y="612" width="16.8" height="18" fill="#222629"/>
+<rect x="663.6" y="612" width="16.8" height="18" fill="#cbcda0"/>
+<rect x="680.4" y="612" width="16.8" height="18" fill="#acb2b4"/>
+<rect x="697.2" y="612" width="16.8" height="18" fill="#d27578"/>
+<rect x="714.0" y="612" width="16.8" height="18" fill="#aeb796"/>
+<rect x="730.8" y="612" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="613.2" y="630" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="630.0" y="630" width="16.8" height="18" fill="#434537"/>
+<rect x="646.8" y="630" width="16.8" height="18" fill="#363a42"/>
+<rect x="663.6" y="630" width="16.8" height="18" fill="#616875"/>
+<rect x="680.4" y="630" width="16.8" height="18" fill="#b0b894"/>
+<rect x="697.2" y="630" width="16.8" height="18" fill="#cdcd9e"/>
+<rect x="714.0" y="630" width="16.8" height="18" fill="#dd8788"/>
+<rect x="613.2" y="648" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="648" width="16.8" height="18" fill="#b0b894"/>
+<rect x="646.8" y="648" width="16.8" height="18" fill="#b7c281"/>
+<rect x="663.6" y="648" width="16.8" height="18" fill="#25282d"/>
+<rect x="680.4" y="648" width="16.8" height="18" fill="#3d4045"/>
+<rect x="697.2" y="648" width="16.8" height="18" fill="#737981"/>
+<rect x="714.0" y="648" width="16.8" height="18" fill="#2c2f32"/>
+<rect x="730.8" y="648" width="16.8" height="18" fill="#494d48"/>
+<rect x="613.2" y="666" width="16.8" height="18" fill="#282c33"/>
+<rect x="630.0" y="666" width="16.8" height="18" fill="#363a42"/>
+<rect x="646.8" y="666" width="16.8" height="18" fill="#404446"/>
+<rect x="663.6" y="666" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="680.4" y="666" width="16.8" height="18" fill="#7c828a"/>
+<rect x="697.2" y="666" width="16.8" height="18" fill="#acb2b4"/>
+<rect x="714.0" y="666" width="16.8" height="18" fill="#cbcda0"/>
+<rect x="730.8" y="666" width="16.8" height="18" fill="#cbb1b0"/>
+<rect x="613.2" y="684" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="684" width="16.8" height="18" fill="#32363d"/>
+<rect x="646.8" y="684" width="16.8" height="18" fill="#474d58"/>
+<rect x="663.6" y="684" width="16.8" height="18" fill="#b0b894"/>
+<rect x="680.4" y="684" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="697.2" y="684" width="16.8" height="18" fill="#acb4b4"/>
+<rect x="714.0" y="684" width="16.8" height="18" fill="#dfdfe1"/>
+<rect x="730.8" y="684" width="16.8" height="18" fill="#dfdfe1"/>
+<rect x="613.2" y="702" width="16.8" height="18" fill="#97c6c5"/>
+<rect x="630.0" y="702" width="16.8" height="18" fill="#b0b894"/>
+<rect x="646.8" y="702" width="16.8" height="18" fill="#e8cb8d"/>
+<rect x="663.6" y="702" width="16.8" height="18" fill="#cdcd9e"/>
+<rect x="680.4" y="702" width="16.8" height="18" fill="#dd8788"/>
+<rect x="697.2" y="702" width="16.8" height="18" fill="#7c828a"/>
+<rect x="613.2" y="720" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="720" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="646.8" y="720" width="16.8" height="18" fill="#81878f"/>
+<rect x="663.6" y="720" width="16.8" height="18" fill="#646c7b"/>
+<rect x="680.4" y="720" width="16.8" height="18" fill="#69707c"/>
+<rect x="697.2" y="720" width="16.8" height="18" fill="#b0b894"/>
+<rect x="714.0" y="720" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="730.8" y="720" width="16.8" height="18" fill="#b4c48a"/>
+<rect x="613.2" y="738" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="738" width="16.8" height="18" fill="#34383f"/>
+<rect x="646.8" y="738" width="16.8" height="18" fill="#818455"/>
+<rect x="663.6" y="738" width="16.8" height="18" fill="#ccb7ac"/>
+<rect x="680.4" y="738" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="697.2" y="738" width="16.8" height="18" fill="#2e2f25"/>
+<rect x="714.0" y="738" width="16.8" height="18" fill="#142724"/>
+<rect x="730.8" y="738" width="16.8" height="18" fill="#616875"/>
+<rect x="613.2" y="756" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="630.0" y="756" width="16.8" height="18" fill="#616874"/>
+<rect x="646.8" y="756" width="16.8" height="18" fill="#1e2226"/>
+<rect x="663.6" y="756" width="16.8" height="18" fill="#363a42"/>
+<rect x="680.4" y="756" width="16.8" height="18" fill="#16191d"/>
+<rect x="697.2" y="756" width="16.8" height="18" fill="#b0b894"/>
+<rect x="714.0" y="756" width="16.8" height="18" fill="#5d5f63"/>
+<rect x="730.8" y="756" width="16.8" height="18" fill="#202327"/>
+<rect x="613.2" y="774" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="774" width="16.8" height="18" fill="#434952"/>
+<rect x="646.8" y="774" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="663.6" y="774" width="16.8" height="18" fill="#b7bdc2"/>
+<rect x="680.4" y="774" width="16.8" height="18" fill="#b0b894"/>
+<rect x="697.2" y="774" width="16.8" height="18" fill="#cbaeb1"/>
+<rect x="714.0" y="774" width="16.8" height="18" fill="#d98284"/>
+<rect x="613.2" y="792" width="16.8" height="18" fill="#b0b894"/>
+<rect x="630.0" y="792" width="16.8" height="18" fill="#282c33"/>
+<rect x="646.8" y="792" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="663.6" y="792" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="680.4" y="792" width="16.8" height="18" fill="#343117"/>
+<rect x="697.2" y="792" width="16.8" height="18" fill="#df8a8a"/>
+<rect x="613.2" y="810" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="810" width="16.8" height="18" fill="#363a42"/>
+<rect x="646.8" y="810" width="16.8" height="18" fill="#b0b894"/>
+<rect x="663.6" y="810" width="16.8" height="18" fill="#aab89d"/>
+<rect x="680.4" y="810" width="16.8" height="18" fill="#cbcda0"/>
+<rect x="697.2" y="810" width="16.8" height="18" fill="#69707c"/>
+<rect x="714.0" y="810" width="16.8" height="18" fill="#b0b894"/>
+<rect x="730.8" y="810" width="16.8" height="18" fill="#414442"/>
+<rect x="630.0" y="828" width="16.8" height="18" fill="#dedfe2"/>
+<rect x="646.8" y="828" width="16.8" height="18" fill="#7c828a"/>
+<rect x="663.6" y="828" width="16.8" height="18" fill="#a6abb1"/>
+<rect x="680.4" y="828" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="697.2" y="828" width="16.8" height="18" fill="#b7c281"/>
+<rect x="714.0" y="828" width="16.8" height="18" fill="#dd8788"/>
+<rect x="730.8" y="828" width="16.8" height="18" fill="#dee0db"/>
+<rect x="613.2" y="846" width="16.8" height="18" fill="#222436"/>
+<rect x="630.0" y="846" width="16.8" height="18" fill="#2f334d"/>
+<rect x="646.8" y="846" width="16.8" height="18" fill="#c8d3f5"/>
+<rect x="663.6" y="846" width="16.8" height="18" fill="#828bb8"/>
+<rect x="680.4" y="846" width="16.8" height="18" fill="#3b4261"/>
+<rect x="697.2" y="846" width="16.8" height="18" fill="#828bb8"/>
+<rect x="714.0" y="846" width="16.8" height="18" fill="#afb795"/>
+<rect x="730.8" y="846" width="16.8" height="18" fill="#c19ef6"/>
+<rect x="613.2" y="864" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="864" width="16.8" height="18" fill="#32363d"/>
+<rect x="646.8" y="864" width="16.8" height="18" fill="#b0b894"/>
+<rect x="663.6" y="864" width="16.8" height="18" fill="#dddfe3"/>
+<rect x="613.2" y="882" width="16.8" height="18" fill="#b0b894"/>
+<rect x="630.0" y="882" width="16.8" height="18" fill="#282c33"/>
+<rect x="646.8" y="882" width="16.8" height="18" fill="#aab89d"/>
+<rect x="663.6" y="882" width="16.8" height="18" fill="#444a55"/>
+<rect x="680.4" y="882" width="16.8" height="18" fill="#df8a8a"/>
+<rect x="697.2" y="882" width="16.8" height="18" fill="#d3d0a2"/>
+<rect x="714.0" y="882" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="730.8" y="882" width="16.8" height="18" fill="#b7c281"/>
+<rect x="613.2" y="900" width="16.8" height="18" fill="#25282d"/>
+<rect x="630.0" y="900" width="16.8" height="18" fill="#7c828a"/>
+<rect x="646.8" y="900" width="16.8" height="18" fill="#363a42"/>
+<rect x="663.6" y="900" width="16.8" height="18" fill="#b0b894"/>
+<rect x="680.4" y="900" width="16.8" height="18" fill="#cbb2af"/>
+<rect x="697.2" y="900" width="16.8" height="18" fill="#97c6c5"/>
+<rect x="714.0" y="900" width="16.8" height="18" fill="#cc8e77"/>
+<rect x="730.8" y="900" width="16.8" height="18" fill="#b7c281"/>
+<g font-family="'JetBrains Mono','DejaVu Sans Mono',Menlo,Consolas,monospace" font-size="14" xml:space="preserve">
+<text x="16.8" y="31" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">❯</text>
+<text x="25.2" y="31" fill="#dedfe2" textLength="109.2" lengthAdjust="spacingAndGlyphs"> spore status</text>
+<text x="0.0" y="67" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  Unclaimed Bloom</text>
+<text x="0.0" y="103" fill="#dedfe2" textLength="310.8" lengthAdjust="spacingAndGlyphs">  current : desktop-graphite-blooming</text>
+<text x="0.0" y="121" fill="#dedfe2" textLength="260.4" lengthAdjust="spacingAndGlyphs">  type    : composition, 2 runs</text>
+<text x="0.0" y="139" fill="#dedfe2" textLength="294.0" lengthAdjust="spacingAndGlyphs">  source  : daily-graphite-blooming</text>
+<text x="0.0" y="157" fill="#dedfe2" textLength="268.8" lengthAdjust="spacingAndGlyphs">  run     : daily-gtk-blooming  </text>
+<text x="268.8" y="157" fill="#dedfe2" opacity="0.6" textLength="319.2" lengthAdjust="spacingAndGlyphs">nord-tweak-dark · blooming · 2 targets</text>
+<text x="0.0" y="175" fill="#dedfe2" textLength="310.8" lengthAdjust="spacingAndGlyphs">  run     : daily-graphite-blooming  </text>
+<text x="310.8" y="175" fill="#dedfe2" opacity="0.6" textLength="327.6" lengthAdjust="spacingAndGlyphs">nord-tweak-dark · blooming · 31 targets</text>
+<text x="0.0" y="193" fill="#dedfe2" textLength="218.4" lengthAdjust="spacingAndGlyphs">  sow     : Oct 23 14:37  </text>
+<text x="218.4" y="193" fill="#dedfe2" opacity="0.6" textLength="33.6" lengthAdjust="spacingAndGlyphs">done</text>
+<text x="0.0" y="211" fill="#dedfe2" textLength="218.4" lengthAdjust="spacingAndGlyphs">  grow    : Oct 23 14:37  </text>
+<text x="218.4" y="211" fill="#dedfe2" opacity="0.6" textLength="33.6" lengthAdjust="spacingAndGlyphs">done</text>
+<text x="0.0" y="229" fill="#dedfe2" textLength="218.4" lengthAdjust="spacingAndGlyphs">  plant   : Oct 23 14:38  </text>
+<text x="218.4" y="229" fill="#dedfe2" opacity="0.6" textLength="33.6" lengthAdjust="spacingAndGlyphs">done</text>
+<text x="0.0" y="247" fill="#dedfe2" textLength="100.8" lengthAdjust="spacingAndGlyphs">  data    : </text>
+<text x="100.8" y="247" fill="#dedfe2" opacity="0.6" textLength="210.0" lengthAdjust="spacingAndGlyphs">~/.config/unclaimed-bloom</text>
+<text x="0.0" y="265" fill="#dedfe2" textLength="100.8" lengthAdjust="spacingAndGlyphs">  cache   : </text>
+<text x="100.8" y="265" fill="#dedfe2" opacity="0.6" textLength="201.6" lengthAdjust="spacingAndGlyphs">~/.cache/unclaimed-bloom</text>
+<text x="0.0" y="301" fill="#dedfe2" textLength="747.6" lengthAdjust="spacingAndGlyphs">  target         profile                  recipe           sown          colors          </text>
+<text x="0.0" y="319" fill="#dedfe2" textLength="747.6" lengthAdjust="spacingAndGlyphs">  -------------  -----------------------  ---------------  ------------  ----------------</text>
+<text x="0.0" y="337" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  atuin          </text>
+<text x="142.8" y="337" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="337" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="337" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="355" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  bat            </text>
+<text x="142.8" y="355" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="355" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="355" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="373" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  broot          </text>
+<text x="142.8" y="373" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="373" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="373" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="391" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  btop           </text>
+<text x="142.8" y="391" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="391" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="391" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="409" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  claimed-bloom  </text>
+<text x="142.8" y="409" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="409" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="409" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="427" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  dbeaver        </text>
+<text x="142.8" y="427" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="427" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="427" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="445" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  eza            </text>
+<text x="142.8" y="445" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="445" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="445" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="463" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  fovia          </text>
+<text x="142.8" y="463" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="463" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="463" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="481" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  ghostty        </text>
+<text x="142.8" y="481" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="481" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="481" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="499" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  gimp           </text>
+<text x="142.8" y="499" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-gtk-blooming     </text>
+<text x="336.0" y="499" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  nord-tweak-dark  </text>
+<text x="495.6" y="499" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="517" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  glow           </text>
+<text x="142.8" y="517" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="517" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="517" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="535" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  gtk            </text>
+<text x="142.8" y="535" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-gtk-blooming     </text>
+<text x="336.0" y="535" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  nord-tweak-dark  </text>
+<text x="495.6" y="535" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="553" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  gum            </text>
+<text x="142.8" y="553" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="553" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="553" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="571" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  hyprland       </text>
+<text x="142.8" y="571" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="571" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="571" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="589" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  hyprlock       </text>
+<text x="142.8" y="589" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="589" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="589" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="607" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  icons          </text>
+<text x="142.8" y="607" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="607" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="607" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="625" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  kitty          </text>
+<text x="142.8" y="625" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="625" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="625" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="643" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  lazygit        </text>
+<text x="142.8" y="643" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="643" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="643" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="661" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  logseq         </text>
+<text x="142.8" y="661" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="661" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="661" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="679" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  mycli          </text>
+<text x="142.8" y="679" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="679" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="679" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="697" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  nvim           </text>
+<text x="142.8" y="697" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="697" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="697" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="715" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  oh-my-posh     </text>
+<text x="142.8" y="715" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="715" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="715" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="733" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  potato         </text>
+<text x="142.8" y="733" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="733" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="733" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="751" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  qreep          </text>
+<text x="142.8" y="751" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="751" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="751" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="769" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  qt6ct          </text>
+<text x="142.8" y="769" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="769" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="769" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="787" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  rofi           </text>
+<text x="142.8" y="787" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="787" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="787" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="805" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  sddm           </text>
+<text x="142.8" y="805" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="805" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="805" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="823" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  sqlit          </text>
+<text x="142.8" y="823" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="823" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="823" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="841" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  superfile      </text>
+<text x="142.8" y="841" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="841" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="841" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="859" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  vl-convert     </text>
+<text x="142.8" y="859" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="859" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="859" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="877" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  wlogout        </text>
+<text x="142.8" y="877" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="877" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="877" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="895" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  yazi           </text>
+<text x="142.8" y="895" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="895" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="895" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+<text x="0.0" y="913" fill="#dedfe2" textLength="142.8" lengthAdjust="spacingAndGlyphs">  zsh            </text>
+<text x="142.8" y="913" fill="#dedfe2" opacity="0.6" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="336.0" y="913" fill="#dedfe2" textLength="159.6" lengthAdjust="spacingAndGlyphs">  subtle-ish       </text>
+<text x="495.6" y="913" fill="#dedfe2" opacity="0.6" textLength="100.8" lengthAdjust="spacingAndGlyphs">Oct 23 14:37</text>
+</g>
+</svg>

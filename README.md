@@ -113,10 +113,17 @@ spore sync --apply   # copy changed theme files into ~/.config, then rerun walls
 ### See what is going on
 
 ```bash
-spore status          # current profile, last sow/grow/plant, every target's spore
+spore status
 ```
 
-or open **claimed-bloom**, which answers the same questions with more colour.
+![spore status: the current composition, its two runs, when sow, grow and plant last ran, and every target with its profile, recipe and a strip of its colours](docs/images/spore-status.svg)
+
+One screen, the whole garden: which profile is live, what it is made of, when
+it last ran, and what every application got — down to the swatches. Spores
+nobody uses anymore are listed at the bottom.
+
+Or open **claimed-bloom**, which answers the same questions with more colour
+and tells you what to do about them.
 
 ## claimed-bloom
 
