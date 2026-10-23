@@ -1255,8 +1255,8 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     const loader = new RecipeLoader();
     const id = target.includes("/") ? target : undefined;
     const summaries = id
-      ? [await loader.list(paths.recipesDir()).then((all) => all.find((r) => r.id === id)!)].filter(Boolean)
-      : await loader.list(paths.recipesDir(), target);
+      ? [await loader.list(paths.targetsDir()).then((all) => all.find((r) => r.id === id)!)].filter(Boolean)
+      : await loader.list(paths.targetsDir(), target);
 
     if (summaries.length === 0) {
       this.printHuman(`No recipes found for: ${target}`);
@@ -1266,7 +1266,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     let anyFailed = false;
 
     for (const summary of summaries) {
-      const recipe = await loader.inspect(paths.recipesDir(), summary.id);
+      const recipe = await loader.inspect(paths.targetsDir(), summary.id);
       const bad: string[] = [];
 
       for (const [name, token] of Object.entries(recipe.tokens)) {
@@ -1288,7 +1288,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
 
     if (this.outputMode === "json") {
       const results = await Promise.all(summaries.map(async (summary) => {
-        const recipe = await loader.inspect(paths.recipesDir(), summary.id);
+        const recipe = await loader.inspect(paths.targetsDir(), summary.id);
         const errors = Object.entries(recipe.tokens)
           .filter(([, t]) => "bloom" in t && !VALID_BLOOM.has(t.bloom))
           .map(([name, t]) => ({ token: name, ref: `bloom:${"bloom" in t ? t.bloom : ""}` }));
@@ -1304,7 +1304,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
   private async listRecipes(target: string | undefined): Promise<void> {
     const paths = BloomPaths.fromDeno();
     const loader = new RecipeLoader();
-    const recipes = await loader.list(paths.recipesDir(), target);
+    const recipes = await loader.list(paths.targetsDir(), target);
 
     if (this.outputMode === "json") {
       this.printJson({
@@ -1348,7 +1348,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     const loader = new RecipeLoader();
 
     if (!id.includes("/")) {
-      const recipes = await loader.list(paths.recipesDir(), id);
+      const recipes = await loader.list(paths.targetsDir(), id);
       if (this.outputMode === "json") {
         this.printJson({
           ok: false,
@@ -1375,7 +1375,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       }
       Deno.exit(1);
     }
-    const recipe = await loader.inspect(paths.recipesDir(), id);
+    const recipe = await loader.inspect(paths.targetsDir(), id);
     if (this.outputMode === "json") {
       this.printJson({
         ok: true,
@@ -2329,7 +2329,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
 
   private async listTargets(): Promise<void> {
     const paths = BloomPaths.fromDeno();
-    const targetsDir = paths.recipesDir();
+    const targetsDir = paths.targetsDir();
     const recipeLoader = new RecipeLoader();
 
     const targetNames: string[] = [];
@@ -2382,7 +2382,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
 
   private async showTarget(target: string): Promise<void> {
     const paths = BloomPaths.fromDeno();
-    const targetsDir = paths.recipesDir();
+    const targetsDir = paths.targetsDir();
     const targetDir = `${targetsDir}/${target}`;
 
     try {
@@ -2511,7 +2511,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
     }
 
     const recipeLoader = new RecipeLoader();
-    await recipeLoader.inspect(paths.recipesDir(), `${target}/${recipeName}`);
+    await recipeLoader.inspect(paths.targetsDir(), `${target}/${recipeName}`);
 
     const previous = (targets as Record<string, string>)[target];
     (targets as Record<string, string>)[target] = recipeName;
@@ -3080,7 +3080,7 @@ For config definitions use: palette show, profile show, recipe show, mood show.`
       await emitter?.startTarget(target);
       try {
         const recipe = await recipeLoader.inspect(
-          context.paths.recipesDir(),
+          context.paths.targetsDir(),
           `${target}/${recipeName}`,
         );
         const targetBasePalette = await this.loadRecipeBasePalette(

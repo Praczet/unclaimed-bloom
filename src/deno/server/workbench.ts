@@ -209,7 +209,7 @@ async function handleRecipes(url: URL): Promise<Response> {
   const paths = BloomPaths.fromDeno();
   const loader = new RecipeLoader();
   const target = url.searchParams.get("target") ?? undefined;
-  const summaries = await loader.list(paths.recipesDir(), target);
+  const summaries = await loader.list(paths.targetsDir(), target);
 
   // build usage map from all profiles
   const profileLoader = new ProfileLoader();
@@ -236,7 +236,7 @@ async function handleRecipes(url: URL): Promise<Response> {
   }
 
   const recipes = await Promise.all(summaries.map(async (s) => {
-    const recipe = await loader.inspect(paths.recipesDir(), s.id);
+    const recipe = await loader.inspect(paths.targetsDir(), s.id);
     return {
       id: s.id,
       name: s.name,
@@ -351,7 +351,7 @@ async function buildPipeline(paths: BloomPaths, profileName: string): Promise<un
 
   const targets: Record<string, unknown> = {};
   for (const [target, recipeName] of Object.entries(entry.targets)) {
-    const recipe = await recipeLoader.inspect(paths.recipesDir(), `${target}/${recipeName}`);
+    const recipe = await recipeLoader.inspect(paths.targetsDir(), `${target}/${recipeName}`);
     const targetBase = await paletteLoader.inspect(
       paths.palettesDir(),
       recipe.basePalette ?? entry.basePalette,

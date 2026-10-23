@@ -60,7 +60,7 @@ export class BloomPaths {
     return this.join(this.dataDir, "moods");
   }
 
-  public recipesDir(): string {
+  public targetsDir(): string {
     return this.join(this.dataDir, "targets");
   }
 

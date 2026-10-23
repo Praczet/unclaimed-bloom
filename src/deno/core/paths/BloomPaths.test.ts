@@ -51,7 +51,7 @@ Deno.test("BloomPaths exposes data directories", () => {
 
   assertEquals(paths.profilesDir(), "/data/ub/profiles");
   assertEquals(paths.palettesDir(), "/data/ub/palettes");
-  assertEquals(paths.recipesDir(), "/data/ub/targets");
+  assertEquals(paths.targetsDir(), "/data/ub/targets");
 });
 
 Deno.test("BloomPaths resolves target templates and rendered output dirs", () => {
