@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="612" viewBox="0 0 1176 612">
+<defs><filter id="smudge" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="100%" height="100%" rx="8" fill="#24272b"/>
+<rect x="25.2" y="126" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="126" width="571.2" height="18" fill="#363a42"/>
+<rect x="25.2" y="144" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="144" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="144" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="144" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="162" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="162" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="180" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="180" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="198" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="198" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="216" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="216" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="234" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="234" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="252" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="252" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="270" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="270" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="288" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="288" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="306" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="306" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="324" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="324" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="324" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="324" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="342" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="342" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="360" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="604.8" y="360" width="554.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="378" width="571.2" height="18" fill="#363a42"/>
+<rect x="596.4" y="378" width="571.2" height="18" fill="#363a42"/>
+<rect x="0.0" y="594" width="16.8" height="18" fill="#363a42"/>
+<rect x="16.8" y="594" width="411.6" height="18" fill="#363a42"/>
+<rect x="428.4" y="594" width="747.6" height="18" fill="#363a42"/>
+<g font-family="'JetBrains Mono','DejaVu Sans Mono',Menlo,Consolas,monospace" font-size="14" xml:space="preserve">
+<text x="25.2" y="13" fill="#b0b894" textLength="134.4" lengthAdjust="spacingAndGlyphs">  CLAIMED BLOOM</text>
+<text x="50.4" y="31" fill="#7c828a" textLength="294.0" lengthAdjust="spacingAndGlyphs">~The garden is yours to understand~</text>
+<text x="25.2" y="67" fill="#7c828a" textLength="117.6" lengthAdjust="spacingAndGlyphs">Home &gt; [DO...]</text>
+<text x="25.2" y="103" fill="#dedfe2" textLength="369.6" lengthAdjust="spacingAndGlyphs">Do:=&gt; buttons that actually do things, scary</text>
+<text x="596.4" y="139" fill="#616875" textLength="571.2" lengthAdjust="spacingAndGlyphs">╭──────────────────────────────────────────────────────────────────╮</text>
+<text x="25.2" y="157" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs"> ❯ ★ spore sync scripts                                             </text>
+<text x="596.4" y="157" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="157" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="175" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync --apply                                             </text>
+<text x="596.4" y="175" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="604.8" y="175" fill="#ffffff" textLength="554.4" lengthAdjust="spacingAndGlyphs"> Suggested.                                                       </text>
+<text x="1159.2" y="175" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="193" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync                                                     </text>
+<text x="596.4" y="193" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="193" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="211" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync --dry-run                                           </text>
+<text x="596.4" y="211" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="604.8" y="211" fill="#ffffff" textLength="554.4" lengthAdjust="spacingAndGlyphs"> Only scripts are outdated: gummy-spore, wallset, wallset-        </text>
+<text x="1159.2" y="211" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="229" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync palettes                                            </text>
+<text x="596.4" y="229" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="604.8" y="229" fill="#ffffff" textLength="554.4" lengthAdjust="spacingAndGlyphs"> backend. No hook of the current theme uses them.                 </text>
+<text x="1159.2" y="229" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="247" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync moods                                               </text>
+<text x="596.4" y="247" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="247" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="265" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync profiles                                            </text>
+<text x="596.4" y="265" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="604.8" y="265" fill="#ffffff" textLength="554.4" lengthAdjust="spacingAndGlyphs"> Copy changed scripts from dev into config.                       </text>
+<text x="1159.2" y="265" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="283" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync recipes                                             </text>
+<text x="596.4" y="283" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="283" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="301" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync templates                                           </text>
+<text x="596.4" y="301" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="604.8" y="301" fill="#ffffff" textLength="554.4" lengthAdjust="spacingAndGlyphs"> Hooks call these as {{data_dir}}/scripts/…; the wallset and      </text>
+<text x="1159.2" y="301" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="319" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync hooks                                               </text>
+<text x="596.4" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="604.8" y="319" fill="#ffffff" textLength="554.4" lengthAdjust="spacingAndGlyphs"> spore launchers run the repo copies instead.                     </text>
+<text x="1159.2" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="337" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync scripts --apply                                     </text>
+<text x="596.4" y="337" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="337" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="355" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     spore sync --prune                                             </text>
+<text x="596.4" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="25.2" y="373" fill="#ffffff" textLength="571.2" lengthAdjust="spacingAndGlyphs">     scripts/install --force                                        </text>
+<text x="596.4" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1159.2" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="596.4" y="391" fill="#616875" textLength="571.2" lengthAdjust="spacingAndGlyphs">╰──────────────────────────────────────────────────────────────────╯</text>
+<text x="16.8" y="607" fill="#dedfe2" textLength="411.6" lengthAdjust="spacingAndGlyphs">↑↓ Navigate | Enter Run | ESC =&gt; back | q =&gt; Quit</text>
+</g>
+</svg>

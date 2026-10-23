@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="612" viewBox="0 0 1176 612">
+<defs><filter id="smudge" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="100%" height="100%" rx="8" fill="#24272b"/>
+<rect x="25.2" y="126" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="144" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="162" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="180" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="198" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="216" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="234" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="252" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="270" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="270" width="688.8" height="18" fill="#363a42"/>
+<rect x="940.8" y="270" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="288" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="260.4" y="288" width="672.0" height="18" fill="#363a42"/>
+<rect x="932.4" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="940.8" y="288" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="306" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="260.4" y="306" width="672.0" height="18" fill="#363a42"/>
+<rect x="932.4" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="940.8" y="306" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="324" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="324" width="8.4" height="18" fill="#363a42"/>
+<rect x="260.4" y="324" width="16.8" height="18" fill="#363a42"/>
+<rect x="277.2" y="324" width="604.8" height="18" fill="#363a42"/>
+<rect x="882.0" y="324" width="50.4" height="18" fill="#363a42"/>
+<rect x="932.4" y="324" width="8.4" height="18" fill="#363a42"/>
+<rect x="940.8" y="324" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="342" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="260.4" y="342" width="16.8" height="18" fill="#363a42"/>
+<rect x="277.2" y="342" width="50.4" height="18" fill="#363a42"/>
+<rect x="327.6" y="342" width="604.8" height="18" fill="#363a42"/>
+<rect x="932.4" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="940.8" y="342" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="360" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="260.4" y="360" width="672.0" height="18" fill="#363a42"/>
+<rect x="932.4" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="940.8" y="360" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="378" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="260.4" y="378" width="672.0" height="18" fill="#363a42"/>
+<rect x="932.4" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="940.8" y="378" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="396" width="226.8" height="18" fill="#363a42"/>
+<rect x="252.0" y="396" width="688.8" height="18" fill="#363a42"/>
+<rect x="940.8" y="396" width="226.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="414" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="432" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="450" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="468" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="486" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="504" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="522" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="540" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="558" width="1142.4" height="18" fill="#363a42"/>
+<rect x="0.0" y="594" width="16.8" height="18" fill="#363a42"/>
+<rect x="16.8" y="594" width="436.8" height="18" fill="#363a42"/>
+<rect x="453.6" y="594" width="722.4" height="18" fill="#363a42"/>
+<g font-family="'JetBrains Mono','DejaVu Sans Mono',Menlo,Consolas,monospace" font-size="14" xml:space="preserve">
+<text x="25.2" y="13" fill="#b0b894" textLength="134.4" lengthAdjust="spacingAndGlyphs">  CLAIMED BLOOM</text>
+<text x="50.4" y="31" fill="#7c828a" textLength="268.8" lengthAdjust="spacingAndGlyphs">~Please do not feed the matugen~</text>
+<text x="25.2" y="67" fill="#7c828a" textLength="168.0" lengthAdjust="spacingAndGlyphs">Home &gt; [COMPLAIN...]</text>
+<text x="25.2" y="103" fill="#dedfe2" textLength="327.6" lengthAdjust="spacingAndGlyphs">Complain:=&gt; a safe space for grievances</text>
+<text x="252.0" y="283" fill="#616875" textLength="688.8" lengthAdjust="spacingAndGlyphs">╭────────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="252.0" y="301" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="932.4" y="301" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="252.0" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="932.4" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="252.0" y="337" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="277.2" y="337" fill="#dedfe2" textLength="604.8" lengthAdjust="spacingAndGlyphs">Nobody ever asks the icons how they feel about being regenerated 44,137 </text>
+<text x="932.4" y="337" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="252.0" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="277.2" y="355" fill="#dedfe2" textLength="50.4" lengthAdjust="spacingAndGlyphs">times.</text>
+<text x="932.4" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="252.0" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="932.4" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="252.0" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="932.4" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="252.0" y="409" fill="#616875" textLength="688.8" lengthAdjust="spacingAndGlyphs">╰────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="16.8" y="607" fill="#dedfe2" textLength="436.8" lengthAdjust="spacingAndGlyphs">Enter/Space =&gt; Another one | ESC =&gt; back | q =&gt; Quit</text>
+</g>
+</svg>

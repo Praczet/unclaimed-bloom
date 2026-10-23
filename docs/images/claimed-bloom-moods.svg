@@ -1,0 +1,394 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="612" viewBox="0 0 1176 612">
+<defs><filter id="smudge" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="100%" height="100%" rx="8" fill="#24272b"/>
+<rect x="25.2" y="126" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="144" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="144" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="144" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="162" width="1108.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="180" width="655.2" height="18" fill="#363a42"/>
+<rect x="705.6" y="180" width="445.2" height="18" fill="#363a42"/>
+<rect x="1150.8" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="198" width="1108.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="216" width="92.4" height="18" fill="#363a42"/>
+<rect x="142.8" y="216" width="352.8" height="18" fill="#363a42"/>
+<rect x="495.6" y="216" width="655.2" height="18" fill="#363a42"/>
+<rect x="1150.8" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="234" width="92.4" height="18" fill="#363a42"/>
+<rect x="142.8" y="234" width="193.2" height="18" fill="#363a42"/>
+<rect x="336.0" y="234" width="814.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="252" width="92.4" height="18" fill="#363a42"/>
+<rect x="142.8" y="252" width="327.6" height="18" fill="#363a42"/>
+<rect x="470.4" y="252" width="680.4" height="18" fill="#363a42"/>
+<rect x="1150.8" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="270" width="92.4" height="18" fill="#363a42"/>
+<rect x="142.8" y="270" width="277.2" height="18" fill="#363a42"/>
+<rect x="420.0" y="270" width="730.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="270" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="288" width="1108.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="306" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="324" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="342" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="360" width="50.4" height="18" fill="#363a42"/>
+<rect x="100.8" y="360" width="67.2" height="18" fill="#363a42"/>
+<rect x="168.0" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="176.4" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="360" width="58.8" height="18" fill="#363a42"/>
+<rect x="243.6" y="360" width="42.0" height="18" fill="#363a42"/>
+<rect x="285.6" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="294.0" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="302.4" y="360" width="84.0" height="18" fill="#363a42"/>
+<rect x="386.4" y="360" width="16.8" height="18" fill="#363a42"/>
+<rect x="403.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="411.6" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="420.0" y="360" width="50.4" height="18" fill="#363a42"/>
+<rect x="470.4" y="360" width="50.4" height="18" fill="#363a42"/>
+<rect x="520.8" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="529.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="537.6" y="360" width="67.2" height="18" fill="#363a42"/>
+<rect x="604.8" y="360" width="25.2" height="18" fill="#363a42"/>
+<rect x="630.0" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="638.4" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="646.8" y="360" width="67.2" height="18" fill="#363a42"/>
+<rect x="714.0" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="722.4" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="730.8" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="739.2" y="360" width="67.2" height="18" fill="#363a42"/>
+<rect x="806.4" y="360" width="344.4" height="18" fill="#363a42"/>
+<rect x="1150.8" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="378" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="396" width="16.8" height="18" fill="#363a42"/>
+<rect x="67.2" y="396" width="58.8" height="18" fill="#363a42"/>
+<rect x="126.0" y="396" width="42.0" height="18" fill="#363a42"/>
+<rect x="168.0" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="176.4" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="396" width="84.0" height="18" fill="#363a42"/>
+<rect x="268.8" y="396" width="16.8" height="18" fill="#363a42"/>
+<rect x="285.6" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="294.0" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="302.4" y="396" width="84.0" height="18" fill="#363a42"/>
+<rect x="386.4" y="396" width="16.8" height="18" fill="#363a42"/>
+<rect x="403.2" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="411.6" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="420.0" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="428.4" y="396" width="75.6" height="18" fill="#363a42"/>
+<rect x="504.0" y="396" width="16.8" height="18" fill="#363a42"/>
+<rect x="520.8" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="529.2" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="537.6" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="546.0" y="396" width="75.6" height="18" fill="#363a42"/>
+<rect x="621.6" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="630.0" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="638.4" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="646.8" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="655.2" y="396" width="67.2" height="18" fill="#363a42"/>
+<rect x="722.4" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="730.8" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="739.2" y="396" width="369.6" height="18" fill="#363a42"/>
+<rect x="1108.8" y="396" width="42.0" height="18" fill="#363a42"/>
+<rect x="1150.8" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="414" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="414" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="414" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="432" width="16.8" height="18" fill="#363a42"/>
+<rect x="67.2" y="432" width="58.8" height="18" fill="#363a42"/>
+<rect x="126.0" y="432" width="42.0" height="18" fill="#363a42"/>
+<rect x="168.0" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="176.4" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="193.2" y="432" width="75.6" height="18" fill="#363a42"/>
+<rect x="268.8" y="432" width="16.8" height="18" fill="#363a42"/>
+<rect x="285.6" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="294.0" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="302.4" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="310.8" y="432" width="75.6" height="18" fill="#363a42"/>
+<rect x="386.4" y="432" width="16.8" height="18" fill="#363a42"/>
+<rect x="403.2" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="411.6" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="420.0" y="432" width="16.8" height="18" fill="#363a42"/>
+<rect x="436.8" y="432" width="67.2" height="18" fill="#363a42"/>
+<rect x="504.0" y="432" width="16.8" height="18" fill="#363a42"/>
+<rect x="520.8" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="529.2" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="537.6" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="546.0" y="432" width="75.6" height="18" fill="#363a42"/>
+<rect x="621.6" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="630.0" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="638.4" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="646.8" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="655.2" y="432" width="67.2" height="18" fill="#363a42"/>
+<rect x="722.4" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="730.8" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="739.2" y="432" width="302.4" height="18" fill="#363a42"/>
+<rect x="1041.6" y="432" width="109.2" height="18" fill="#363a42"/>
+<rect x="1150.8" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="432" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="450" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="450" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="450" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="67.2" y="468" width="84.0" height="18" fill="#363a42"/>
+<rect x="151.2" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="168.0" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="176.4" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="193.2" y="468" width="75.6" height="18" fill="#363a42"/>
+<rect x="268.8" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="285.6" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="294.0" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="302.4" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="319.2" y="468" width="67.2" height="18" fill="#363a42"/>
+<rect x="386.4" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="403.2" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="411.6" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="420.0" y="468" width="25.2" height="18" fill="#363a42"/>
+<rect x="445.2" y="468" width="58.8" height="18" fill="#363a42"/>
+<rect x="504.0" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="520.8" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="529.2" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="537.6" y="468" width="16.8" height="18" fill="#363a42"/>
+<rect x="554.4" y="468" width="67.2" height="18" fill="#363a42"/>
+<rect x="621.6" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="630.0" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="638.4" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="646.8" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="655.2" y="468" width="67.2" height="18" fill="#363a42"/>
+<rect x="722.4" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="730.8" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="739.2" y="468" width="403.2" height="18" fill="#363a42"/>
+<rect x="1142.4" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="1150.8" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="468" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="486" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="486" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="486" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="504" width="16.8" height="18" fill="#363a42"/>
+<rect x="67.2" y="504" width="75.6" height="18" fill="#363a42"/>
+<rect x="142.8" y="504" width="25.2" height="18" fill="#363a42"/>
+<rect x="168.0" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="176.4" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="504" width="33.6" height="18" fill="#363a42"/>
+<rect x="218.4" y="504" width="50.4" height="18" fill="#363a42"/>
+<rect x="268.8" y="504" width="16.8" height="18" fill="#363a42"/>
+<rect x="285.6" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="294.0" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="302.4" y="504" width="25.2" height="18" fill="#363a42"/>
+<rect x="327.6" y="504" width="58.8" height="18" fill="#363a42"/>
+<rect x="386.4" y="504" width="16.8" height="18" fill="#363a42"/>
+<rect x="403.2" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="411.6" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="420.0" y="504" width="42.0" height="18" fill="#363a42"/>
+<rect x="462.0" y="504" width="42.0" height="18" fill="#363a42"/>
+<rect x="504.0" y="504" width="16.8" height="18" fill="#363a42"/>
+<rect x="520.8" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="529.2" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="537.6" y="504" width="33.6" height="18" fill="#363a42"/>
+<rect x="571.2" y="504" width="50.4" height="18" fill="#363a42"/>
+<rect x="621.6" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="630.0" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="638.4" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="646.8" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="655.2" y="504" width="67.2" height="18" fill="#363a42"/>
+<rect x="722.4" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="730.8" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="739.2" y="504" width="336.0" height="18" fill="#363a42"/>
+<rect x="1075.2" y="504" width="75.6" height="18" fill="#363a42"/>
+<rect x="1150.8" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="504" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="522" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="522" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="522" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="540" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="540" width="739.2" height="18" fill="#363a42"/>
+<rect x="772.8" y="540" width="394.8" height="18" fill="#363a42"/>
+<rect x="25.2" y="558" width="1142.4" height="18" fill="#363a42"/>
+<rect x="0.0" y="594" width="16.8" height="18" fill="#363a42"/>
+<rect x="16.8" y="594" width="294.0" height="18" fill="#363a42"/>
+<rect x="310.8" y="594" width="865.2" height="18" fill="#363a42"/>
+<g font-family="'JetBrains Mono','DejaVu Sans Mono',Menlo,Consolas,monospace" font-size="14" xml:space="preserve">
+<text x="25.2" y="13" fill="#b0b894" textLength="134.4" lengthAdjust="spacingAndGlyphs">  CLAIMED BLOOM</text>
+<text x="50.4" y="31" fill="#7c828a" textLength="294.0" lengthAdjust="spacingAndGlyphs">~The garden is yours to understand~</text>
+<text x="25.2" y="67" fill="#7c828a" textLength="201.6" lengthAdjust="spacingAndGlyphs">Home &gt; Show... &gt; [MOODS]</text>
+<text x="25.2" y="103" fill="#dedfe2" textLength="378.0" lengthAdjust="spacingAndGlyphs">Moods:=&gt; wallpaper influence per colour group</text>
+<text x="33.6" y="157" fill="#7c828a" textLength="1125.6" lengthAdjust="spacingAndGlyphs">╭─Moods: how much of the wallpaper gets in───────────────────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="33.6" y="175" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1150.8" y="175" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="193" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="193" fill="#dedfe2" textLength="655.2" lengthAdjust="spacingAndGlyphs">A mood mixes the wallpaper (matugen) colours into the base palette, per group:</text>
+<text x="1150.8" y="193" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="211" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1150.8" y="211" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="229" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="229" fill="#b0b894" textLength="92.4" lengthAdjust="spacingAndGlyphs">surface    </text>
+<text x="142.8" y="229" fill="#7c828a" textLength="352.8" lengthAdjust="spacingAndGlyphs">backgrounds, borders, selection background</text>
+<text x="1150.8" y="229" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="247" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="247" fill="#b0b894" textLength="92.4" lengthAdjust="spacingAndGlyphs">foreground </text>
+<text x="142.8" y="247" fill="#7c828a" textLength="193.2" lengthAdjust="spacingAndGlyphs">text and selection text</text>
+<text x="1150.8" y="247" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="265" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="265" fill="#b0b894" textLength="92.4" lengthAdjust="spacingAndGlyphs">accent     </text>
+<text x="142.8" y="265" fill="#7c828a" textLength="327.6" lengthAdjust="spacingAndGlyphs">primary, secondary and tertiary accents</text>
+<text x="1150.8" y="265" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="283" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="283" fill="#b0b894" textLength="92.4" lengthAdjust="spacingAndGlyphs">semantic   </text>
+<text x="142.8" y="283" fill="#7c828a" textLength="277.2" lengthAdjust="spacingAndGlyphs">danger, warning, success and info</text>
+<text x="1150.8" y="283" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="301" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1150.8" y="301" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="319" fill="#7c828a" textLength="1125.6" lengthAdjust="spacingAndGlyphs">╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="33.6" y="355" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">┌───────────────┬─────────────┬─────────────┬─────────────┬────────────┬──────────┬──────────────────────────────────────────────────┐</text>
+<text x="33.6" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="373" fill="#b0b894" textLength="50.4" lengthAdjust="spacingAndGlyphs">  MOOD</text>
+<text x="168.0" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="184.8" y="373" fill="#b0b894" textLength="58.8" lengthAdjust="spacingAndGlyphs">SURFACE</text>
+<text x="285.6" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="302.4" y="373" fill="#b0b894" textLength="84.0" lengthAdjust="spacingAndGlyphs">FOREGROUND</text>
+<text x="403.2" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="420.0" y="373" fill="#b0b894" textLength="50.4" lengthAdjust="spacingAndGlyphs">ACCENT</text>
+<text x="520.8" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="537.6" y="373" fill="#b0b894" textLength="67.2" lengthAdjust="spacingAndGlyphs">SEMANTIC</text>
+<text x="630.0" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="646.8" y="373" fill="#b0b894" textLength="67.2" lengthAdjust="spacingAndGlyphs">PROFILES</text>
+<text x="722.4" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="739.2" y="373" fill="#b0b894" textLength="67.2" lengthAdjust="spacingAndGlyphs">IN SHORT</text>
+<text x="1150.8" y="373" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="391" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">├───────────────┼─────────────┼─────────────┼─────────────┼────────────┼──────────┼──────────────────────────────────────────────────┤</text>
+<text x="33.6" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="67.2" y="409" fill="#dedfe2" textLength="58.8" lengthAdjust="spacingAndGlyphs">dormant</text>
+<text x="168.0" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="184.8" y="409" fill="#7c828a" textLength="84.0" lengthAdjust="spacingAndGlyphs">░░░░░ 5%  </text>
+<text x="285.6" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="302.4" y="409" fill="#7c828a" textLength="84.0" lengthAdjust="spacingAndGlyphs">░░░░░ 8%  </text>
+<text x="403.2" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="420.0" y="409" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="428.4" y="409" fill="#7c828a" textLength="75.6" lengthAdjust="spacingAndGlyphs">░░░░ 20% </text>
+<text x="520.8" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="537.6" y="409" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="546.0" y="409" fill="#7c828a" textLength="75.6" lengthAdjust="spacingAndGlyphs">░░░░ 10% </text>
+<text x="630.0" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="646.8" y="409" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">6</text>
+<text x="722.4" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="739.2" y="409" fill="#7c828a" textLength="369.6" lengthAdjust="spacingAndGlyphs">palette is the law — Matugen barely whispers</text>
+<text x="1150.8" y="409" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="427" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">├───────────────┼─────────────┼─────────────┼─────────────┼────────────┼──────────┼──────────────────────────────────────────────────┤</text>
+<text x="33.6" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="67.2" y="445" fill="#dedfe2" textLength="58.8" lengthAdjust="spacingAndGlyphs">budding</text>
+<text x="168.0" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="184.8" y="445" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="193.2" y="445" fill="#7c828a" textLength="75.6" lengthAdjust="spacingAndGlyphs">░░░░ 15% </text>
+<text x="285.6" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="302.4" y="445" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="310.8" y="445" fill="#7c828a" textLength="75.6" lengthAdjust="spacingAndGlyphs">░░░░ 18% </text>
+<text x="403.2" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="420.0" y="445" fill="#b0b894" textLength="16.8" lengthAdjust="spacingAndGlyphs">██</text>
+<text x="436.8" y="445" fill="#7c828a" textLength="67.2" lengthAdjust="spacingAndGlyphs">░░░ 45% </text>
+<text x="520.8" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="537.6" y="445" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="546.0" y="445" fill="#7c828a" textLength="75.6" lengthAdjust="spacingAndGlyphs">░░░░ 25% </text>
+<text x="630.0" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="646.8" y="445" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">5</text>
+<text x="722.4" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="739.2" y="445" fill="#7c828a" textLength="302.4" lengthAdjust="spacingAndGlyphs">gentle mix, tuned for light profiles</text>
+<text x="1150.8" y="445" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="463" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">├───────────────┼─────────────┼─────────────┼─────────────┼────────────┼──────────┼──────────────────────────────────────────────────┤</text>
+<text x="33.6" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="67.2" y="481" fill="#dedfe2" textLength="84.0" lengthAdjust="spacingAndGlyphs">blooming ●</text>
+<text x="168.0" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="184.8" y="481" fill="#b0b894" textLength="8.4" lengthAdjust="spacingAndGlyphs">█</text>
+<text x="193.2" y="481" fill="#7c828a" textLength="75.6" lengthAdjust="spacingAndGlyphs">░░░░ 25% </text>
+<text x="285.6" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="302.4" y="481" fill="#b0b894" textLength="16.8" lengthAdjust="spacingAndGlyphs">██</text>
+<text x="319.2" y="481" fill="#7c828a" textLength="67.2" lengthAdjust="spacingAndGlyphs">░░░ 32% </text>
+<text x="403.2" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="420.0" y="481" fill="#b0b894" textLength="25.2" lengthAdjust="spacingAndGlyphs">███</text>
+<text x="445.2" y="481" fill="#7c828a" textLength="58.8" lengthAdjust="spacingAndGlyphs">░░ 50% </text>
+<text x="520.8" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="537.6" y="481" fill="#b0b894" textLength="16.8" lengthAdjust="spacingAndGlyphs">██</text>
+<text x="554.4" y="481" fill="#7c828a" textLength="67.2" lengthAdjust="spacingAndGlyphs">░░░ 40% </text>
+<text x="630.0" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="646.8" y="481" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">5</text>
+<text x="722.4" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="739.2" y="481" fill="#7c828a" textLength="403.2" lengthAdjust="spacingAndGlyphs">balanced default — palette and source in harmony</text>
+<text x="1150.8" y="481" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="499" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">├───────────────┼─────────────┼─────────────┼─────────────┼────────────┼──────────┼──────────────────────────────────────────────────┤</text>
+<text x="33.6" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="67.2" y="517" fill="#dedfe2" textLength="75.6" lengthAdjust="spacingAndGlyphs">overgrown</text>
+<text x="168.0" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="184.8" y="517" fill="#b0b894" textLength="33.6" lengthAdjust="spacingAndGlyphs">████</text>
+<text x="218.4" y="517" fill="#7c828a" textLength="50.4" lengthAdjust="spacingAndGlyphs">░ 70% </text>
+<text x="285.6" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="302.4" y="517" fill="#b0b894" textLength="25.2" lengthAdjust="spacingAndGlyphs">███</text>
+<text x="327.6" y="517" fill="#7c828a" textLength="58.8" lengthAdjust="spacingAndGlyphs">░░ 60% </text>
+<text x="403.2" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="420.0" y="517" fill="#b0b894" textLength="42.0" lengthAdjust="spacingAndGlyphs">█████</text>
+<text x="462.0" y="517" fill="#7c828a" textLength="42.0" lengthAdjust="spacingAndGlyphs"> 90% </text>
+<text x="520.8" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="537.6" y="517" fill="#b0b894" textLength="33.6" lengthAdjust="spacingAndGlyphs">████</text>
+<text x="571.2" y="517" fill="#7c828a" textLength="50.4" lengthAdjust="spacingAndGlyphs">░ 70% </text>
+<text x="630.0" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="646.8" y="517" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">4</text>
+<text x="722.4" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="739.2" y="517" fill="#7c828a" textLength="336.0" lengthAdjust="spacingAndGlyphs">Matugen dominates — wallpaper takes over</text>
+<text x="1150.8" y="517" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="535" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">└───────────────┴─────────────┴─────────────┴─────────────┴────────────┴──────────┴──────────────────────────────────────────────────┘</text>
+<text x="33.6" y="553" fill="#7c828a" textLength="739.2" lengthAdjust="spacingAndGlyphs">0% = pure palette colour, 100% = pure wallpaper colour  ·  ● mood of the current profile</text>
+<text x="16.8" y="607" fill="#dedfe2" textLength="294.0" lengthAdjust="spacingAndGlyphs">↑↓ Scroll | ESC =&gt; back | q =&gt; Quit</text>
+</g>
+</svg>

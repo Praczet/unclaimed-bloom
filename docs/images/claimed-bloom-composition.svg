@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="612" viewBox="0 0 1176 612">
+<defs><filter id="smudge" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="100%" height="100%" rx="8" fill="#24272b"/>
+<rect x="25.2" y="126" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="144" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="144" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="144" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="162" width="1108.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="162" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="180" width="134.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="180" width="520.8" height="18" fill="#363a42"/>
+<rect x="705.6" y="180" width="445.2" height="18" fill="#363a42"/>
+<rect x="1150.8" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="180" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="198" width="134.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="198" width="193.2" height="18" fill="#363a42"/>
+<rect x="378.0" y="198" width="327.6" height="18" fill="#363a42"/>
+<rect x="705.6" y="198" width="445.2" height="18" fill="#363a42"/>
+<rect x="1150.8" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="198" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="216" width="134.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="216" width="92.4" height="18" fill="#363a42"/>
+<rect x="277.2" y="216" width="873.6" height="18" fill="#363a42"/>
+<rect x="1150.8" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="216" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="234" width="1108.8" height="18" fill="#363a42"/>
+<rect x="1150.8" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="234" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="252" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="252" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="270" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="288" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="288" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="306" width="42.0" height="18" fill="#363a42"/>
+<rect x="92.4" y="306" width="92.4" height="18" fill="#363a42"/>
+<rect x="184.8" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="193.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="201.6" y="306" width="58.8" height="18" fill="#363a42"/>
+<rect x="260.4" y="306" width="226.8" height="18" fill="#363a42"/>
+<rect x="487.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="495.6" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="504.0" y="306" width="50.4" height="18" fill="#363a42"/>
+<rect x="554.4" y="306" width="201.6" height="18" fill="#363a42"/>
+<rect x="756.0" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="764.4" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="772.8" y="306" width="58.8" height="18" fill="#363a42"/>
+<rect x="831.6" y="306" width="151.2" height="18" fill="#363a42"/>
+<rect x="982.8" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="991.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="999.6" y="306" width="33.6" height="18" fill="#363a42"/>
+<rect x="1033.2" y="306" width="117.6" height="18" fill="#363a42"/>
+<rect x="1150.8" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="306" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="324" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="324" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="324" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="342" width="25.2" height="18" fill="#616875"/>
+<rect x="75.6" y="342" width="109.2" height="18" fill="#363a42"/>
+<rect x="184.8" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="193.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="201.6" y="342" width="151.2" height="18" fill="#616875"/>
+<rect x="352.8" y="342" width="134.4" height="18" fill="#363a42"/>
+<rect x="487.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="495.6" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="504.0" y="342" width="75.6" height="18" fill="#616875"/>
+<rect x="579.6" y="342" width="176.4" height="18" fill="#363a42"/>
+<rect x="756.0" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="764.4" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="772.8" y="342" width="126.0" height="18" fill="#616875"/>
+<rect x="898.8" y="342" width="84.0" height="18" fill="#363a42"/>
+<rect x="982.8" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="991.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="999.6" y="342" width="67.2" height="18" fill="#616875"/>
+<rect x="1066.8" y="342" width="84.0" height="18" fill="#363a42"/>
+<rect x="1150.8" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="342" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="360" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="360" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="42.0" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="50.4" y="378" width="16.8" height="18" fill="#363a42"/>
+<rect x="67.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="75.6" y="378" width="109.2" height="18" fill="#363a42"/>
+<rect x="184.8" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="193.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="201.6" y="378" width="193.2" height="18" fill="#363a42"/>
+<rect x="394.8" y="378" width="92.4" height="18" fill="#363a42"/>
+<rect x="487.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="495.6" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="504.0" y="378" width="168.0" height="18" fill="#363a42"/>
+<rect x="672.0" y="378" width="84.0" height="18" fill="#363a42"/>
+<rect x="756.0" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="764.4" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="772.8" y="378" width="126.0" height="18" fill="#363a42"/>
+<rect x="898.8" y="378" width="84.0" height="18" fill="#363a42"/>
+<rect x="982.8" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="991.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="999.6" y="378" width="67.2" height="18" fill="#363a42"/>
+<rect x="1066.8" y="378" width="84.0" height="18" fill="#363a42"/>
+<rect x="1150.8" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="1159.2" y="378" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="396" width="1125.6" height="18" fill="#363a42"/>
+<rect x="1159.2" y="396" width="8.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="414" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="432" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="450" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="468" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="486" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="504" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="522" width="1142.4" height="18" fill="#363a42"/>
+<rect x="25.2" y="540" width="8.4" height="18" fill="#363a42"/>
+<rect x="33.6" y="540" width="260.4" height="18" fill="#363a42"/>
+<rect x="294.0" y="540" width="873.6" height="18" fill="#363a42"/>
+<rect x="25.2" y="558" width="1142.4" height="18" fill="#363a42"/>
+<rect x="0.0" y="594" width="16.8" height="18" fill="#363a42"/>
+<rect x="16.8" y="594" width="638.4" height="18" fill="#363a42"/>
+<rect x="655.2" y="594" width="520.8" height="18" fill="#363a42"/>
+<g font-family="'JetBrains Mono','DejaVu Sans Mono',Menlo,Consolas,monospace" font-size="14" xml:space="preserve">
+<text x="25.2" y="13" fill="#b0b894" textLength="134.4" lengthAdjust="spacingAndGlyphs">  CLAIMED BLOOM</text>
+<text x="50.4" y="31" fill="#7c828a" textLength="378.0" lengthAdjust="spacingAndGlyphs">~A terminal is just a garden with fewer bees~</text>
+<text x="25.2" y="67" fill="#7c828a" textLength="546.0" lengthAdjust="spacingAndGlyphs">Home &gt; Show... &gt; Profiles &gt; Profile &gt; [DESKTOP-GRAPHITE-BLOOMING]</text>
+<text x="25.2" y="103" fill="#dedfe2" textLength="243.6" lengthAdjust="spacingAndGlyphs">Profile:=&gt; what it is made of</text>
+<text x="33.6" y="157" fill="#7c828a" textLength="1125.6" lengthAdjust="spacingAndGlyphs">╭─Profile: desktop-graphite-blooming ●───────────────────────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="33.6" y="175" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1150.8" y="175" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="193" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="193" fill="#7c828a" textLength="134.4" lengthAdjust="spacingAndGlyphs">Type            </text>
+<text x="184.8" y="193" fill="#dedfe2" textLength="520.8" lengthAdjust="spacingAndGlyphs">composition — each run plants its targets from its own profile</text>
+<text x="1150.8" y="193" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="211" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="211" fill="#7c828a" textLength="134.4" lengthAdjust="spacingAndGlyphs">Source profile  </text>
+<text x="184.8" y="211" fill="#dedfe2" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="378.0" y="211" fill="#7c828a" textLength="327.6" lengthAdjust="spacingAndGlyphs">  (used for previews and the workbench)</text>
+<text x="1150.8" y="211" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="229" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="229" fill="#7c828a" textLength="134.4" lengthAdjust="spacingAndGlyphs">Targets         </text>
+<text x="184.8" y="229" fill="#dedfe2" textLength="92.4" lengthAdjust="spacingAndGlyphs">33 in total</text>
+<text x="1150.8" y="229" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="247" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="1150.8" y="247" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="265" fill="#7c828a" textLength="1125.6" lengthAdjust="spacingAndGlyphs">╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="33.6" y="301" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">┌─────────────────┬───────────────────────────────────┬───────────────────────────────┬──────────────────────────┬───────────────────┐</text>
+<text x="33.6" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="319" fill="#b0b894" textLength="42.0" lengthAdjust="spacingAndGlyphs">  RUN</text>
+<text x="184.8" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="201.6" y="319" fill="#b0b894" textLength="58.8" lengthAdjust="spacingAndGlyphs">PROFILE</text>
+<text x="487.2" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="504.0" y="319" fill="#b0b894" textLength="50.4" lengthAdjust="spacingAndGlyphs">PLANTS</text>
+<text x="756.0" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="772.8" y="319" fill="#b0b894" textLength="58.8" lengthAdjust="spacingAndGlyphs">PALETTE</text>
+<text x="982.8" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="999.6" y="319" fill="#b0b894" textLength="33.6" lengthAdjust="spacingAndGlyphs">MOOD</text>
+<text x="1150.8" y="319" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="337" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">├─────────────────┼───────────────────────────────────┼───────────────────────────────┼──────────────────────────┼───────────────────┤</text>
+<text x="33.6" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="50.4" y="355" fill="#dedfe2" textLength="25.2" lengthAdjust="spacingAndGlyphs">❯ 1</text>
+<text x="184.8" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="201.6" y="355" fill="#dedfe2" textLength="151.2" lengthAdjust="spacingAndGlyphs">daily-gtk-blooming</text>
+<text x="487.2" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="504.0" y="355" fill="#dedfe2" textLength="75.6" lengthAdjust="spacingAndGlyphs">gtk, gimp</text>
+<text x="756.0" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="772.8" y="355" fill="#dedfe2" textLength="126.0" lengthAdjust="spacingAndGlyphs">nord-tweak-dark</text>
+<text x="982.8" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="999.6" y="355" fill="#dedfe2" textLength="67.2" lengthAdjust="spacingAndGlyphs">blooming</text>
+<text x="1150.8" y="355" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="373" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">├─────────────────┼───────────────────────────────────┼───────────────────────────────┼──────────────────────────┼───────────────────┤</text>
+<text x="33.6" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="67.2" y="391" fill="#7c828a" textLength="8.4" lengthAdjust="spacingAndGlyphs">2</text>
+<text x="184.8" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="201.6" y="391" fill="#dedfe2" textLength="193.2" lengthAdjust="spacingAndGlyphs">daily-graphite-blooming</text>
+<text x="487.2" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="504.0" y="391" fill="#7c828a" textLength="168.0" lengthAdjust="spacingAndGlyphs">all its targets (31)</text>
+<text x="756.0" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="772.8" y="391" fill="#7c828a" textLength="126.0" lengthAdjust="spacingAndGlyphs">nord-tweak-dark</text>
+<text x="982.8" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="999.6" y="391" fill="#7c828a" textLength="67.2" lengthAdjust="spacingAndGlyphs">blooming</text>
+<text x="1150.8" y="391" fill="#616875" textLength="8.4" lengthAdjust="spacingAndGlyphs">│</text>
+<text x="33.6" y="409" fill="#616875" textLength="1125.6" lengthAdjust="spacingAndGlyphs">└─────────────────┴───────────────────────────────────┴───────────────────────────────┴──────────────────────────┴───────────────────┘</text>
+<text x="33.6" y="553" fill="#7c828a" textLength="260.4" lengthAdjust="spacingAndGlyphs">Enter =&gt; open the run's profile</text>
+<text x="16.8" y="607" fill="#dedfe2" textLength="638.4" lengthAdjust="spacingAndGlyphs">↑↓ Select | Enter Open | p =&gt; Palette | m =&gt; Moods | ESC =&gt; back | q =&gt; Quit</text>
+</g>
+</svg>
