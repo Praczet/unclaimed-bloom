@@ -10,8 +10,12 @@ import {
 } from "@opentui/core";
 
 import type { View, ViewContext } from "../app/types.ts";
-import type { SporeStatus, SporeStatusProcess } from "../services/types.ts";
-import { formatDate, formatDuration } from "../app/utils.ts";
+import type {
+  SporeStatus,
+  SporeStatusSpore,
+  SporeStatusStage,
+} from "../services/types.ts";
+import { formatDuration } from "../app/utils.ts";
 
 export function createCurrentStatusView(context: ViewContext): View {
   let destroyed = false;
@@ -76,21 +80,19 @@ export function createCurrentStatusView(context: ViewContext): View {
   root.add(scroll);
   root.add(actionStatus);
 
-  let status: SporeStatus | undefined;
-
   void context.spore
     .getStatus()
     .then((loadedStatus) => {
       if (destroyed) return;
-      status = loadedStatus;
-      details.title = `Current Status (Profile: ${loadedStatus.currentProfile})`;
+      details.title = `Current Status (Profile: ${loadedStatus.currentProfile ?? "none"})`;
       detailsContent.content = renderStatusDetails(loadedStatus);
-      // table.content = createTableContent(loadedPreview, context.colors);
+      table.content = createTableContent(loadedStatus.spores, context.colors);
+      actionStatus.content = renderStray(loadedStatus);
     })
     .catch((error: unknown) => {
       if (destroyed) return;
       const message = error instanceof Error ? error.message : String(error);
-      detailsContent.content = `Failed to load recipe:\n${message}`;
+      detailsContent.content = `Failed to load status:\n${message}`;
     });
 
   return {
@@ -118,26 +120,53 @@ export function createCurrentStatusView(context: ViewContext): View {
 }
 
 function renderStatusDetails(status: SporeStatus): string {
+  const { paths, profile } = status;
   const lines = [
-    `CWD:               ${status.cwd}`,
-    `Home:              ${status.home}`,
-    `Data Dir:          ${status.dataDir} (source: ${status.dataDirSource})`,
-    `Cache Dir:         ${status.cacheDir} (source: ${status.cacheDirSource})`,
-    `Default Data Dir:  ${status.defaultDataDir}`,
-    `Default Cache Dir: ${status.defaultCacheDir}`,
-    "\n",
-    `Sow:               Targets:  ${Object.keys(status.sow.targets).length}, ${status.sow.status} (${formatDates(status.sow)})`,
-    `Grow:              Targets:  ${Object.keys(status.grow.targets).length}, ${status.grow.status} (${formatDates(status.grow)})`,
-    `Plant:             Targets:  ${Object.keys(status.plant.targets).length}, ${status.plant.status} (${formatDates(status.plant)})`,
+    `CWD:               ${paths.cwd}`,
+    `Home:              ${paths.home}`,
+    `Data Dir:          ${paths.dataDir} (source: ${paths.dataDirSource})`,
+    `Cache Dir:         ${paths.cacheDir} (source: ${paths.cacheDirSource})`,
+    `Default Data Dir:  ${paths.defaultDataDir}`,
+    `Default Cache Dir: ${paths.defaultCacheDir}`,
+    "",
   ];
+
+  if (profile) {
+    if (profile.name !== status.currentProfile) {
+      lines.push(`Profile:           ${profile.name} (last run)`);
+    }
+    if (profile.type === "composition") {
+      lines.push(`Type:              composition, ${profile.runs.length} runs`);
+      lines.push(`Source Profile:    ${profile.sourceProfile}`);
+    }
+    for (const run of profile.runs) {
+      lines.push(
+        `Run:               ${run.profile} (palette: ${run.basePalette}, mood: ${run.mood}, targets: ${run.targets.length})`,
+      );
+    }
+  } else if (status.profileError) {
+    lines.push(`Profile:           ${status.profileError}`);
+  }
+
+  lines.push(
+    "",
+    `Sow:               ${formatStage(status.stages.sow)}`,
+    `Grow:              ${formatStage(status.stages.grow)}`,
+    `Plant:             ${formatStage(status.stages.plant)}`,
+  );
 
   return lines.join("\n");
 }
 
-function formatDates(statusProcess: SporeStatusProcess) {
-  // if started_at and updated_at are valid dates, format them to a more readable format
-  const startedAt = new Date(statusProcess.started_at);
-  const updatedAt = new Date(statusProcess.updated_at);
+function formatStage(stage: SporeStatusStage | null): string {
+  if (!stage) return "never run";
+  const targets = `Targets: ${Object.keys(stage.targets).length}, ${stage.status} (${formatDates(stage)})`;
+  return stage.inSync ? targets : `${targets} — ran for ${stage.profile}`;
+}
+
+function formatDates(stage: SporeStatusStage) {
+  const startedAt = new Date(stage.started_at);
+  const updatedAt = new Date(stage.updated_at);
   const duration = formatDuration(updatedAt.getTime() - startedAt.getTime());
   // if the day is the same, only show the time for updated_at and duration
   if (startedAt.toDateString() === updatedAt.toDateString()) {
@@ -147,90 +176,59 @@ function formatDates(statusProcess: SporeStatusProcess) {
   }
 }
 
-// function formatDetails(preview: RecipePreview): string {
-//   const lines = [
-//     `Name:     ${preview.recipe.name}`,
-//     `Target:   ${preview.recipe.target}`,
-//     `ID:       ${preview.id}`,
-//     `Path:     ${preview.path}`,
-//     `Palette:  ${preview.palette.slug}`,
-//     `Preview:  current profile context (${preview.profile})`,
-//     `Results:  ${preview.resultContext}`,
-//   ];
-//
-//   if (preview.warnings.length > 0) {
-//     lines.push("", "Color availability:");
-//     lines.push(...preview.warnings.map((warning) => `  ! ${warning}`));
-//   }
-//
-//   return lines.join("\n");
-// }
-//
-// function createTableContent(
-//   preview: RecipePreview,
-//   colors: Record<string, string>,
-// ): TextChunk[][][] {
-//   const header = ["TOKEN", "KIND", "BASE", "SOURCE", "MIX", "RESULT RULE", "COLOR"].map((label) => [
-//     fg(themeColor(colors, "green", "#80d9ab"))(label),
-//   ]);
-//
-//   return [header, ...preview.tokens.map((token) => createRow(token, colors))];
-// }
-//
-// function createRow(token: RecipeTokenPreview, colors: Record<string, string>): TextChunk[][] {
-//   return [
-//     [fg(themeColor(colors, "foreground", "#d9ebe3"))(token.name)],
-//     [fg(themeColor(colors, "muted", "#8da89e"))(token.kind)],
-//     colorCell(token.baseLabel, token.baseHex, colors),
-//     colorCell(token.sourceLabel, token.sourceHex, colors),
-//     [
-//       fg(themeColor(colors, "foreground", "#d9ebe3"))(
-//         token.mix > 0 ? `${Math.round(token.mix * 100)}%` : "—",
-//       ),
-//     ],
-//     [fg(themeColor(colors, "muted", "#8da89e"))(resultRule(token))],
-//     token.resultHex
-//       ? colorCell("", token.resultHex, colors)
-//       : [
-//         fg(themeColor(colors, "muted", "#8da89e"))(
-//           token.unavailableReason ?? "Color unavailable in the current profile context.",
-//         ),
-//       ],
-//   ];
-// }
-//
-// function colorCell(
-//   label: string,
-//   hex: string | undefined,
-//   colors: Record<string, string>,
-// ): TextChunk[] {
-//   const chunks: TextChunk[] = [];
-//
-//   if (!hex) {
-//     chunks.push(dim("—"));
-//     if (label) {
-//       chunks.push(fg(themeColor(colors, "foreground", "#d9ebe3"))(`\n${label}`));
-//     }
-//     return chunks;
-//   }
-//
-//   chunks.push(bg(hex)("  "));
-//   chunks.push(fg(themeColor(colors, "muted", "#8da89e"))(` ${hex}`));
-//   if (label) {
-//     chunks.push(fg(themeColor(colors, "foreground", "#d9ebe3"))(`\n${label}`));
-//   }
-//   return chunks;
-// }
-//
-// function themeColor(colors: Record<string, string>, name: string, fallback: string): string {
-//   return colors[name] ?? fallback;
-// }
-//
-// function resultRule(token: RecipeTokenPreview): string {
-//   if (token.kind === "Base") return "100% base";
-//   if (token.sourceLabel !== "—" && !token.sourceHex) return "missing source → base fallback";
-//   const sourcePercent = Math.round(token.mix * 100);
-//   const baseName = token.kind === "Bloom" ? "bloom" : "base";
-//   const sourceName = token.kind === "Derived" ? "tint" : "source";
-//   return `${100 - sourcePercent}% ${baseName} + ${sourcePercent}% ${sourceName}`;
-// }
+function renderStray(status: SporeStatus): string {
+  if (status.stray.length === 0) return "";
+  const stray = status.stray.map((s) => `${s.profile}/${s.target}`).join(", ");
+  return `Stray spores (cached, not used by ${status.profile?.name}): ${stray}`;
+}
+
+function createTableContent(
+  spores: SporeStatusSpore[],
+  colors: Record<string, string>,
+): TextChunk[][][] {
+  const header = ["TARGET", "PROFILE", "RECIPE", "SOWN", "COLORS"].map((label) => [
+    fg(themeColor(colors, "green", "#80d9ab"))(label),
+  ]);
+
+  return [header, ...spores.map((spore) => createRow(spore, colors))];
+}
+
+function createRow(spore: SporeStatusSpore, colors: Record<string, string>): TextChunk[][] {
+  const foreground = fg(themeColor(colors, "foreground", "#d9ebe3"));
+  const muted = fg(themeColor(colors, "muted", "#8da89e"));
+
+  return [
+    [foreground(spore.target)],
+    [muted(spore.profile)],
+    recipeCell(spore, foreground, muted),
+    [muted(spore.generatedAt ? new Date(spore.generatedAt).toLocaleString() : "—")],
+    swatches(spore.colors, 8),
+  ];
+}
+
+function recipeCell(
+  spore: SporeStatusSpore,
+  foreground: (text: string) => TextChunk,
+  muted: (text: string) => TextChunk,
+): TextChunk[] {
+  if (!spore.recipe) return [muted(`not sown (${spore.expectedRecipe})`)];
+  if (spore.recipe !== spore.expectedRecipe) {
+    return [foreground(spore.recipe), muted(` → ${spore.expectedRecipe}`)];
+  }
+  return [foreground(spore.recipe)];
+}
+
+function swatches(colors: Record<string, string>, count: number): TextChunk[] {
+  const hexValues = Object.values(colors);
+  if (hexValues.length === 0) return [dim("—")];
+  const step = Math.max(1, Math.floor(hexValues.length / count));
+  const chunks: TextChunk[] = [];
+  for (let i = 0; i < hexValues.length && chunks.length < count; i += step) {
+    chunks.push(bg(hexValues[i]!)("  "));
+  }
+  return chunks;
+}
+
+function themeColor(colors: Record<string, string>, name: string, fallback: string): string {
+  return colors[name] ?? fallback;
+}

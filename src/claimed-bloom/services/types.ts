@@ -153,38 +153,73 @@ export interface RecipePreview {
   resultContext: string;
 }
 
-export interface SporeStatusProcess {
+export interface SporeStatusStage {
   run_id: string;
   profile: string;
   stage: string;
   status: string;
   started_at: string;
   updated_at: string;
+  inSync: boolean;
   targets: {
     [target: string]: {
       status: string;
-      duration_ms: number;
+      duration_ms?: number;
     };
   };
 }
 
-export interface SporeStatus {
+export interface SporeStatusPaths {
   cwd: string;
   home: string;
   dataDir: string;
   cacheDir: string;
   defaultDataDir: string;
   defaultCacheDir: string;
-  dataDirSource: string;
-  cacheDirSource: string;
-  currentProfile: string;
-  sow: SporeStatusProcess;
-  grow: SporeStatusProcess;
-  plant: SporeStatusProcess;
+  dataDirSource: "env" | "default";
+  cacheDirSource: "env" | "default";
+}
+
+export interface SporeStatusRun {
+  profile: string;
+  basePalette: string;
+  mood: string;
+  targets: string[];
+}
+
+export interface SporeStatusProfile {
+  name: string;
+  type: "profile" | "composition";
+  sourceProfile: string;
+  runs: SporeStatusRun[];
+}
+
+export interface SporeStatusSpore {
+  target: string;
+  profile: string;
+  expectedRecipe: string;
+  recipe: string | null;
+  generatedAt: string | null;
+  colors: Record<string, string>;
+}
+
+export interface SporeStatus {
+  paths: SporeStatusPaths;
+  currentProfile: string | null;
+  profile: SporeStatusProfile | null;
+  profileError?: string;
+  stages: {
+    sow: SporeStatusStage | null;
+    grow: SporeStatusStage | null;
+    plant: SporeStatusStage | null;
+  };
+  spores: SporeStatusSpore[];
+  stray: { profile: string; target: string }[];
 }
 
 export interface SporeStatusResponse {
   ok: boolean;
+  command: string;
   status: SporeStatus;
   error?: { message: string };
 }
