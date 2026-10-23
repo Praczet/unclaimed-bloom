@@ -24,6 +24,12 @@ import { type Recipe, RecipeLoader } from "../core/recipes/RecipeLoader.ts";
 import { ReportWriter } from "../core/reports/ReportWriter.ts";
 import { type Spore, SporeGenerator } from "../core/spores/SporeGenerator.ts";
 import { TemplateRenderer } from "../core/templates/TemplateRenderer.ts";
+import {
+  DataSync,
+  DEFAULT_SYNC_KINDS,
+  type SyncAction,
+  type SyncKind,
+} from "../core/sync/DataSync.ts";
 import { localISOString } from "../core/time/localIso.ts";
 import { WorkerRunner } from "../core/workers/WorkerRunner.ts";
 
@@ -130,6 +136,11 @@ class SporeCli {
         return;
       }
       this.printHuman(`spore ${VERSION}`);
+      return;
+    }
+
+    if (command === "sync") {
+      await this.syncData(commandArgs.slice(1));
       return;
     }
 
@@ -269,6 +280,9 @@ Config (source definitions in ~/.config/unclaimed-bloom/):
 
 Maintenance:
   prune   [--keep <n>] [--rendered] [--all] [--dry-run]          Trim accumulated cache files.
+  sync    [kind...] [--apply] [--prune] [--dry-run]              Copy changed theme files from dev into config.
+          kinds: palettes moods profiles recipes templates hooks scripts
+          (default: all but scripts; --apply reruns wallset with the current wallpaper)
 
 Targets:
   targets [<target>]    List all targets, or show one in detail.
@@ -282,6 +296,157 @@ Utility:
 Global flags:
   --json           Machine-readable JSON output.
   --format json    Same as --json.`);
+  }
+
+  private async syncData(args: string[]): Promise<void> {
+    const flags = args.filter((arg) => arg.startsWith("-"));
+    const kindArgs = args.filter((arg) => !arg.startsWith("-"));
+    const dryRun = flags.includes("--dry-run");
+    const apply = flags.includes("--apply");
+    const prune = flags.includes("--prune");
+    const usage = "sync [palettes|moods|profiles|recipes|templates|hooks|scripts...] [--apply] [--prune] [--dry-run]";
+
+    const unknown = [
+      ...kindArgs.filter((kind) => !DataSync.isKind(kind)),
+      ...flags.filter((flag) => !["--dry-run", "--apply", "--prune"].includes(flag)),
+    ];
+    if (unknown.length > 0) {
+      this.printUsageError(`Unknown sync argument: ${unknown.join(", ")}`, usage);
+      Deno.exit(1);
+    }
+
+    const paths = BloomPaths.fromDeno();
+    const devDir = (Deno.env.get("UB_DEV_DIR") ?? new URL("../../..", import.meta.url).pathname)
+      .replace(/\/+$/, "");
+    const configDir = paths.dataDir.replace(/\/+$/, "");
+
+    if (await this.samePath(devDir, configDir)) {
+      this.printUsageError(
+        `Nothing to sync: spore already reads data from the dev dir (${devDir}).`,
+        usage,
+      );
+      Deno.exit(1);
+    }
+
+    const kinds = kindArgs.length > 0
+      ? [...new Set(kindArgs)] as SyncKind[]
+      : DEFAULT_SYNC_KINDS;
+    const sync = new DataSync(devDir, configDir);
+    const plan = await sync.plan(kinds);
+    const result = dryRun ? null : await sync.apply(plan, prune);
+    const wallpaper = apply && !dryRun ? await this.readCurrentWallpaper(paths) : null;
+
+    if (apply && !dryRun && !wallpaper) {
+      throw new Error(
+        `Cannot apply: no current wallpaper in ${paths.currentWallpaperFile()}.\n  Pick one with: wallset <wallpaper>`,
+      );
+    }
+
+    if (this.outputMode === "json") {
+      const applied = wallpaper ? await this.runWallset(devDir, wallpaper, false) : null;
+      this.printJson({
+        ok: applied === null || applied.code === 0,
+        command: "sync",
+        devDir,
+        configDir,
+        kinds,
+        dryRun,
+        prune,
+        entries: plan.entries,
+        ...(result ? { copied: result.copied.length, pruned: result.pruned.length, kept: result.kept.length } : {}),
+        ...(applied ? { apply: { wallpaper, exitCode: applied.code, output: applied.output } } : {}),
+      });
+      if (applied && applied.code !== 0) Deno.exit(applied.code);
+      return;
+    }
+
+    this.printHuman(this.display.fields([
+      { label: dryRun ? "Dry run" : "Sync", value: "dev → config" },
+      { label: "dev", value: devDir, dim: true },
+      { label: "config", value: configDir, dim: true },
+      { label: "kinds", value: kinds.join(", ") },
+    ]));
+
+    const labels: Record<SyncAction, string> = {
+      add: dryRun ? "would add" : "added",
+      update: dryRun ? "would update" : "updated",
+      "config-only": prune ? (dryRun ? "would delete" : "deleted") : "kept (config only)",
+    };
+
+    if (plan.entries.length === 0) {
+      this.printHuman("");
+      this.printHuman(this.display.dim("  config already matches dev."));
+    } else {
+      this.printHuman("");
+      this.printHuman(this.display.table(plan.entries, [
+        { header: "action", value: (entry) => labels[entry.action] },
+        { header: "kind", value: (entry) => entry.kind, dim: true },
+        { header: "path", value: (entry) => entry.path },
+      ]));
+    }
+
+    const kept = plan.entries.filter((entry) => entry.action === "config-only").length;
+    if (kept > 0 && !prune) {
+      this.printHuman("");
+      this.printHuman(this.display.dim(`  ${kept} config-only file(s) kept — spore sync --prune deletes them.`));
+    }
+    if (result) {
+      this.printHuman("");
+      this.printHuman(`copied ${result.copied.length}, deleted ${result.pruned.length}.`);
+    }
+
+    if (wallpaper) {
+      this.printHuman("");
+      this.printHuman(`apply: wallset ${wallpaper}`);
+      const applied = await this.runWallset(devDir, wallpaper, true);
+      if (applied.code !== 0) {
+        throw new Error(`wallset exited with code ${applied.code}`);
+      }
+    } else if (!apply && result && result.copied.length > 0) {
+      this.printHuman(this.display.dim("  next: spore sync --apply   (reruns wallset with the current wallpaper)"));
+    }
+  }
+
+  private async readCurrentWallpaper(paths: BloomPaths): Promise<string | null> {
+    try {
+      const wallpaper = (await Deno.readTextFile(paths.currentWallpaperFile())).trim();
+      return wallpaper.length > 0 ? wallpaper : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // Prefers the installed wallset launcher; falls back to the repo script.
+  private async runWallset(
+    devDir: string,
+    wallpaper: string,
+    inherit: boolean,
+  ): Promise<{ code: number; output: string }> {
+    const candidates = [Deno.env.get("UB_WALLSET") ?? "wallset", `${devDir}/scripts/wallset`];
+
+    for (const executable of candidates) {
+      try {
+        const command = new Deno.Command(executable, {
+          args: [wallpaper],
+          stdout: inherit ? "inherit" : "piped",
+          stderr: inherit ? "inherit" : "piped",
+        });
+        const result = await command.output();
+        const decoder = new TextDecoder();
+        const output = inherit ? "" : decoder.decode(result.stdout) + decoder.decode(result.stderr);
+        return { code: result.code, output };
+      } catch (error) {
+        if (error instanceof Deno.errors.NotFound) continue;
+        throw error;
+      }
+    }
+
+    throw new Error("wallset not found on PATH or in the repo scripts folder.");
+  }
+
+  private async samePath(left: string, right: string): Promise<boolean> {
+    const resolve = (path: string) => Deno.realPath(path).catch(() => path);
+    return (await resolve(left)) === (await resolve(right));
   }
 
   private async printStatus(): Promise<void> {
