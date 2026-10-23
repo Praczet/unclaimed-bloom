@@ -19,6 +19,13 @@ import { createCheckView } from "../views/CheckView.ts";
 import { createDoView } from "../views/DoView.ts";
 import { createRunView } from "../views/RunView.ts";
 import { createThemeView } from "../views/ThemeView.ts";
+import { createTargetsView } from "../views/TargetsView.ts";
+import { createTargetDetailView } from "../views/TargetDetailView.ts";
+import { createProfilesView } from "../views/ProfilesView.ts";
+import { createProfileDetailView } from "../views/ProfileDetailView.ts";
+import { createPalettesView } from "../views/PalettesView.ts";
+import { createPaletteDetailView } from "../views/PaletteDetailView.ts";
+import { createMoodsView } from "../views/MoodsView.ts";
 
 export class App {
   private renderer!: CliRenderer;
@@ -210,7 +217,13 @@ export class App {
           return createRecipeDetailView(context, route.id);
 
         case "profile":
-          throw new Error(`Unimplemented profile route: ${route.id}`);
+          return createProfileDetailView(context, route.id);
+
+        case "target":
+          return createTargetDetailView(context, route.id);
+
+        case "palette":
+          return createPaletteDetailView(context, route.id);
 
         case "run":
           return createRunView(context, route.id);
@@ -236,6 +249,14 @@ export class App {
         return createChangesView(context);
       case "theme":
         return createThemeView(context);
+      case "profiles":
+        return createProfilesView(context);
+      case "palettes":
+        return createPalettesView(context);
+      case "moods":
+        return createMoodsView(context);
+      case "targets":
+        return createTargetsView(context);
 
       default:
         throw new Error(`Unimplemented route: ${route}`);

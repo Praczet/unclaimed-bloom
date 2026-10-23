@@ -49,5 +49,9 @@ export function routeKey(route: Route): string {
       return `profile:${route.id}`;
     case "run":
       return `run:${route.id}`;
+    case "target":
+      return `target:${route.id}`;
+    case "palette":
+      return `palette:${route.id}`;
   }
 }

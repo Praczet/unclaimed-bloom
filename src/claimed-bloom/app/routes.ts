@@ -20,7 +20,9 @@ export type Route =
   | StaticRoute
   | { name: "recipe"; id: string }
   | { name: "profile"; id: string }
-  | { name: "run"; id: string };
+  | { name: "run"; id: string }
+  | { name: "target"; id: string }
+  | { name: "palette"; id: string };
 
 export function routeBreadcrumbs(route: Route): string[] {
   if (typeof route === "string") {
@@ -32,10 +34,12 @@ export function routeBreadcrumbs(route: Route): string[] {
       const [target, recipe] = route.id.split("/", 2);
       return [target ?? route.id, recipe ?? ""];
     }
-    case "profile": {
-      const [target, profile] = route.id.split("/", 2);
-      return [target ?? route.id, profile ?? ""];
-    }
+    case "profile":
+      return ["Profile", route.id];
+    case "target":
+      return ["Target", route.id];
+    case "palette":
+      return ["Palette", route.id];
     case "run":
       return ["Run", route.id];
   }
