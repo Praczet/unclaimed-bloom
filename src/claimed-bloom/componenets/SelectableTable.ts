@@ -65,7 +65,12 @@ export function createSelectableTable(renderer: CliRenderer, colors: ThemeColors
         row.cells.map((cell, column) => {
           const marker = column === 0 ? [fg(colors.accent)(index === selected ? "❯ " : "  ")] : [];
           const chunks = [...marker, ...cell];
-          return index === selected ? chunks.map((chunk) => bg(colors.panelRaised)(chunk)) : chunks;
+          // The selected row is drawn in full-strength text so dimmed cells stay
+          // readable on the highlight; chunks with their own background
+          // (colour swatches) keep it.
+          return index === selected
+            ? chunks.map((chunk) => (chunk.bg ? chunk : bg(colors.panelRaised)(fg(colors.foreground)(chunk))))
+            : chunks;
         })
       ),
     ];
