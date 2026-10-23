@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {
+      "type": "copy",
+      "dest": ["~/.config/superfile/theme/unclaimed-bloom.toml"]
+    },
+    {
+      "type": "exec",
+      "command": "{{data_dir}}/scripts/superfile-select-theme",
+      "args": ["unclaimed-bloom"]
+    }
+  ]
+}

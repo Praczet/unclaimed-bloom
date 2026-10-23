@@ -1,0 +1,90 @@
+{
+  "name": "subtle-ish",
+  "target": "superfile",
+  "tokens": {
+    "bg": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.2
+    },
+    "raised_bg": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
+    "fg": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "fg_dim": {
+      "bloom": "text.secondary",
+      "source": "on_surface_variant",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "border": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.1
+    },
+    "border_active": {
+      "bloom": "border.strong",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "primary": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    },
+    "secondary": {
+      "bloom": "accent.secondary",
+      "source": "secondary",
+      "mix": 0.15
+    },
+    "tertiary": {
+      "bloom": "accent.tertiary",
+      "source": "tertiary",
+      "mix": 0.15
+    },
+    "success": {
+      "bloom": "state.success",
+      "source": "primary",
+      "mix": 0.05
+    },
+    "warning": {
+      "bloom": "state.warning",
+      "source": "tertiary",
+      "mix": 0.05
+    },
+    "danger": {
+      "bloom": "state.danger",
+      "source": "error",
+      "mix": 0.1
+    },
+    "info": {
+      "bloom": "state.info",
+      "source": "secondary",
+      "mix": 0.05
+    },
+    "selected_fg": {
+      "bloom": "selection.foreground"
+    },
+    "selected_bg": {
+      "bloom": "selection.background"
+    },
+    "on_accent": {
+      "bloom": "surface.base"
+    },
+    "cursor": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.05
+    }
+  }
+}

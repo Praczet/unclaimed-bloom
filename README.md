@@ -616,6 +616,7 @@ Installed data:
 | `hyprlock` | Lock screen | Full config target plus prepared gap/blur background hook. |
 | `rofi` | Launcher | Generated launcher theme. |
 | `yazi` | Terminal file manager | Because previews deserve atmosphere too. |
+| `superfile` | Terminal file manager | Plants `unclaimed-bloom.toml` and selects it without replacing the rest of Superfile's config. |
 | `wlogout` | Logout menu | Dramatic exit, but themed. |
 | `iced` | App target | For Iced-based UI experiments. |
 | `sddm` | Display manager | Login screen theming; plant hook deploys `theme.conf`. |
