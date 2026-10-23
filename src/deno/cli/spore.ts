@@ -10,7 +10,7 @@ import {
   type WorkerEventSink,
 } from "../core/hooks/HookRunner.ts";
 import { MoodLoader, type MoodSummary } from "../core/moods/MoodLoader.ts";
-import { BloomPaths } from "../core/paths/BloomPaths.ts";
+import { BloomPaths, type BloomPathSummary } from "../core/paths/BloomPaths.ts";
 import { type Palette, PaletteLoader } from "../core/palettes/PaletteLoader.ts";
 import {
   type CompositionProfile,
@@ -62,6 +62,50 @@ interface CompositionGrowResult {
   readonly target: string;
   readonly outputPath: string;
   readonly reportPath: string;
+}
+
+interface StatusRun {
+  readonly profile: string;
+  readonly basePalette: string;
+  readonly mood: string;
+  readonly targets: string[];
+}
+
+interface StatusProfile {
+  readonly name: string;
+  readonly type: "profile" | "composition";
+  readonly sourceProfile: string;
+  readonly runs: StatusRun[];
+}
+
+type StatusStage = RunState & { readonly inSync: boolean };
+
+interface StatusSpore {
+  readonly target: string;
+  readonly profile: string;
+  readonly expectedRecipe: string;
+  readonly recipe: string | null;
+  readonly generatedAt: string | null;
+  readonly colors: Record<string, string>;
+}
+
+interface StatusStray {
+  readonly profile: string;
+  readonly target: string;
+}
+
+interface StatusReport {
+  readonly paths: BloomPathSummary;
+  readonly currentProfile: string | null;
+  readonly profile: StatusProfile | null;
+  readonly profileError?: string;
+  readonly stages: {
+    readonly sow: StatusStage | null;
+    readonly grow: StatusStage | null;
+    readonly plant: StatusStage | null;
+  };
+  readonly spores: StatusSpore[];
+  readonly stray: StatusStray[];
 }
 
 class SporeCli {
@@ -231,7 +275,7 @@ Targets:
 
 Utility:
   worker <name> [args...]   Run a Python worker.
-  status                    Show runtime paths and env overrides.
+  status                    Show current profile, stage runs, spores and paths.
   version                   Show version.
   help                      Show this help.
 
@@ -242,19 +286,10 @@ Global flags:
 
   private async printStatus(): Promise<void> {
     const paths = BloomPaths.fromDeno();
-    const pathSummary = paths.summary();
-    const stateBase = paths.stateFile().replace(/\.json$/, "");
-    const sowState = await this.readStageState(`${stateBase}-sow.json`);
-    const growState = await this.readStageState(`${stateBase}-grow.json`);
-    const plantState = await this.readStageState(`${stateBase}-plant.json`);
-    const currentProfile = await this.readCurrentProfile(paths);
-    const lastProfile = [plantState, growState, sowState].find((s) => s?.profile)?.profile;
+    const status = await this.collectStatus(paths);
 
     if (this.outputMode === "json") {
-      this.printJson({
-        ok: true,
-        status: { ...pathSummary, currentProfile, sow: sowState, grow: growState, plant: plantState },
-      });
+      this.printJson({ ok: true, command: "status", status });
       return;
     }
 
@@ -262,47 +297,128 @@ Global flags:
     this.printHuman("");
 
     const infoFields: Array<{ label: string; value: string; dim?: boolean }> = [];
+    const { profile } = status;
 
-    if (currentProfile) {
-      infoFields.push({ label: "current", value: currentProfile });
+    if (status.currentProfile) {
+      infoFields.push({ label: "current", value: status.currentProfile });
     }
 
-    if (lastProfile) {
-      infoFields.push({ label: "profile", value: lastProfile });
-      try {
-        const profile = await new ProfileLoader().inspect(paths.profilesDir(), lastProfile);
-        if (!this.isCompositionProfile(profile)) {
-          infoFields.push({ label: "palette", value: profile.basePalette });
-          infoFields.push({ label: "mood", value: profile.mood });
+    if (profile) {
+      if (profile.name !== status.currentProfile) {
+        infoFields.push({ label: "profile", value: `${profile.name}  ${this.display.dim("(last run)")}` });
+      }
+      if (profile.type === "composition") {
+        infoFields.push({ label: "type", value: `composition, ${profile.runs.length} runs` });
+        infoFields.push({ label: "source", value: profile.sourceProfile });
+      }
+      for (const run of profile.runs) {
+        infoFields.push({
+          label: profile.type === "composition" ? "run" : "palette",
+          value: profile.type === "composition"
+            ? `${run.profile}  ${this.display.dim(`${run.basePalette} · ${run.mood} · ${run.targets.length} targets`)}`
+            : run.basePalette,
+        });
+        if (profile.type === "profile") {
+          infoFields.push({ label: "mood", value: run.mood });
         }
-      } catch { /* profile not in data dir — skip */ }
+      }
+    } else if (status.profileError) {
+      infoFields.push({ label: "profile", value: status.profileError });
     }
 
-    const fmtStage = (state: RunState | null): string => {
+    const fmtStage = (state: StatusStage | null): string => {
       if (!state) return this.display.dim("(never)");
-      return `${this.formatDate(state.updated_at)}  ${this.display.dim(state.status)}`;
+      const stale = state.inSync ? "" : `  ${this.display.dim(`(ran for ${state.profile})`)}`;
+      return `${this.formatDate(state.updated_at)}  ${this.display.dim(state.status)}${stale}`;
     };
 
-    infoFields.push({ label: "sow", value: fmtStage(sowState) });
-    infoFields.push({ label: "grow", value: fmtStage(growState) });
-    infoFields.push({ label: "plant", value: fmtStage(plantState) });
-    infoFields.push({ label: "data", value: pathSummary.dataDir, dim: true });
-    infoFields.push({ label: "cache", value: pathSummary.cacheDir, dim: true });
+    infoFields.push({ label: "sow", value: fmtStage(status.stages.sow) });
+    infoFields.push({ label: "grow", value: fmtStage(status.stages.grow) });
+    infoFields.push({ label: "plant", value: fmtStage(status.stages.plant) });
+    infoFields.push({ label: "data", value: status.paths.dataDir, dim: true });
+    infoFields.push({ label: "cache", value: status.paths.cacheDir, dim: true });
 
     this.printHuman(this.display.fields(infoFields));
 
-    if (lastProfile) {
-      const sporeRows = await this.readSporeRows(paths, lastProfile);
-      if (sporeRows.length > 0) {
-        this.printHuman("");
-        this.printHuman(this.display.table(sporeRows, [
-          { header: "target", value: (r) => r.target },
-          { header: "recipe", value: (r) => r.recipe },
-          { header: "sown", value: (r) => r.sownAt, dim: true },
-          { header: "colors", value: (r) => r.colors },
-        ]));
+    if (status.spores.length > 0) {
+      this.printHuman("");
+      this.printHuman(this.display.table(status.spores, [
+        { header: "target", value: (r) => r.target },
+        { header: "profile", value: (r) => r.profile, dim: true },
+        { header: "recipe", value: (r) => this.statusRecipeLabel(r) },
+        { header: "sown", value: (r) => r.generatedAt ? this.formatDate(r.generatedAt) : "—", dim: true },
+        { header: "colors", value: (r) => this.sporeSwatches(r.colors, 8) },
+      ]));
+    }
+
+    if (status.stray.length > 0) {
+      this.printHuman("");
+      this.printHuman(this.display.dim(
+        `  stray spores (cached, not used by ${profile?.name}): ` +
+          status.stray.map((s) => `${s.profile}/${s.target}`).join(", "),
+      ));
+    }
+  }
+
+  private statusRecipeLabel(row: StatusSpore): string {
+    if (!row.recipe) return this.display.dim(`(not sown) ${row.expectedRecipe}`);
+    if (row.recipe !== row.expectedRecipe) {
+      return `${row.recipe} ${this.display.dim(`→ ${row.expectedRecipe}`)}`;
+    }
+    return row.recipe;
+  }
+
+  private async collectStatus(paths: BloomPaths): Promise<StatusReport> {
+    const stateBase = paths.stateFile().replace(/\.json$/, "");
+    const sowState = await this.readStageState(`${stateBase}-sow.json`);
+    const growState = await this.readStageState(`${stateBase}-grow.json`);
+    const plantState = await this.readStageState(`${stateBase}-plant.json`);
+    const currentProfile = await this.readCurrentProfile(paths);
+    const lastProfile = [plantState, growState, sowState].find((s) => s?.profile)?.profile;
+    const profileName = currentProfile ?? lastProfile ?? null;
+
+    let profile: StatusProfile | null = null;
+    let profileError: string | undefined;
+    let spores: StatusSpore[] = [];
+    let stray: StatusStray[] = [];
+
+    if (profileName) {
+      try {
+        const entry = await new ProfileLoader().inspect(paths.profilesDir(), profileName);
+        const runs = this.isCompositionProfile(entry)
+          ? await this.expandCompositionRuns(entry, paths)
+          : [{ profile: entry, targets: Object.entries(entry.targets) }];
+        profile = {
+          name: entry.name,
+          type: this.isCompositionProfile(entry) ? "composition" : "profile",
+          sourceProfile: this.isCompositionProfile(entry)
+            ? entry.currentProfile ?? entry.runs[0]?.profile ?? entry.name
+            : entry.name,
+          runs: runs.map(({ profile, targets }) => ({
+            profile: profile.name,
+            basePalette: profile.basePalette,
+            mood: profile.mood,
+            targets: targets.map(([target]) => target),
+          })),
+        };
+        ({ spores, stray } = await this.readStatusSpores(paths, runs));
+      } catch (err) {
+        profileError = err instanceof Error ? err.message : String(err);
       }
     }
+
+    const stage = (state: RunState | null): StatusStage | null =>
+      state ? { ...state, inSync: state.profile === profileName } : null;
+
+    return {
+      paths: paths.summary(),
+      currentProfile,
+      profile,
+      ...(profileError ? { profileError } : {}),
+      stages: { sow: stage(sowState), grow: stage(growState), plant: stage(plantState) },
+      spores,
+      stray,
+    };
   }
 
   private async readStageState(path: string): Promise<RunState | null> {
@@ -314,34 +430,47 @@ Global flags:
     }
   }
 
-  private async readSporeRows(
+  private async readStatusSpores(
     paths: BloomPaths,
-    profile: string,
-  ): Promise<Array<{ target: string; recipe: string; sownAt: string; colors: string }>> {
-    const profileEntry = await new ProfileLoader().inspect(paths.profilesDir(), profile).catch(() => null);
-    const subProfiles: string[] = profileEntry && this.isCompositionProfile(profileEntry)
-      ? profileEntry.runs.map((r) => r.profile)
-      : [profile];
+    runs: Array<{ profile: Profile; targets: Array<[string, string]> }>,
+  ): Promise<{ spores: StatusSpore[]; stray: StatusStray[] }> {
+    const spores: StatusSpore[] = [];
+    const stray: StatusStray[] = [];
+    const covered = new Map<string, Set<string>>();
 
-    const rows: Array<{ target: string; recipe: string; sownAt: string; colors: string }> = [];
-    for (const sub of subProfiles) {
+    for (const { profile, targets } of runs) {
+      const set = covered.get(profile.name) ?? new Set<string>();
+      covered.set(profile.name, set);
+      for (const [target, expectedRecipe] of targets) {
+        set.add(target);
+        const spore = await this.readJson(paths.sporeFile(profile.name, target))
+          .then((value) => value as Spore)
+          .catch(() => null);
+        spores.push({
+          target,
+          profile: profile.name,
+          expectedRecipe,
+          recipe: spore?.recipe ?? null,
+          generatedAt: spore?.generatedAt ?? null,
+          colors: spore?.colors ?? {},
+        });
+      }
+    }
+
+    for (const [profile, targets] of covered) {
       try {
-        for await (const entry of Deno.readDir(paths.sporesDir(sub))) {
+        for await (const entry of Deno.readDir(paths.sporesDir(profile))) {
           if (!entry.isFile || !entry.name.endsWith(".json") || entry.name.includes("__")) continue;
           const target = entry.name.replace(/\.json$/, "");
-          try {
-            const spore = await this.readJson(paths.sporeFile(sub, target)) as Spore;
-            rows.push({
-              target: subProfiles.length > 1 ? `${sub}/${target}` : target,
-              recipe: spore.recipe,
-              sownAt: this.formatDate(spore.generatedAt),
-              colors: this.sporeSwatches(spore.colors, 8),
-            });
-          } catch { /* skip unreadable spore */ }
+          if (!targets.has(target)) stray.push({ profile, target });
         }
       } catch { /* no spores dir yet */ }
     }
-    return rows.sort((a, b) => a.target.localeCompare(b.target));
+
+    return {
+      spores: spores.sort((a, b) => a.target.localeCompare(b.target)),
+      stray: stray.sort((a, b) => `${a.profile}/${a.target}`.localeCompare(`${b.profile}/${b.target}`)),
+    };
   }
 
   private sporeSwatches(colors: Record<string, string>, count: number): string {
