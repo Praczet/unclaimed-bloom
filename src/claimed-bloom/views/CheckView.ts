@@ -140,7 +140,9 @@ export function renderReport(report: ChangesReport, s: Styles): TextChunk[] {
   const running = report.cache.filter((change) => change.state === "running");
   const notApplied = report.cache.filter((change) => change.state !== "running");
 
-  line(s.muted(`Profile ${report.profile ?? "none"}  ·  dev ${report.devDir}  ·  config ${report.configDir}`));
+  const home = Bun.env.HOME ?? "";
+  const tilde = (path: string) => (home && path.startsWith(`${home}/`) ? `~${path.slice(home.length)}` : path);
+  line(s.muted(`Profile ${report.profile ?? "none"}  ·  dev ${tilde(report.devDir)}  ·  config ${tilde(report.configDir)}`));
   for (const note of report.notes) line(s.muted(`! ${note}`));
   line();
 

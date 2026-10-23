@@ -65,8 +65,13 @@ function describe(theme: Theme, context: ViewContext): StyledText {
   if (theme.fallbackKeys.length > 0) {
     chunks.push(muted(`\n! Missing or invalid, using default: ${theme.fallbackKeys.join(", ")}\n`));
   }
-  chunks.push(muted(`\n${theme.path}\n`));
-  chunks.push(muted(`\nAdd your own as ${context.themes.userDir}/theme-<name>.json`));
+  chunks.push(muted(`\n${tilde(theme.path)}\n`));
+  chunks.push(muted(`\nAdd your own as ${tilde(context.themes.userDir)}/theme-<name>.json`));
 
   return new StyledText(chunks);
+}
+
+function tilde(path: string): string {
+  const home = Bun.env.HOME ?? "";
+  return home && path.startsWith(`${home}/`) ? `~${path.slice(home.length)}` : path;
 }

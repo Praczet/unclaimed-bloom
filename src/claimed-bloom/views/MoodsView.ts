@@ -33,21 +33,18 @@ export function createMoodsView(context: ViewContext): View {
       for (const [group, steers] of GROUPS) {
         chunks.push(accent(group.padEnd(11)), muted(`${steers}\n`));
       }
-      chunks.push(text("\n"));
-      for (const mood of catalog.moods) {
-        chunks.push(text(`${liveMoods.has(mood.name) ? "●" : " "} ${mood.name.padEnd(10)}`), muted(`${mood.description}\n`));
-      }
       layout.setInfo(new StyledText(chunks));
 
       layout.table.setRows(
-        ["MOOD", ...GROUPS.map(([group]) => group.toUpperCase()), "USED BY"],
+        ["MOOD", ...GROUPS.map(([group]) => group.toUpperCase()), "PROFILES", "IN SHORT"],
         catalog.moods.map((mood) => {
           const users = catalog.profilesUsingMood(mood.name);
           return {
             cells: [
               [text(`${mood.name}${liveMoods.has(mood.name) ? " ●" : ""}`)],
-              ...GROUPS.map(([group]) => shareBar(mood.weights[group] ?? 0, context.colors.accent, context.colors.muted, 8)),
-              [muted(users.length > 3 ? `${users.length} profiles` : users.join(", ") || "—")],
+              ...GROUPS.map(([group]) => shareBar(mood.weights[group] ?? 0, context.colors.accent, context.colors.muted, 5)),
+              [muted(String(users.length))],
+              [muted(mood.description)],
             ],
           };
         }),
