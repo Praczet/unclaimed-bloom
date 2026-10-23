@@ -223,3 +223,57 @@ export interface SporeStatusResponse {
   status: SporeStatus;
   error?: { message: string };
 }
+
+export type ChangeKind =
+  | "palette"
+  | "mood"
+  | "profile"
+  | "recipe"
+  | "template"
+  | "hook"
+  | "script"
+  | "target"
+  | "wallpaper"
+  | "stage"
+  | "other";
+
+export interface InstallChange {
+  kind: ChangeKind;
+  name: string;
+  path: string;
+  state: "modified" | "not-installed" | "only-installed";
+  // Targets of the current profile that read this file; empty when unused.
+  usedBy: string[];
+}
+
+export interface CacheChange {
+  kind: ChangeKind;
+  name: string;
+  path: string;
+  stage: "sow" | "grow" | "plant";
+  state: "changed-after" | "not-run" | "running" | "failed" | "other-profile";
+  changedAt: string | null;
+  lastRun: string | null;
+  targets: string[];
+}
+
+export interface WallpaperInfo {
+  path: string | null;
+  pickedAt: string | null;
+  colorsPath: string | null;
+  colorsAt: string | null;
+  plantedAt: string | null;
+  planting: boolean;
+}
+
+export interface ChangesReport {
+  devDir: string;
+  configDir: string;
+  cacheDir: string;
+  profile: string | null;
+  sameDir: boolean;
+  wallpaper: WallpaperInfo;
+  install: InstallChange[];
+  cache: CacheChange[];
+  notes: string[];
+}

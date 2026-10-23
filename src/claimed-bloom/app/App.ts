@@ -14,6 +14,10 @@ import { createRecipesView } from "../views/RecipesView.ts";
 import { createChoiceDialog } from "../componenets/ChoiceDialog.ts";
 import { createRecipeDetailView } from "../views/RecipeDetailView.ts";
 import { createCurrentStatusView } from "../views/CurrentStatusView.ts";
+import { createChangesView } from "../views/ChangesView.ts";
+import { createCheckView } from "../views/CheckView.ts";
+import { createDoView } from "../views/DoView.ts";
+import { createRunView } from "../views/RunView.ts";
 import { createThemeView } from "../views/ThemeView.ts";
 
 export class App {
@@ -31,6 +35,7 @@ export class App {
   private readonly themes = new ThemeStore();
   // Mutated in place on a theme change, so every holder of context.colors sees it.
   private readonly colors: ThemeColors = { ...DefaultColors };
+  private themeRefreshPending = false;
 
   constructor() {
     this.router = new Router((route) => {
@@ -110,14 +115,22 @@ export class App {
     this.showRoute("home");
   }
 
-  // Reloads the selected theme and restyles everything.
+  // Reloads the selected theme and restyles everything. A run view is not
+  // rebuilt, because rebuilding starts its command again; it restyles on the
+  // next navigation instead.
   private async applyTheme(): Promise<void> {
     Object.assign(this.colors, (await this.themes.current()).colors);
     this.renderer.setBackgroundColor(this.colors.background);
+
+    if (this.isRunRoute(this.router.current)) {
+      this.themeRefreshPending = true;
+      return;
+    }
     this.rebuild();
   }
 
   private rebuild(): void {
+    this.themeRefreshPending = false;
     this.container.remove(this.header.root);
     this.container.remove(this.footer.root);
     this.header.root.destroyRecursively();
@@ -129,7 +142,15 @@ export class App {
     this.showRoute(this.router.current);
   }
 
+  private isRunRoute(route: Route): boolean {
+    return typeof route !== "string" && route.name === "run";
+  }
+
   private showRoute(route: Route): void {
+    if (this.themeRefreshPending && !this.isRunRoute(route)) {
+      this.rebuild();
+      return;
+    }
     this.closeDialog();
     const nextView = this.createView(route);
 
@@ -190,6 +211,9 @@ export class App {
 
         case "profile":
           throw new Error(`Unimplemented profile route: ${route.id}`);
+
+        case "run":
+          return createRunView(context, route.id);
       }
     }
 
@@ -199,11 +223,17 @@ export class App {
 
       case "show":
         return createShowView(context);
+      case "check":
+        return createCheckView(context);
+      case "do":
+        return createDoView(context);
 
       case "recipes":
         return createRecipesView(context);
       case "current":
         return createCurrentStatusView(context);
+      case "changes":
+        return createChangesView(context);
       case "theme":
         return createThemeView(context);
 

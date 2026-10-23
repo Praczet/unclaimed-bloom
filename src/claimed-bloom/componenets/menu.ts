@@ -85,12 +85,16 @@ export function createMenuView(
       update();
     },
 
+    // Views fill menus asynchronously; ignore results that land after the
+    // view was left, when its renderables are already freed.
     setItems(items: MenuItem[]) {
+      if (disposed) return;
       menuItems = [...items];
       selected = 0;
       update();
     },
     setMessage(message: string) {
+      if (disposed) return;
       menu.content = message;
       description.content = "";
     },
