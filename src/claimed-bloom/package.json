@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "typecheck": "bun check",
-    "dev": "bun --watch index.ts"
+    "dev": "bun --watch index.ts",
+    "import-pqf": "bun scripts/import-pqf.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

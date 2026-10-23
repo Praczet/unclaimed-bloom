@@ -5,6 +5,8 @@ import bundled from "../themes/quotes.json";
 export interface Quote {
   text: string;
   by?: string;
+  // Where an imported quote came from, e.g. "pqf"; hand-written ones have none.
+  source?: string;
 }
 
 export interface QuoteBook {

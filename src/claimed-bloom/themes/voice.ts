@@ -165,14 +165,15 @@ const COMPLAINTS = [
 
 
 // Picks a random item, avoiding the one picked last time for the same list.
-const lastPicked = new Map<readonly unknown[], unknown>();
-function pick<T>(items: readonly T[]): T {
+// Lists rebuilt on every call pass a stable key instead of relying on identity.
+const lastPicked = new Map<unknown, unknown>();
+function pick<T>(items: readonly T[], key: unknown = items): T {
   if (items.length === 1) return items[0]!;
   let item: T;
   do {
     item = items[Math.floor(Math.random() * items.length)]!;
-  } while (item === lastPicked.get(items));
-  lastPicked.set(items, item);
+  } while (item === lastPicked.get(key));
+  lastPicked.set(key, item);
   return item;
 }
 
@@ -196,11 +197,15 @@ export interface Complaint {
   by?: string;
 }
 
-// Mostly complaints; roughly one time in three a quote instead.
+// Mostly complaints; roughly one time in three a quote instead. Hand-written
+// quotes get half the turns, so a few hundred imported ones cannot bury them.
 export function complaint(book: QuoteBook): Complaint {
   if (book.quotes.length > 0 && Math.random() < 0.3) {
-    const quote = pick(book.quotes);
-    return { intro: book.intros.length > 0 ? pick(book.intros) : undefined, text: quote.text, by: quote.by };
+    const own = book.quotes.filter((quote) => !quote.source);
+    const imported = book.quotes.filter((quote) => quote.source);
+    const pool = own.length > 0 && imported.length > 0 ? (Math.random() < 0.5 ? own : imported) : book.quotes;
+    const quote = pick(pool, pool === own ? "own-quotes" : pool === imported ? "imported-quotes" : "quotes");
+    return { intro: book.intros.length > 0 ? pick(book.intros, "intros") : undefined, text: quote.text, by: quote.by };
   }
   return { text: pick(COMPLAINTS) };
 }
