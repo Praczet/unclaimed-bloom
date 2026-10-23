@@ -1,6 +1,7 @@
 import { type CliRenderer, BoxRenderable, TextRenderable } from "@opentui/core";
 import type { AppContext } from "../app/types";
 import type { ThemeColors } from "../themes/colors";
+import { subtitle } from "../themes/voice";
 import type { Route } from "../app/routes";
 
 export class Header {
@@ -8,6 +9,7 @@ export class Header {
   private container: BoxRenderable;
   private breadcrumbs: TextRenderable;
   private titleRenderable: TextRenderable;
+  private subtitleRenderable: TextRenderable;
   private colors: ThemeColors;
 
   constructor(appContext: AppContext) {
@@ -26,8 +28,8 @@ export class Header {
       fg: this.colors.accent,
     });
 
-    const description = new TextRenderable(this.renderer, {
-      content: "~The garden is yours to understand~",
+    this.subtitleRenderable = new TextRenderable(this.renderer, {
+      content: subtitle(),
       fg: this.colors.muted,
       width: "100%",
       marginLeft: 3,
@@ -46,13 +48,17 @@ export class Header {
     });
 
     this.container.add(header);
-    this.container.add(description);
+    this.container.add(this.subtitleRenderable);
     this.container.add(this.breadcrumbs);
     this.container.add(this.titleRenderable);
   }
 
   get root(): BoxRenderable {
     return this.container;
+  }
+
+  setSubtitle(text: string): void {
+    this.subtitleRenderable.content = text;
   }
 
   setTitle(title: string): void {

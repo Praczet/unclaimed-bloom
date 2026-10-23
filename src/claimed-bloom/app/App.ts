@@ -26,6 +26,8 @@ import { createProfileDetailView } from "../views/ProfileDetailView.ts";
 import { createPalettesView } from "../views/PalettesView.ts";
 import { createPaletteDetailView } from "../views/PaletteDetailView.ts";
 import { createMoodsView } from "../views/MoodsView.ts";
+import { createComplainView } from "../views/ComplainView.ts";
+import { subtitle, viewTitle } from "../themes/voice.ts";
 
 export class App {
   private renderer!: CliRenderer;
@@ -164,7 +166,8 @@ export class App {
     this.currentView?.destroy();
 
     this.currentView = nextView;
-    this.header.setTitle(nextView.title);
+    this.header.setTitle((typeof route === "string" ? viewTitle(route) : undefined) ?? nextView.title);
+    this.header.setSubtitle(subtitle());
 
     const breadcrumbs = this.router.getHistory().flatMap(routeBreadcrumbs);
     this.header.setBreadcrumbs(breadcrumbs);
@@ -249,6 +252,8 @@ export class App {
         return createChangesView(context);
       case "theme":
         return createThemeView(context);
+      case "complain":
+        return createComplainView(context);
       case "profiles":
         return createProfilesView(context);
       case "palettes":
