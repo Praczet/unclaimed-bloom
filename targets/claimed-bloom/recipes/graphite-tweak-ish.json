@@ -1,0 +1,27 @@
+{
+  "name": "graphite-tweak-ish",
+  "target": "claimed-bloom",
+  "basePalette": "nord-tweak-dark",
+  "tokens": {
+    "background": {
+      "base": "background"
+    },
+    "panel": {
+      "base": "background_highlight"
+    },
+    "panel_raised": {
+      "base": "border"
+    },
+    "foreground": {
+      "base": "foreground"
+    },
+    "muted": {
+      "base": "comment"
+    },
+    "accent": {
+      "base": "blue",
+      "source": "primary",
+      "mix": 0.08
+    }
+  }
+}

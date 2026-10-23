@@ -1,0 +1,36 @@
+{
+  "name": "subtle-ish",
+  "target": "claimed-bloom",
+  "tokens": {
+    "background": {
+      "bloom": "surface.base",
+      "source": "background",
+      "mix": 0.2
+    },
+    "panel": {
+      "bloom": "surface.raised",
+      "source": "surface_container_high",
+      "mix": 0.1
+    },
+    "panel_raised": {
+      "bloom": "border.subtle",
+      "source": "outline_variant",
+      "mix": 0.1
+    },
+    "foreground": {
+      "bloom": "text.primary",
+      "source": "on_surface",
+      "mix": 0.1
+    },
+    "muted": {
+      "bloom": "text.muted",
+      "source": "outline",
+      "mix": 0.1
+    },
+    "accent": {
+      "bloom": "accent.primary",
+      "source": "primary",
+      "mix": 0.15
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Unclaimed Bloom",
+  "description": "Planted by spore from the current profile and wallpaper. Regenerated on every plant; edit the claimed-bloom recipe instead of this file.",
+  "colors": {
+    "background": "{{background}}",
+    "panel": "{{panel}}",
+    "panelRaised": "{{panel_raised}}",
+    "foreground": "{{foreground}}",
+    "muted": "{{muted}}",
+    "accent": "{{accent}}"
+  }
+}
