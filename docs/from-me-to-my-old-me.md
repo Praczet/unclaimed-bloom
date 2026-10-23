@@ -1,7 +1,7 @@
 type:: note
 tags:: [[unclaimed-bloom]], [[future-me]], [[wallset]], [[recipes]], [[themes]]
 status:: living
-updated:: [[2026-06-10]]
+updated:: [[2026-10-23]]
 project:: [[Projects/Unclaimed Bloom]]
 related:: [[docs/PROJECT-CAPSULE.md]], [[README.md]]
 
@@ -44,8 +44,58 @@ That picks a wallpaper, runs Matugen, grows colors, and applies the desktop.
 If you already know the wallpaper:
 
 ```bash
-wallset ~/Pictures/wallpapers/something.png
+wallset ~/.config/backgrounds/something.png
 ```
+
+If you changed something in this repo and want to see it:
+
+```bash
+spore sync --apply
+```
+
+That one is new, and it is the one you will forget. Read the next section.
+
+## There Are Two Copies Of Everything
+
+This is the thing that will bite you.
+
+```text
+~/Development/Hyprland/unclaimed-bloom/   the repo — where you edit
+~/.config/unclaimed-bloom/                the installed copy — what spore reads
+```
+
+The installed `spore`, `wallset` and friends read **`~/.config/unclaimed-bloom`**,
+not the repo. That is on purpose: you can break things in the repo without
+breaking the desktop.
+
+So editing a recipe in the repo changes nothing until it is copied over:
+
+```bash
+spore sync            # copy changed palettes, moods, profiles, recipes, templates, hooks
+spore sync --apply    # same, then rerun wallset with the current wallpaper
+spore sync --dry-run  # what would be copied
+spore sync scripts    # scripts are left out unless you ask
+```
+
+Copied files get the current time as their timestamp, so claimed-bloom can tell
+that a sow is older than its inputs.
+
+Not `scripts/install --force`. That one deletes and recopies everything, rewrites
+the launchers, and keeps old timestamps. Use it when the launchers changed, not
+when a recipe did.
+
+Two more traps in the same family:
+
+- `spore replant <profile> <target> <recipe>` edits the profile in
+  `~/.config`, **not in the repo**. The next `spore sync` puts the repo's
+  version back. If you want to keep a recipe switch, edit `profiles/` in the
+  repo and sync.
+- `scripts/spore` (the dev wrapper in the repo) reads the **repo** instead of
+  `~/.config`. Same for `deno task dev:local`. Handy for trying things; confusing
+  if you forgot which `spore` you ran.
+
+If you do not know whether the two copies agree: open claimed-bloom and look at
+**Check**. It says what is outdated and what to run.
 
 ## What wallset Does
 
@@ -55,78 +105,113 @@ It does not contain the color brain. It is the doorbell.
 
 It:
 
-- opens Rofi so you can pick a wallpaper
-- uses the Rofi wallpaper theme with image icons
-- passes the selected file to `wallset-backend`
+- opens the Qreep wallpaper picker (or fuzzel/fzf if Qreep is not running),
+  showing `~/.config/backgrounds` (`UB_WALLPAPER_DIR` changes that)
+- passes the chosen file to `wallset-backend`
 
-The backend runs:
+The backend:
+
+```text
+writes ~/.cache/unclaimed-bloom/current-wallpaper
+runs Matugen on the wallpaper            (scripts/matugen-cache)
+spore sow <profile> --wallpaper … --bloom-osd
+spore grow <profile>
+sets the wallpaper with awww
+spore plant <profile> --bloom-osd
+```
+
+`<profile>` is whatever you chose with:
 
 ```bash
-spore sow desktop --wallpaper <wallpaper>
-spore grow desktop
-spore plant desktop
+spore profile use desktop-graphite-blooming
 ```
 
-`desktop` is a composition profile:
+(falling back to `desktop`). Override one run with
+`UB_WALLSET_PROFILE=daily-light wallset`.
+
+Planting takes about a minute. Most apps change within seconds; `hyprlock`
+(about 15 s, it prepares its blurred background) and `icons` (about 50 s, it
+recolours tens of thousands of SVGs) take the rest, and everything after
+hyprlock waits for it. If you look straight after picking and nothing changed:
+wait. The Qreep bloom OSD shows the progress.
+
+## Compositions
+
+The profiles you actually use are compositions:
 
 ```text
-profiles/desktop.json
+desktop-graphite-blooming   = daily-gtk-blooming (gtk, gimp) + daily-graphite-blooming (the other 31)
+desktop-ash-dark-dormant    = daily-ash-dark-gtk-dormant (gtk, gimp) + daily-ash-dark-dormant
+…
+desktop                     = daily-gtk (gtk) + daily          ← the original
 ```
 
-It currently runs:
-
-```text
-daily-gtk gtk
-daily
-```
+Name pattern: `desktop-<palette>-<mood>`. Pick a different one with
+`spore profile use …` and then `wallset` (or `spore sync --apply`).
 
 That means:
 
-- GTK gets its own Graphite-ish neutral profile first
-- the rest of the desktop gets the normal `daily` profile after that
-- `current-profile` ends as `daily`
+- GTK (and GIMP) get their own profile, so they can use calmer recipes than the rest
+- the rest of the desktop gets the big `daily-*` profile
+- `current-profile` is whatever you `profile use`d, the composition itself
 
 This is intentional. Do not "fix" it at 1 AM unless you enjoy rebuilding the
 same idea from scratch like a man cursed by tabs.
 
+Two things compositions do **not** do:
+
+- **They ignore the `[target]` argument.** `spore sow desktop-graphite-blooming yazi`
+  sows all 33 targets. To work on one target, use the plain profile that plants
+  it (see "One Target Only" below).
+- **They have no spores of their own.** `spore inspect spore desktop-graphite-blooming yazi`
+  fails; the spore lives under the run's profile:
+  `spore inspect spore daily-graphite-blooming yazi`.
+
+## One Target Only
+
+Find which plain profile plants the target now (claimed-bloom → Show → Targets
+says "Planted now by …", or `spore profile show <composition>`), then:
+
+```bash
+spore sow   daily-graphite-blooming yazi
+spore grow  daily-graphite-blooming yazi
+spore plant daily-graphite-blooming yazi
+```
+
+Afterwards `spore status` and claimed-bloom say the last sow/grow/plant "ran
+for daily-graphite-blooming" instead of your composition. That is true and
+harmless; the next `wallset` puts it back.
+
 ## Important Files
 
-Profiles:
+In the repo (edit here, then `spore sync`):
 
 ```text
-profiles/
+profiles/                      profiles and compositions
+palettes/                      base palettes
+moods/                         mood weights
+targets/<target>/recipes/      how a target reads the bloom
+targets/<target>/templates/    the shape of the final config file
+targets/<target>/hooks/        where it lands and what reloads
 ```
 
-Target recipes and templates:
+Generated:
 
 ```text
-targets/<target>/recipes/
-targets/<target>/templates/
+~/.cache/unclaimed-bloom/      blooms, spores, rendered files, run state
 ```
 
-Base palettes:
-
-```text
-palettes/
-```
-
-Mood weights:
-
-```text
-moods/
-```
-
-Generated cache:
-
-```text
-~/.cache/unclaimed-bloom/
-```
-
-Real installed config files are usually under:
+Real installed app config files are usually under:
 
 ```text
 ~/.config/
 ~/.local/share/
+```
+
+claimed-bloom's own stuff (its themes, the selected theme, the complaint quotes):
+
+```text
+~/.config/claimed-bloom/
 ```
 
 ## Words You Will Forget
@@ -138,8 +223,9 @@ A palette is the boring base taste.
 Examples:
 
 ```text
-palettes/tokyonight-moon.json
-palettes/graphite-dark.json
+palettes/nord-tweak-dark.json   the graphite compositions
+palettes/ash-dark.json          the ash-dark compositions
+palettes/tokyonight-moon.json   daily
 palettes/graphite-light.json
 ```
 
@@ -172,8 +258,12 @@ blooming  = normal daily influence
 overgrown = Matugen has been given the microphone
 ```
 
+Each mood has four weights: surfaces (backgrounds, borders), text, accents, and
+states (danger, warning…). claimed-bloom → Show → Moods puts them side by side.
+
 If everything is too pastel, too wallpaper-colored, or too much, try a calmer
-mood.
+mood — that is, a calmer composition: `desktop-graphite-dormant` instead of
+`desktop-graphite-blooming`.
 
 ### Bloom
 
@@ -201,13 +291,13 @@ You usually do not hand-edit blooms. They are generated.
 Inspect one:
 
 ```bash
-spore inspect daily waybar
+spore inspect bloom daily-graphite-blooming
 ```
 
-or:
+Inspect what one target got from it:
 
 ```bash
-spore inspect desktop gtk
+spore inspect spore daily-graphite-blooming yazi
 ```
 
 ### Recipe
@@ -220,8 +310,8 @@ Examples:
 
 ```text
 targets/yazi/recipes/subtle-ish.json
-targets/waybar/recipes/source-heavy.json
-targets/gtk/recipes/graphite-dark.json
+targets/nvim/recipes/source-heavy.json
+targets/gtk/recipes/nord-tweak-dark.json
 targets/ghostty/recipes/subtle-ish.json
 ```
 
@@ -254,41 +344,31 @@ mix 0.50 = serious source pull
 mix 0.90 = wallpaper has taken hostages
 ```
 
-If waybar is too goddamn pastel, look at:
+Most targets use `subtle-ish`. A few still have a `source-heavy` recipe, and
+`daily` still picks it for `nvim` and `qreep`. If Neovim is too goddamn pastel
+under `daily`, look at:
 
 ```text
-targets/waybar/recipes/source-heavy.json
 profiles/daily.json
+targets/nvim/recipes/source-heavy.json
 ```
 
 `daily` currently chooses:
 
 ```json
-"waybar": "source-heavy"
+"nvim": "source-heavy"
 ```
 
-So yes, if waybar is too much, future Adam, the file name was literally trying
-to warn you.
+So yes, if it is too much, future Adam, the file name was literally trying to
+warn you.
 
 Change it to:
 
 ```json
-"waybar": "subtle-ish"
+"nvim": "subtle-ish"
 ```
 
-or reduce the `mix` values in:
-
-```text
-targets/waybar/recipes/source-heavy.json
-```
-
-Then run:
-
-```bash
-spore sow daily waybar
-spore grow daily waybar
-spore plant daily waybar
-```
+or reduce the `mix` values in the recipe. Then `spore sync --apply`.
 
 ### Template
 
@@ -327,6 +407,9 @@ It has `copy` steps (copy rendered file to config path) and optional `exec` step
 If a target is being grown but nothing is changing on disk after `grow`,
 you need to run `plant` as well. Or check if the hook is missing.
 
+claimed-bloom → Show → Targets lists, for every target, where it lands and what
+runs after.
+
 ## Where Do I Change Yazi Colors?
 
 Open:
@@ -335,18 +418,19 @@ Open:
 targets/yazi/recipes/subtle-ish.json
 ```
 
-Then inspect:
+Copy it over and inspect:
 
 ```bash
-spore inspect daily yazi
+spore sync recipes
+spore sow daily-graphite-blooming yazi
+spore inspect spore daily-graphite-blooming yazi
 ```
 
 Apply only yazi:
 
 ```bash
-spore sow daily yazi
-spore grow daily yazi
-spore plant daily yazi
+spore grow  daily-graphite-blooming yazi
+spore plant daily-graphite-blooming yazi
 ```
 
 The adapter writes:
@@ -373,61 +457,23 @@ or:
 { "base": "..." }
 ```
 
-## Where Do I Change Waybar Colors?
-
-Profile choice:
-
-```text
-profiles/daily.json
-```
-
-Recipes:
-
-```text
-targets/waybar/recipes/subtle-ish.json
-targets/waybar/recipes/source-heavy.json
-```
-
-Generated output:
-
-```text
-~/.config/waybar/colors/matugen.css
-```
-
-Commands:
-
-```bash
-spore inspect daily waybar
-spore sow daily waybar
-spore grow daily waybar
-spore plant daily waybar
-```
-
-If it is pastelish, first check whether `daily` uses `source-heavy`.
-
-It probably does.
-
-Yes, this is your handwriting.
-
 ## Where Do I Change GTK Colors?
 
 GTK is special because GTK cannot be trusted with power.
 
-GTK uses its own profile:
+GTK uses its own profile inside every composition:
 
 ```text
-profiles/daily-gtk.json
+profiles/daily-gtk-blooming.json          graphite compositions (one per mood)
+profiles/daily-ash-dark-gtk-dormant.json  ash-dark compositions (one per mood)
+profiles/daily-gtk.json                   the original desktop
 ```
 
-The `desktop` composition runs that first:
+GTK recipes, one per palette family:
 
 ```text
-profiles/desktop.json
-```
-
-GTK recipes:
-
-```text
+targets/gtk/recipes/nord-tweak-dark.json
+targets/gtk/recipes/ash-dark.json
 targets/gtk/recipes/graphite-dark.json
 targets/gtk/recipes/graphite-light.json
 targets/gtk/recipes/subtle-ish.json
@@ -446,22 +492,21 @@ Generated output includes:
 ~/.local/share/themes/ADArt-Unclaimed-Bloom/
 ```
 
-Use:
+Use the GTK run's profile, not the composition:
 
 ```bash
-spore inspect desktop gtk
-spore sow desktop gtk
-spore grow desktop gtk
-spore plant desktop gtk
+spore inspect spore daily-gtk-blooming gtk
+spore sow   daily-gtk-blooming gtk
+spore grow  daily-gtk-blooming gtk
+spore plant daily-gtk-blooming gtk
 ```
 
-GTK surfaces should mostly come from Graphite base colors, not Matugen.
+GTK surfaces should mostly come from the base palette, not Matugen.
 
-If Thunar becomes purple again, look for `source_color` in:
-
-```text
-targets/gtk/recipes/graphite-dark.json
-```
+If Thunar becomes purple again, look for `source_color` and other `"source"`
+pulls on surface tokens in the GTK recipe the profile uses. Of the GTK recipes,
+`subtle-ish.json` is the one that pulls `source_color` into several tokens; the
+per-palette ones (`nord-tweak-dark`, `ash-dark`, `graphite-*`) do not.
 
 If big surfaces use this:
 
@@ -483,6 +528,9 @@ or:
 { "base": "background_highlight" }
 ```
 
+The structural GTK theme (widget shapes, Thunar rules) still lives in the
+sibling `adart-matugener-gtk-theme` repo. See [gtk.md](gtk.md).
+
 ## Where Do I Change Rofi Colors?
 
 Rofi target recipe:
@@ -497,85 +545,108 @@ Generated shared Rofi colors:
 ~/.config/rofi/shared/matugen.rasi
 ```
 
-Rofi theme used by `wallset`:
-
-```text
-~/.config/rofi/launchers/type-2/style-10.rasi
-```
-
-Override the picker theme:
-
-```bash
-UB_WALLSET_ROFI_THEME=~/.config/rofi/themes/peek/peek-preview.rasi wallset
-```
+(wallset no longer uses Rofi for picking wallpapers; Qreep does that now.)
 
 ## How To Change Which Recipe A Target Uses
 
-Edit the profile:
+Edit the profile **in the repo**:
 
 ```text
-profiles/daily.json
+profiles/daily-graphite-blooming.json
 ```
 
 Example:
 
 ```json
-"waybar": "source-heavy"
+"nvim": "source-heavy"
 ```
 
 Change to:
 
 ```json
-"waybar": "subtle-ish"
+"nvim": "subtle-ish"
 ```
 
-Or use the CLI:
+Then:
 
 ```bash
-spore replant daily waybar subtle-ish --apply
+spore sync --apply
 ```
+
+`spore replant <profile> <target> <recipe> --apply` also works, but it edits
+`~/.config` only, and the next `spore sync` undoes it. Fine for trying; edit the
+repo to keep it.
 
 If you only want to test without applying:
 
 ```bash
-spore sow daily waybar
-spore inspect daily waybar
+spore sync profiles
+spore sow daily-graphite-blooming nvim
+spore inspect spore daily-graphite-blooming nvim
 ```
 
 ## How To See What Is Happening
 
-List profiles:
+The quick answer:
+
+```bash
+spore status
+```
+
+Current profile, its runs, when sow/grow/plant last ran, and every target's
+recipe and colors. Spores nobody uses anymore are listed at the bottom.
+
+The friendlier answer: claimed-bloom.
+
+```bash
+cd src/claimed-bloom && bun run dev
+```
+
+- **Check** — is anything the current theme uses outdated, and what to run
+- **Do** — run that
+- **Show** — profiles, palettes, moods, targets, recipes, and what changed where
+
+The CLI way:
 
 ```bash
 spore profile list
-```
-
-List recipes:
-
-```bash
+spore profile show desktop-graphite-blooming
 spore recipe list
-spore recipe list waybar
-```
-
-Validate recipes:
-
-```bash
-spore recipe validate
-```
-
-Inspect a target:
-
-```bash
-spore inspect daily waybar
-```
-
-Status:
-
-```bash
-spore status desktop
+spore recipe list yazi
+spore recipe validate yazi
+spore inspect spore daily-graphite-blooming yazi
 ```
 
 ## Common Problems
+
+### I Changed A Recipe And Nothing Happened
+
+You forgot to sync.
+
+Again.
+
+The installed spore reads `~/.config/unclaimed-bloom`, not the repo:
+
+```bash
+spore sync --apply
+```
+
+If you did sync: you forgot to sow/grow/plant. `--apply` does that for you.
+
+### I Picked A Wallpaper And The Theme Did Not Change
+
+Two usual reasons.
+
+1. **It did change, you were early.** Planting takes about a minute; hyprlock
+   and icons are slow and the rest waits for hyprlock. Watch the Qreep OSD.
+2. **Only the accents changed.** In dark mode Matugen's background is
+   near-black for almost any wallpaper, and blooming only lets a quarter of it
+   into surfaces. So backgrounds barely move (on 2026-10-23 two very different
+   wallpapers gave Ghostty `#25282d` and `#252831`) while accents swung from
+   olive to lavender. If you want the wallpaper all over the place, use an
+   `overgrown` composition.
+
+`spore status` shows when plant last finished. If it says `running`, see 1.
 
 ### Everything Is Too Wallpaper-Colored
 
@@ -583,9 +654,11 @@ Check:
 
 ```text
 moods/
-profiles/daily.json
+profiles/<profile>.json
 targets/<target>/recipes/
 ```
+
+Use a calmer composition (`…-dormant` or `…-budding`).
 
 Reduce `mix`.
 
@@ -601,10 +674,10 @@ Go to:
 targets/<app>/recipes/
 ```
 
-Then inspect:
+Then inspect (with the run profile, not the composition):
 
 ```bash
-spore inspect daily <app>
+spore inspect spore daily-graphite-blooming <app>
 ```
 
 ### The Generated File Has The Wrong Shape
@@ -618,35 +691,15 @@ targets/<app>/templates/
 targets/<app>/hooks/plant.json
 ```
 
-### I Changed A Recipe And Nothing Happened
+### I Asked For One Target And It Did All Of Them
 
-You forgot to sow/grow.
+You used the composition. Compositions ignore the target. Use the plain profile
+that plants it: see "One Target Only".
 
-Again.
+### Status Says A Stage "Ran For" Some Other Profile
 
-Run:
-
-```bash
-spore sow daily <target>
-spore grow daily <target>
-spore plant daily <target>
-```
-
-For GTK:
-
-```bash
-spore sow desktop gtk
-spore grow desktop gtk
-spore plant desktop gtk
-```
-
-For everything:
-
-```bash
-spore sow desktop
-spore grow desktop
-spore plant desktop
-```
+You did a one-target run on a plain profile. True and harmless; the next
+`wallset` or `spore sync --apply` puts it back.
 
 ## Final Reminder
 
@@ -659,9 +712,11 @@ Do not start by inventing `PaletteHydratorAbstractThemeMoodProvider`.
 Start here:
 
 ```text
+claimed-bloom → Check
 profiles/<profile>.json
 targets/<target>/recipes/<recipe>.json
-spore inspect <profile> <target>
+spore sync --apply
+spore inspect spore <run-profile> <target>
 ```
 
 Most of the time, the answer is:
@@ -669,5 +724,6 @@ Most of the time, the answer is:
 ```text
 wrong recipe,
 too much mix,
+forgot to sync,
 or source-heavy got invited and nobody supervised it.
 ```
