@@ -5,7 +5,8 @@ import { Router } from "./Router.ts";
 import { routeBreadcrumbs, type Route } from "./routes.ts";
 import type { AppContext, ChoiceDialogOptions, Dialog, View, ViewContext } from "./types.ts";
 import { createHomeView } from "../views/HomeView.ts";
-import { ThemeColors } from "../themes/colors.ts";
+import { DefaultColors, type ThemeColors } from "../themes/colors.ts";
+import { ThemeStore } from "../services/ThemeStore.ts";
 import { Footer } from "../componenets/Footer.ts";
 import { Header } from "../componenets/Header.ts";
 import { createShowView } from "../views/ShowView.ts";
@@ -13,6 +14,7 @@ import { createRecipesView } from "../views/RecipesView.ts";
 import { createChoiceDialog } from "../componenets/ChoiceDialog.ts";
 import { createRecipeDetailView } from "../views/RecipeDetailView.ts";
 import { createCurrentStatusView } from "../views/CurrentStatusView.ts";
+import { createThemeView } from "../views/ThemeView.ts";
 
 export class App {
   private renderer!: CliRenderer;
@@ -26,7 +28,9 @@ export class App {
   private header!: Header;
   private footer!: Footer;
   private readonly spore = new SporeClient();
-  private colors = ThemeColors;
+  private readonly themes = new ThemeStore();
+  // Mutated in place on a theme change, so every holder of context.colors sees it.
+  private readonly colors: ThemeColors = { ...DefaultColors };
 
   constructor() {
     this.router = new Router((route) => {
@@ -35,9 +39,11 @@ export class App {
   }
 
   async start(): Promise<void> {
+    Object.assign(this.colors, (await this.themes.current()).colors);
+
     this.renderer = await createCliRenderer({
       exitOnCtrlC: true,
-      backgroundColor: this.colors.backgroundColor,
+      backgroundColor: this.colors.background,
     });
 
     this.container = new BoxRenderable(this.renderer, {
@@ -71,6 +77,7 @@ export class App {
       renderer: this.renderer,
       colors: this.colors,
       spore: this.spore,
+      themes: this.themes,
       route: this.router.current,
     };
 
@@ -91,8 +98,7 @@ export class App {
         if (this.router.canGoBack) {
           this.router.back();
         } else {
-          this.currentView?.destroy();
-          this.renderer.destroy();
+          this.exit();
         }
         return;
       }
@@ -100,7 +106,27 @@ export class App {
       this.currentView?.onKey?.(key.name);
     });
 
+    this.themes.watch(() => void this.applyTheme());
     this.showRoute("home");
+  }
+
+  // Reloads the selected theme and restyles everything.
+  private async applyTheme(): Promise<void> {
+    Object.assign(this.colors, (await this.themes.current()).colors);
+    this.renderer.setBackgroundColor(this.colors.background);
+    this.rebuild();
+  }
+
+  private rebuild(): void {
+    this.container.remove(this.header.root);
+    this.container.remove(this.footer.root);
+    this.header.root.destroyRecursively();
+    this.footer.root.destroyRecursively();
+    this.header = new Header(this.context);
+    this.footer = new Footer(this.context);
+    this.container.add(this.header.root, 0);
+    this.container.add(this.footer.root);
+    this.showRoute(this.router.current);
   }
 
   private showRoute(route: Route): void {
@@ -130,6 +156,7 @@ export class App {
   }
 
   private exit(): void {
+    this.themes.close();
     this.currentView?.destroy();
     this.renderer.destroy();
   }
@@ -153,6 +180,7 @@ export class App {
       exit: () => this.exit(),
       openChoiceDialog: <T>(options: ChoiceDialogOptions<T>) => this.openChoiceDialog<T>(options),
       closeDialog: () => this.closeDialog(),
+      applyTheme: () => this.applyTheme(),
     };
 
     if (typeof route !== "string") {
@@ -176,6 +204,8 @@ export class App {
         return createRecipesView(context);
       case "current":
         return createCurrentStatusView(context);
+      case "theme":
+        return createThemeView(context);
 
       default:
         throw new Error(`Unimplemented route: ${route}`);

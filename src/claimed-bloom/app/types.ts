@@ -1,10 +1,12 @@
-import type { BoxRenderable, CliRenderer } from "@opentui/core";
+import type { BoxRenderable, CliRenderer, StyledText } from "@opentui/core";
 import type { Route } from "./routes.ts";
 import type { SporeClient } from "../services/SporeClient.ts";
+import type { ThemeStore } from "../services/ThemeStore.ts";
+import type { ThemeColors } from "../themes/colors.ts";
 
 export type MenuItemBase = {
   label: string;
-  description: string;
+  description: string | StyledText;
 };
 
 export interface Dialog {
@@ -37,9 +39,10 @@ export interface View {
 }
 
 export interface AppContext {
-  colors: Record<string, string>;
+  colors: ThemeColors;
   renderer: CliRenderer;
   spore: SporeClient;
+  themes: ThemeStore;
   route: Route;
 }
 
@@ -63,6 +66,8 @@ export interface ViewContext extends AppContext {
   openChoiceDialog<T>(options: ChoiceDialogOptions<T>): void;
 
   closeDialog(): void;
+  // Reloads the selected theme from ThemeStore and restyles the whole app.
+  applyTheme(): Promise<void>;
   back(): void;
   exit(): void;
 }

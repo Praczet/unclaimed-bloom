@@ -59,7 +59,7 @@ export function createRecipeDetailView(context: ViewContext, recipeId: string): 
     showBorders: true,
     outerBorder: true,
     borderStyle: "single",
-    borderColor: context.colors.panelRised,
+    borderColor: context.colors.panelRaised,
     backgroundColor: context.colors.panel,
     fg: context.colors.foreground,
     wrapMode: "word",
@@ -176,7 +176,7 @@ function createTableContent(
   colors: Record<string, string>,
 ): TextChunk[][][] {
   const header = ["TOKEN", "KIND", "BASE", "SOURCE", "MIX", "RESULT RULE", "COLOR"].map((label) => [
-    fg(themeColor(colors, "green", "#80d9ab"))(label),
+    fg(themeColor(colors, "accent", "#80d9ab"))(label),
   ]);
 
   return [header, ...preview.tokens.map((token) => createRow(token, colors))];

@@ -1,8 +1,17 @@
-export const ThemeColors = {
-  foreground: "#d9ebe3",
-  muted: "#8da89e",
-  green: "#80d9ab",
-  panel: "#1b302b",
-  panelRised: "#3c5951",
-  backgroundColor: "#101a19",
-};
+import defaultTheme from "./theme-default.json";
+
+export const THEME_COLOR_KEYS = [
+  "background",
+  "panel",
+  "panelRaised",
+  "foreground",
+  "muted",
+  "accent",
+] as const;
+
+export type ThemeColorKey = (typeof THEME_COLOR_KEYS)[number];
+
+export type ThemeColors = Record<ThemeColorKey, string>;
+
+// Fallback for keys a theme file leaves out, and the theme used when none loads.
+export const DefaultColors: ThemeColors = defaultTheme.colors;

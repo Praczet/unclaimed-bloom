@@ -1,5 +1,6 @@
 import { type CliRenderer, BoxRenderable, TextRenderable } from "@opentui/core";
 import type { AppContext } from "../app/types";
+import type { ThemeColors } from "../themes/colors";
 import type { Route } from "../app/routes";
 
 export class Header {
@@ -7,7 +8,7 @@ export class Header {
   private container: BoxRenderable;
   private breadcrumbs: TextRenderable;
   private titleRenderable: TextRenderable;
-  private colors: Record<string, string>;
+  private colors: ThemeColors;
 
   constructor(appContext: AppContext) {
     this.renderer = appContext.renderer;
@@ -22,7 +23,7 @@ export class Header {
 
     const header = new TextRenderable(this.renderer, {
       content: "  CLAIMED BLOOM",
-      fg: this.colors.green,
+      fg: this.colors.accent,
     });
 
     const description = new TextRenderable(this.renderer, {
@@ -34,7 +35,7 @@ export class Header {
 
     this.titleRenderable = new TextRenderable(this.renderer, {
       content: "",
-      fg: this.colors.fg,
+      fg: this.colors.foreground,
       marginTop: 1,
     });
 

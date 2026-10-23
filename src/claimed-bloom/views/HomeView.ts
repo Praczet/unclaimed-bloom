@@ -11,6 +11,12 @@ export function createHomeView(appContext: ViewContext): View {
       { label: "Check...", route: "check", description: "Check if your configs are valid" },
       { label: "Do...", route: "do", description: "Do something with your configs" },
       { label: "Complain...", route: "complain", description: "Complain about something" },
+      {
+        label: "Theme...",
+        route: "theme",
+        description:
+          "How claimed-bloom itself looks.\n\nPick a theme-*.json from the bundled themes or ~/.config/claimed-bloom/themes; it applies right away.",
+      },
     ],
   );
 }

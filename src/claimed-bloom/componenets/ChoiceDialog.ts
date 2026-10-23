@@ -1,10 +1,11 @@
 import { BoxRenderable, TextRenderable, type CliRenderer } from "@opentui/core";
 
 import type { ChoiceDialogOptions, Dialog } from "../app/types.ts";
+import type { ThemeColors } from "../themes/colors.ts";
 
 export function createChoiceDialog<T>(
   renderer: CliRenderer,
-  colors: Record<string, string>,
+  colors: ThemeColors,
   options: ChoiceDialogOptions<T>,
   onClose: () => void,
 ): Dialog {
@@ -33,9 +34,9 @@ export function createChoiceDialog<T>(
     backgroundColor: colors.panel,
     border: true,
     borderStyle: "rounded",
-    borderColor: colors.panelRised,
+    borderColor: colors.panelRaised,
     title: ` ${options.title} `,
-    titleColor: colors.green,
+    titleColor: colors.accent,
     bottomTitle: " ↑↓ Navigate • Enter Select • Esc Close ",
     bottomTitleAlignment: "center",
     padding: 1,
@@ -61,7 +62,7 @@ export function createChoiceDialog<T>(
     flexDirection: "column",
     paddingLeft: 1,
     border: ["left"],
-    borderColor: colors.panelRised,
+    borderColor: colors.panelRaised,
   });
 
   const choices = new TextRenderable(renderer, {

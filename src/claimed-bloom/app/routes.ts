@@ -11,6 +11,7 @@ export const routes = {
   moods: "Moods",
   targets: "Targets",
   changes: "Changes",
+  theme: "Theme",
 } as const;
 
 export type StaticRoute = keyof typeof routes;

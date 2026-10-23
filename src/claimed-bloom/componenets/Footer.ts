@@ -1,11 +1,12 @@
 import { type CliRenderer, BoxRenderable, TextRenderable } from "@opentui/core";
 import type { AppContext } from "../app/types";
+import type { ThemeColors } from "../themes/colors";
 
 export class Footer {
   private renderer: CliRenderer;
   private container: BoxRenderable;
   private shortcutsRenderable: TextRenderable;
-  private colors: Record<string, string>;
+  private colors: ThemeColors;
 
   constructor(appContext: AppContext) {
     this.renderer = appContext.renderer;
@@ -23,7 +24,7 @@ export class Footer {
 
     this.shortcutsRenderable = new TextRenderable(this.renderer, {
       content: "",
-      fg: this.colors.fg,
+      fg: this.colors.foreground,
     });
 
     this.container.add(this.shortcutsRenderable);

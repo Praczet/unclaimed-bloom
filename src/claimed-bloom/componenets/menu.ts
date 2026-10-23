@@ -31,7 +31,7 @@ export function createMenuView(
     width: "100%",
     flexDirection: "column",
     padding: 1,
-    borderColor: context.colors.panelRised,
+    borderColor: context.colors.panelRaised,
     borderStyle: "rounded",
     // No flexGrow
   });

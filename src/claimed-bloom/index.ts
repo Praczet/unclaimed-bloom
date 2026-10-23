@@ -1,5 +1,5 @@
 import { BoxRenderable, TextRenderable, createCliRenderer } from "@opentui/core";
-import { ThemeColors } from "./themes/colors";
+import type { ThemeColors } from "./themes/colors";
 
 import { App } from "./app/App";
 

@@ -1,0 +1,12 @@
+{
+  "name": "Default",
+  "description": "The original claimed-bloom greens.",
+  "colors": {
+    "background": "#101a19",
+    "panel": "#1b302b",
+    "panelRaised": "#3c5951",
+    "foreground": "#d9ebe3",
+    "muted": "#8da89e",
+    "accent": "#80d9ab"
+  }
+}
