@@ -105,6 +105,7 @@ const ASIDES: Partial<Record<StaticRoute, string[]>> = {
     "Yes, the theming tool needs a theme. No, we will not discuss it.",
     "Pick Unclaimed Bloom and watch it repaint itself after every wallpaper.",
     "Dress the gardener before the garden.",
+    "Szewc bez butów chodzi. Not this shoemaker. Not anymore.",
   ],
   current: [
     "Start here. Everyone starts here. Nobody knows why.",
